@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "194620200746",
+    "firebase_url": "https://switchcalls-ab7c6.firebaseio.com",
+    "project_id": "switchcalls-ab7c6",
+    "storage_bucket": "switchcalls-ab7c6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:194620200746:android:77803319d727c5d193b053",
+        "android_client_info": {
+          "package_name": "com.ojtechnologiesltd.switchcalls"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "194620200746-3k99l8ocfapkob74d30sokm556qpi2c7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ojtechnologiesltd.switchcalls",
+            "certificate_hash": "bbf692ae364643e4d0f56f0c3a550b00af0fa110"
+          }
+        },
+        {
+          "client_id": "194620200746-bf3clbi4hmimgit2df9i3m5pa73lc3vj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkI-abh0QHT7jdsfCjjhnGKZ58wLxrTeY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "194620200746-bf3clbi4hmimgit2df9i3m5pa73lc3vj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
