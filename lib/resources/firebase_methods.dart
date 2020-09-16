@@ -47,11 +47,19 @@ class FirebaseMethods {
 
   Future<void> addDataToDb(FirebaseUser currentUser) async{
 
+    String username = utils.getUsername(currentUser.email);
+    
     user = User(
       uid: currentUser.uid,
       email: currentUser..email,
       name: currentUser.displayName,
-      profilePhoto: currentUser.photoUrl,);
+      profilePhoto: currentUser.photoUrl,
+      username: username
+    );
 
+    firestore
+        .collection("users")
+        .document(currentUser.uid)
+        .setData(user.toMap(user));
   }
 }
