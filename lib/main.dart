@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:switchcalls/resources/firebase_repository.dart';
+import 'package:switchcalls/screens/home_screen.dart';
+import 'package:switchcalls/screens/login_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,15 +13,24 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+  FirebaseRepository _repository = FirebaseRepository();
+
   @override
   Widget build(BuildContext context) {
-    Firestore.instance.collection("users").document().setData({
-      "name":"Joseph"
-    });
 
     return MaterialApp(
-      home: Scaffold (
-        body: Container(),
+      title: "Switchcalls",
+      debugShowCheckedModeBanner: false,
+      home: FutureBuilder(
+        future: _repository.getCurrentUser(),
+        builder: (context, AsyncSnapshot<FirebaseUser> snapshot ) {
+          if(snapshot.hasData){
+            return HomeScreen() ;
+          } else {
+            return LoginScreen();
+          }
+        },
       ),
     );
   }
