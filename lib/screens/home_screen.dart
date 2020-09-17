@@ -36,8 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: UniversalVariables.blackColor,
       body: PageView(
         children: <Widget>[
-          Center(child: Text("Chat List Screen", style: TextStyle(color: Colors.white),)),
-          Center(child: Text("Call Logs", style: TextStyle(color: Colors.white),)),
+          Center(child: Text("Call logs", style: TextStyle(color: Colors.white),)),
+          Center(child: Text("Messages Screen", style: TextStyle(color: Colors.white),)),
           Center(child: Text("Contact Screen", style: TextStyle(color: Colors.white),)),
         ],
         controller: pageController,
@@ -51,12 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: UniversalVariables.blackColor,
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: Icon(Icons.chat,
+                icon: Icon(Icons.call,
                     color: (_page == 0)
                         ? UniversalVariables.lightBlueColor
                         : UniversalVariables.greyColor),
                 title: Text(
-                  "Chats",
+                  "Calls",
                   style: TextStyle(
                       fontSize: _labelFontSize,
                       color: (_page == 0)
@@ -65,12 +65,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.call,
+                icon: Icon(Icons.chat,
                     color: (_page == 1)
                         ? UniversalVariables.lightBlueColor
                         : UniversalVariables.greyColor),
                 title: Text(
-                  "Calls",
+                  "Messages",
                   style: TextStyle(
                       fontSize: _labelFontSize,
                       color: (_page == 1)
