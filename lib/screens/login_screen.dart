@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void performLogin(){
-    _repository.signIn().then((FirebaseUser User) {
+    _repository.signIn().then((FirebaseUser user) {
       if (user != null) {
         authenticateUser(user);
       } else {
@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void authenticateUser(FirebaseUser User){
+  void authenticateUser(FirebaseUser user){
     _repository.authenticateUser(user).then((isNewUser){
 
       if(isNewUser){
@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context){
           return HomeScreen();
-        }))
+        }));
       }
     });
   }

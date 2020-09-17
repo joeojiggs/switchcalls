@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:switchcalls/models/user.dart';
+import 'package:switchcalls/utils/utilities.dart';
 
 class FirebaseMethods {
 
@@ -28,7 +29,7 @@ class FirebaseMethods {
         accessToken: _signInAuthentication.accessToken,
         idToken: _signInAuthentication.idToken);
 
-    FirebaseUser user = _auth.signInWithCredential(credential);
+    FirebaseUser user = await _auth.signInWithCredential(credential);
       return user;
   }
 
@@ -47,11 +48,11 @@ class FirebaseMethods {
 
   Future<void> addDataToDb(FirebaseUser currentUser) async{
 
-    String username = utils.getUsername(currentUser.email);
+    String username = Utils.getUsername(currentUser.email);
     
     user = User(
       uid: currentUser.uid,
-      email: currentUser..email,
+      email: currentUser.email,
       name: currentUser.displayName,
       profilePhoto: currentUser.photoUrl,
       username: username
@@ -61,5 +62,11 @@ class FirebaseMethods {
         .collection("users")
         .document(currentUser.uid)
         .setData(user.toMap(user));
+  }
+
+  Future<void> signOut() async {
+    await _googleSignIn.disconnect();
+    await _googleSignIn.signOut();
+    return await _auth.signOut();
   }
 }

@@ -4,6 +4,8 @@
     <list default="true" id="c30c6e7d-72c8-49c4-8b89-2836497194fd" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/resources/firebase_methods.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/resources/firebase_methods.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/resources/firebase_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/resources/firebase_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/login_screen.dart" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
