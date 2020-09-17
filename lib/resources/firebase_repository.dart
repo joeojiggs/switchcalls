@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/firebase_methods.dart';
 
 class FirebaseRepository {
@@ -15,4 +16,7 @@ class FirebaseRepository {
 
   ///responsible for signing out
   Future<void> signOut() => _firebaseMethods.signOut();
+
+  Future<List<User>> fetchAllUsers(FirebaseUser user) =>
+      _firebaseMethods.fetchAllUsers(user);
 }

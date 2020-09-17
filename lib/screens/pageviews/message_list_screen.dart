@@ -46,7 +46,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
             Icons.search,
             color: Colors.white,
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, "/search_screen");
+          },
         ),
         IconButton(
           icon: Icon(
@@ -109,7 +111,8 @@ class _ChatListContainerState extends State<ChatListContainer> {
                   CircleAvatar(
                     maxRadius: 30,
                     backgroundColor: Colors.grey,
-                    backgroundImage: NetworkImage("https://scontent.fbni1-2.fna.fbcdn.net/v/t1.0-9/81706390_1186328948224412_2842745643842142208_o.jpg?_nc_cat=100&_nc_sid=09cbfe&_nc_eui2=AeHB7kBFe86ZRfBcz-mGY2cUHX_4GbkbFQMdf_gZuRsVA493HVLcG9zdbGI8iIwvB5cEgiv8LLz0i2yMy0pADQB3&_nc_ohc=H_5j_SBiwmAAX_eVkDe&_nc_ht=scontent.fbni1-2.fna&oh=f69c0ff49b78dca4f397e8a982d47470&oe=5F888A49"),
+                    backgroundImage: NetworkImage(
+                        "https://scontent.fbni1-2.fna.fbcdn.net/v/t1.0-9/81706390_1186328948224412_2842745643842142208_o.jpg?_nc_cat=100&_nc_sid=09cbfe&_nc_eui2=AeHB7kBFe86ZRfBcz-mGY2cUHX_4GbkbFQMdf_gZuRsVA493HVLcG9zdbGI8iIwvB5cEgiv8LLz0i2yMy0pADQB3&_nc_ohc=H_5j_SBiwmAAX_eVkDe&_nc_ht=scontent.fbni1-2.fna&oh=f69c0ff49b78dca4f397e8a982d47470&oe=5F888A49"),
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
@@ -120,10 +123,7 @@ class _ChatListContainerState extends State<ChatListContainer> {
                           shape: BoxShape.circle,
                           color: UniversalVariables.onlineDotColor,
                           border: Border.all(
-                              color: UniversalVariables.blackColor,
-                              width: 2
-                          )
-                      ),
+                              color: UniversalVariables.blackColor, width: 2)),
                     ),
                   )
                 ],
