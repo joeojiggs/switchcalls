@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:switchcalls/screens/pageviews/message_list_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PageView(
         children: <Widget>[
           Center(child: Text("Call logs", style: TextStyle(color: Colors.white),)),
-          Center(child: Text("Messages Screen", style: TextStyle(color: Colors.white),)),
+          Container(child: ChatListScreen(),),
           Center(child: Text("Contact Screen", style: TextStyle(color: Colors.white),)),
         ],
         controller: pageController,
