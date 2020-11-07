@@ -29,7 +29,7 @@ dependencies:
   firebase_auth: '0.11.1+7'
   #firebase_auth: ^0.18.1+2
   google_sign_in: 4.0.2
-  shimmer: 1.0.1
+  shimmer: #1.0.1
   gradient_app_bar: ^0.0.1
 
   # Emojies
