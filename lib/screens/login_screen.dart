@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:switchcalls/resources/firebase_repository.dart';
+import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/screens/home_screen.dart';
@@ -11,7 +11,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
-  FirebaseRepository _repository = FirebaseRepository();
+  final AuthMethods _authMethods = AuthMethods();
 
   bool isLoginPressed = false;
 
@@ -58,7 +58,7 @@ class LoginScreenState extends State<LoginScreen> {
       isLoginPressed = true;
     });
 
-    _repository.signIn().then((FirebaseUser user) {
+    _authMethods.signIn().then((FirebaseUser user) {
       print("something");
       if (user != null) {
         authenticateUser(user);
@@ -69,13 +69,13 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   void authenticateUser(FirebaseUser user) {
-    _repository.authenticateUser(user).then((isNewUser) {
+    _authMethods.authenticateUser(user).then((isNewUser) {
       setState(() {
         isLoginPressed = false;
       });
 
       if (isNewUser) {
-        _repository.addDataToDb(user).then((value) {
+        _authMethods.addDataToDb(user).then((value) {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
                 return HomeScreen();
