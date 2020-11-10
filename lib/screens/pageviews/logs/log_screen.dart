@@ -12,7 +12,7 @@ class LogScreen extends StatelessWidget {
         child: FlatButton(
           child: Text("Click Me"),
           onPressed: () {
-            LogRepository.init(isHive: false);
+            LogRepository.init(isHive: true);
             LogRepository.addLogs(Log());
           },
         ),
