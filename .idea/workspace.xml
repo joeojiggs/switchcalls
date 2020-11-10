@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c30c6e7d-72c8-49c4-8b89-2836497194fd" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/resources/local_db/db/hive_methods.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/resources/local_db/db/hive_methods.dart" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -197,7 +198,14 @@
       <option name="project" value="LOCAL" />
       <updated>1605016219843</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="implemented sqlite">
+      <created>1605045755768</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1605045755768</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -223,6 +231,7 @@
     <MESSAGE value="populate chat screen" />
     <MESSAGE value="user profile and logout" />
     <MESSAGE value="sqlite et hive" />
-    <option name="LAST_COMMIT_MESSAGE" value="sqlite et hive" />
+    <MESSAGE value="implemented sqlite" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented sqlite" />
   </component>
 </project>
