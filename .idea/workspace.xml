@@ -5,6 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c30c6e7d-72c8-49c4-8b89-2836497194fd" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/enum/user_state.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/contact.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/pageviews/widgets/contact_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/pageviews/widgets/last_message_container.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/pageviews/widgets/new_chat_button.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/pageviews/widgets/online_dot_indicator.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/pageviews/widgets/quiet_box.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/pageviews/widgets/user_circle.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -106,7 +114,14 @@
       <option name="project" value="LOCAL" />
       <updated>1604925148263</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="still working">
+      <created>1604998906235</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1604998906235</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
