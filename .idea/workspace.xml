@@ -5,8 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c30c6e7d-72c8-49c4-8b89-2836497194fd" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/screens/pageviews/widgets/shimmering_logo.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/pageviews/widgets/user_details_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/provider/user_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/provider/user_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/resources/auth_methods.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/resources/auth_methods.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/pageviews/widgets/user_circle.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/pageviews/widgets/user_circle.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -149,7 +153,14 @@
       <option name="project" value="LOCAL" />
       <updated>1605005804634</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="populate chat screen">
+      <created>1605010556853</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1605010556853</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
