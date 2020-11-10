@@ -1,10 +1,13 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:flutter/material.dart';
 import 'package:image/image.dart' as Im;
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:switchcalls/enum/user_state.dart';
+import 'package:switchcalls/resources/auth_methods.dart';
 
 class Utils {
   static String getUsername(String email) {
@@ -61,5 +64,11 @@ class Utils {
       default:
         return UserState.Waiting;
     }
+  }
+
+  static String formatDateString(String dateString) {
+    DateTime dateTime = DateTime.parse(dateString);
+    var formatter = DateFormat('dd/MM/yy');
+    return formatter.format(dateTime);
   }
 }

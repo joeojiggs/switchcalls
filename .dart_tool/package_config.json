@@ -200,6 +200,12 @@
       "languageVersion": "1.19"
     },
     {
+      "name": "hive",
+      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/hive-1.4.1+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.6"
+    },
+    {
       "name": "http",
       "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/http-0.12.2",
       "packageUri": "lib/",
@@ -506,7 +512,7 @@
       "languageVersion": "2.1"
     }
   ],
-  "generated": "2020-11-10T12:50:24.145698Z",
+  "generated": "2020-11-10T13:13:03.324774Z",
   "generator": "pub",
   "generatorVersion": "2.10.1"
 }

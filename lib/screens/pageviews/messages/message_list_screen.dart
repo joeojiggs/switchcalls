@@ -10,10 +10,10 @@ import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/utilities.dart';
 import 'package:switchcalls/widgets/appbar.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
-import 'package:switchcalls/screens/pageviews/widgets/contact_view.dart';
-import 'package:switchcalls/screens/pageviews/widgets/new_chat_button.dart';
-import 'package:switchcalls/screens/pageviews/widgets/quiet_box.dart';
-import 'package:switchcalls/screens/pageviews/widgets/user_circle.dart';
+import 'package:switchcalls/screens/pageviews/messages/widgets/contact_view.dart';
+import 'package:switchcalls/screens/pageviews/messages/widgets/new_chat_button.dart';
+import 'package:switchcalls/screens/pageviews/messages/widgets/quiet_box.dart';
+import 'package:switchcalls/screens/pageviews/messages/widgets/user_circle.dart';
 
 class ChatListScreen extends StatelessWidget {
   CustomAppBar customAppBar(BuildContext context) {

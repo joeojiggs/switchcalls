@@ -7,7 +7,7 @@ import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/resources/chat_methods.dart';
 import 'package:switchcalls/screens/messagescreens/message_screen.dart';
 import 'package:switchcalls/screens/messagescreens/widgets/cached_image.dart';
-import 'package:switchcalls/screens/pageviews/widgets/online_dot_indicator.dart';
+import 'package:switchcalls/screens/pageviews/messages/widgets/online_dot_indicator.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 

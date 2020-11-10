@@ -6,7 +6,8 @@ import 'package:switchcalls/enum/user_state.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
-import 'package:switchcalls/screens/pageviews/message_list_screen.dart';
+import 'package:switchcalls/screens/pageviews/messages/message_list_screen.dart';
+import 'package:switchcalls/screens/pageviews/logs/log_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -102,14 +103,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         backgroundColor: UniversalVariables.blackColor,
         body: PageView(
           children: <Widget>[
-            Center(
-              child: Text(
-                "Call Logs",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),Container(
-              child: ChatListScreen(),
-            ),
+            LogScreen(),
+            ChatListScreen(),
             Center(
                 child: Text(
                   "Contact Screen",
