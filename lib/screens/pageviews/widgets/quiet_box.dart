@@ -16,7 +16,7 @@ class QuietBox extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Text(
-                "This is where all the contacts are listed",
+                "You do not have any Messages Yet",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -25,7 +25,7 @@ class QuietBox extends StatelessWidget {
               ),
               SizedBox(height: 25),
               Text(
-                "Search for your friends and family to start calling or chatting with them",
+                "Search for your friends and family to start calling or Texting with them",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   letterSpacing: 1.2,
@@ -36,7 +36,7 @@ class QuietBox extends StatelessWidget {
               SizedBox(height: 25),
               FlatButton(
                 color: UniversalVariables.lightBlueColor,
-                child: Text("START SEARCHING"),
+                child: Text("SEARCH"),
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
