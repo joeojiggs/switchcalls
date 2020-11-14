@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:switchcalls/enum/user_state.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
+import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/screens/pageviews/messages/message_list_screen.dart';
 import 'package:switchcalls/screens/pageviews/logs/log_screen.dart';
@@ -33,6 +34,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _authMethods.setUserState(
         userId: userProvider.getUser.uid,
         userState: UserState.Online,
+      );
+
+      LogRepository.init(
+        isHive: true,
+        dbName: userProvider.getUser.uid,
       );
     });
 

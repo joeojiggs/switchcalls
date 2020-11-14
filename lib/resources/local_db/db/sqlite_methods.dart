@@ -9,7 +9,7 @@ import 'package:path/path.dart';
 class SqliteMethods implements LogInterface {
   Database _db;
 
-  String databaseName = "LogDB";
+  String databaseName = "";
 
   String tableName = "Call_Logs";
 
@@ -32,6 +32,9 @@ class SqliteMethods implements LogInterface {
   }
 
   @override
+  openDb(dbName) => (databaseName = dbName);
+
+  @override
   init() async {
     Directory dir = await getApplicationDocumentsDirectory();
     String path = join(dir.path, databaseName);
@@ -50,14 +53,8 @@ class SqliteMethods implements LogInterface {
   @override
   addLogs(Log log) async {
     var dbClient = await db;
+    print("the log has been added in sqlite db");
     await dbClient.insert(tableName, log.toMap(log));
-  }
-
-  @override
-  deleteLogs(int logId) async {
-    var dbClient = await db;
-    return await dbClient
-        .delete(tableName, where: '$id = ?', whereArgs: [logId]);
   }
 
   updateLogs(Log log) async {
@@ -103,6 +100,13 @@ class SqliteMethods implements LogInterface {
       print(e);
       return null;
     }
+  }
+
+  @override
+  deleteLogs(int logId) async {
+    var client = await db;
+    return await client
+        .delete(tableName, where: '$id = ?', whereArgs: [logId + 1]);
   }
 
   @override

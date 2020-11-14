@@ -35,18 +35,63 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   Widget loginButton() {
-    return Shimmer.fromColors(
-      baseColor: Colors.white,
-      highlightColor: UniversalVariables.senderColor,
-      child: FlatButton(
-        padding: EdgeInsets.all(35),
-        child: Text(
-          "LOGIN",
-          style: TextStyle(
-              fontSize: 35, fontWeight: FontWeight.w900, letterSpacing: 1.2),
-        ),
-        onPressed: () => performLogin(),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text("WELCOME", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),),
+          Padding(
+            padding: EdgeInsets.all(5),
+            child: Text("Please sign into Switch Calls with your Google Account", textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 17.5, fontWeight: FontWeight.w300, letterSpacing: 1.2),),
+          ),
+          Image.asset('assets/icon.png', height: 200,),
+          Container(
+            margin: EdgeInsets.all(30),
+            padding: EdgeInsets.all(0),
+            decoration: BoxDecoration(
+              color: Colors.amber,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25),
+                  //topRight: Radius.circular(10),
+                  //bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(25)
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 3,
+                  blurRadius: 5,
+                  offset: Offset(0, 2), // changes position of shadow
+                ),
+              ],
+            ),
+            //decoration: BoxDecoration(
+                //color: Colors.orange,
+                //shape: BoxShape.rectangle,
+                //borderRadius: BorderRadius.only(
+                    //topLeft: Radius.circular(25.0),
+                    //bottomRight: Radius.circular(25.0))),
+            //color: Colors.amber,
+            child: Shimmer.fromColors(
+              baseColor: Colors.white,
+              highlightColor: Colors.white,
+              child: FlatButton(
+                //shape: OutlineInputBorder(),
+                padding: EdgeInsets.all(10),
+                child: Text(
+                  "SIGNIN",
+                  style: TextStyle(
+                      fontSize: 25, fontWeight: FontWeight.w900, letterSpacing: 1.2),
+                ),
+                onPressed: () => performLogin(),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

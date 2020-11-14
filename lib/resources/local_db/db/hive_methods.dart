@@ -6,7 +6,10 @@ import 'package:switchcalls/models/log.dart';
 import 'package:switchcalls/resources/local_db/interface/log_interface.dart';
 
 class HiveMethods implements LogInterface {
-  String hive_box = "Call_Logs";
+  String hive_box = "";
+
+  @override
+  openDb(dbName) => (hive_box = dbName);
 
   @override
   init() async {
@@ -22,6 +25,8 @@ class HiveMethods implements LogInterface {
 
     // box.put("custom_key", logMap);
     int idOfInput = await box.add(logMap);
+
+    print("Log added with id ${idOfInput.toString()} in Hive db");
 
     close();
 

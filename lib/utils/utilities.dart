@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:switchcalls/enum/user_state.dart';
-import 'package:switchcalls/resources/auth_methods.dart';
+//import 'package:switchcalls/resources/auth_methods.dart';
 
 class Utils {
   static String getUsername(String email) {
