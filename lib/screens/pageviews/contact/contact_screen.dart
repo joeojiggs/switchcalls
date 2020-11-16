@@ -94,79 +94,102 @@ class _ContactListScreenState extends State<ContactListScreen> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Container(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          children: <Widget>[
-            Container(
-              child: TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                    labelText: 'Search',
-                    border: new OutlineInputBorder(
-                        borderSide: new BorderSide(
-                            color: Theme.of(context).primaryColor
+    return Container(
+      child: FutureBuilder<dynamic>(
+        future: getAllContacts(),
+        builder: (BuildContext context, snapshot){
+
+      if (contacts.isNotEmpty) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+          ),
+          body: Container(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              children: <Widget>[
+                Container(
+                  child: TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                        labelText: 'Search',
+                        border: new OutlineInputBorder(
+                            borderSide: new BorderSide(
+                                color: Theme
+                                    .of(context)
+                                    .primaryColor
+                            )
+                        ),
+                        prefixIcon: Icon(
+                            Icons.search,
+                            color: Theme
+                                .of(context)
+                                .primaryColor
                         )
                     ),
-                    prefixIcon: Icon(
-                        Icons.search,
-                        color: Theme.of(context).primaryColor
-                    )
+                  ),
                 ),
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: isSearching == true ? contactsFiltered.length : contacts.length,
-                itemBuilder: (context, index) {
-                  Contact contact = isSearching == true ? contactsFiltered[index] : contacts[index];
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: isSearching == true
+                        ? contactsFiltered.length
+                        : contacts.length,
+                    itemBuilder: (context, index) {
+                      Contact contact = isSearching == true
+                          ? contactsFiltered[index]
+                          : contacts[index];
 
-                  var baseColor = contactsColorMap[contact.displayName] as dynamic;
+                      var baseColor = contactsColorMap[contact
+                          .displayName] as dynamic;
 
-                  Color color1 = baseColor[800];
-                  Color color2 = baseColor[400];
-                  return ListTile(
-                      title: Text(contact.displayName),
-                      subtitle: Text(
-                          contact.phones.length > 0 ? contact.phones.elementAt(0).value : ''
-                      ),
-                      leading: (contact.avatar != null && contact.avatar.length > 0) ?
-                      CircleAvatar(
-                        backgroundImage: MemoryImage(contact.avatar),
-                      ) :
-                      Container(
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                  colors: [
-                                    color1,
-                                    color2,
-                                  ],
-                                  begin: Alignment.bottomLeft,
-                                  end: Alignment.topRight
-                              )
+                      Color color1 = baseColor[800];
+                      Color color2 = baseColor[400];
+                      return ListTile(
+                          title: Text(contact.displayName),
+                          subtitle: Text(
+                              contact.phones.length > 0 ? contact.phones
+                                  .elementAt(0)
+                                  .value : ''
                           ),
-                          child: CircleAvatar(
-                              child: Text(
-                                  contact.initials(),
-                                  style: TextStyle(
-                                      color: Colors.white
+                          leading: (contact.avatar != null &&
+                              contact.avatar.length > 0) ?
+                          CircleAvatar(
+                            backgroundImage: MemoryImage(contact.avatar),
+                          ) :
+                          Container(
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: LinearGradient(
+                                      colors: [
+                                        color1,
+                                        color2,
+                                      ],
+                                      begin: Alignment.bottomLeft,
+                                      end: Alignment.topRight
                                   )
                               ),
-                              backgroundColor: Colors.transparent
+                              child: CircleAvatar(
+                                  child: Text(
+                                      contact.initials(),
+                                      style: TextStyle(
+                                          color: Colors.white
+                                      )
+                                  ),
+                                  backgroundColor: Colors.transparent
+                              )
                           )
-                      )
-                  );
-                },
-              ),
-            )
-          ],
-        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      return Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }
