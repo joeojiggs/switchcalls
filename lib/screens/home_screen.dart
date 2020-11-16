@@ -7,6 +7,7 @@ import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
+import 'package:switchcalls/screens/pageviews/contact/contact_screen.dart';
 import 'package:switchcalls/screens/pageviews/messages/message_list_screen.dart';
 import 'package:switchcalls/screens/pageviews/logs/log_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       );
 
       LogRepository.init(
-        isHive: true,
+        isHive: false,
         dbName: userProvider.getUser.uid,
       );
     });
@@ -111,11 +112,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           children: <Widget>[
             LogScreen(),
             ChatListScreen(),
-            Center(
-                child: Text(
-                  "Contact Screen",
-                  style: TextStyle(color: Colors.white),
-                )),
+            ContactListScreen(title: 'Contacts'),
           ],
           controller: pageController,
           onPageChanged: onPageChanged,

@@ -16,7 +16,23 @@ class Permissions {
           cameraPermissionStatus, microphonePermissionStatus);
       return false;
     }
+
   }
+
+  static Future<bool> contactPermissionsGranted() async {
+    PermissionStatus contactPermissionStatus =
+    await _getContactPermission();
+
+    if (contactPermissionStatus == PermissionStatus.granted ) {
+      return true;
+    } else {
+      _handleInvalidPermissions2(
+          contactPermissionStatus);
+      return false;
+    }
+
+  }
+
 
   static Future<PermissionStatus> _getCameraPermission() async {
     PermissionStatus permission =
@@ -48,6 +64,21 @@ class Permissions {
     }
   }
 
+  static Future<PermissionStatus> _getContactPermission() async {
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.contacts);
+    if (permission != PermissionStatus.granted &&
+        permission != PermissionStatus.disabled) {
+      Map<PermissionGroup, PermissionStatus> permissionStatus =
+      await PermissionHandler()
+          .requestPermissions([PermissionGroup.contacts]);
+      return permissionStatus[PermissionGroup.contacts] ??
+          PermissionStatus.unknown;
+    } else {
+      return permission;
+    }
+  }
+
   static void _handleInvalidPermissions(
     PermissionStatus cameraPermissionStatus,
     PermissionStatus microphonePermissionStatus,
@@ -60,6 +91,22 @@ class Permissions {
           details: null);
     } else if (cameraPermissionStatus == PermissionStatus.disabled &&
         microphonePermissionStatus == PermissionStatus.disabled) {
+      throw new PlatformException(
+          code: "PERMISSION_DISABLED",
+          message: "Location data is not available on device",
+          details: null);
+    }
+  }
+
+  static void _handleInvalidPermissions2(
+      PermissionStatus contactPermissionStatus,
+      ) {
+    if (contactPermissionStatus == PermissionStatus.denied ) {
+      throw new PlatformException(
+          code: "PERMISSION_DENIED",
+          message: "Access to contact denied",
+          details: null);
+    } else if (contactPermissionStatus == PermissionStatus.disabled ) {
       throw new PlatformException(
           code: "PERMISSION_DISABLED",
           message: "Location data is not available on device",

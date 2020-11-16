@@ -68,6 +68,12 @@
       "languageVersion": "2.10"
     },
     {
+      "name": "contacts_service",
+      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/contacts_service-0.3.10",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "convert",
       "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1",
       "packageUri": "lib/",
@@ -512,7 +518,7 @@
       "languageVersion": "2.1"
     }
   ],
-  "generated": "2020-11-10T13:13:03.324774Z",
+  "generated": "2020-11-16T12:10:31.653843Z",
   "generator": "pub",
   "generatorVersion": "2.10.1"
 }
