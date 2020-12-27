@@ -1,4 +1,4 @@
-# Referenced at D:\CODE\switchcalls\switch_calls\build\app\intermediates\merged_manifests\debug\AndroidManifest.xml:32
+# Referenced at C:\Users\chris\Desktop\Mobile Dev\Flutter Projects\switchcalls\build\app\intermediates\merged_manifests\debug\AndroidManifest.xml:32
 -keep class androidx.core.app.CoreComponentFactory { <init>(); }
-# Referenced at D:\CODE\switchcalls\switch_calls\build\app\intermediates\merged_manifests\debug\AndroidManifest.xml:32
+# Referenced at C:\Users\chris\Desktop\Mobile Dev\Flutter Projects\switchcalls\build\app\intermediates\merged_manifests\debug\AndroidManifest.xml:32
 -keep class io.flutter.app.FlutterApplication { <init>(); }
