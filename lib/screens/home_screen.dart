@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
+import 'package:sms/sms.dart';
 import 'package:switchcalls/enum/user_state.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
@@ -21,6 +24,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   PageController pageController;
   int _page = 0;
   final AuthMethods _authMethods = AuthMethods();
+  SmsReceiver receiver = new SmsReceiver();
+  StreamSubscription<SmsMessage> receivedSub;
 
   UserProvider userProvider;
 
@@ -41,6 +46,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         isHive: false,
         dbName: userProvider.getUser.uid,
       );
+
+      receivedSub =
+          receiver.onSmsReceived.listen((SmsMessage msg) => print(msg.body));
     });
 
     WidgetsBinding.instance.addObserver(this);
@@ -52,14 +60,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    //TODO: this isnt supposed to be cancelled, Fix it.
+    receivedSub.cancel();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     String currentUserId =
-    (userProvider != null && userProvider.getUser != null)
-        ? userProvider.getUser.uid
-        : "";
+        (userProvider != null && userProvider.getUser != null)
+            ? userProvider.getUser.uid
+            : "";
 
     super.didChangeAppLifecycleState(state);
 
@@ -67,25 +77,25 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       case AppLifecycleState.resumed:
         currentUserId != null
             ? _authMethods.setUserState(
-            userId: currentUserId, userState: UserState.Online)
+                userId: currentUserId, userState: UserState.Online)
             : print("resume state");
         break;
       case AppLifecycleState.inactive:
         currentUserId != null
             ? _authMethods.setUserState(
-            userId: currentUserId, userState: UserState.Offline)
+                userId: currentUserId, userState: UserState.Offline)
             : print("inactive state");
         break;
       case AppLifecycleState.paused:
         currentUserId != null
             ? _authMethods.setUserState(
-            userId: currentUserId, userState: UserState.Waiting)
+                userId: currentUserId, userState: UserState.Waiting)
             : print("paused state");
         break;
       case AppLifecycleState.detached:
         currentUserId != null
             ? _authMethods.setUserState(
-            userId: currentUserId, userState: UserState.Offline)
+                userId: currentUserId, userState: UserState.Offline)
             : print("detached state");
         break;
     }
@@ -177,3 +187,5 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 }
 
+// Is the ui complete
+// What kind of call is supposed to be made when a number is dialled, same with messages

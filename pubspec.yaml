@@ -66,6 +66,8 @@ dependencies:
 
   #contact service
   contacts_service: ^0.3.10
+  call_log: ^2.1.0
+  sms: ^0.2.0
 
   #permission_handler: ^5.0.1+1
 

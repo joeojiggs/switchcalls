@@ -25,9 +25,35 @@ class LogScreen extends StatelessWidget {
           ],
         ),
         floatingActionButton: FloatingColumn(),
-        body: Padding(
-          padding: EdgeInsets.only(left: 15),
-          child: LogListContainer(),
+        body: DefaultTabController(
+          length: 2,
+          child: Column(
+            children: [
+              TabBar(
+                tabs: [
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Icon(Icons.network_locked),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Icon(Icons.network_cell),
+                  ),
+                ],
+                indicatorColor: UniversalVariables.blueColor,
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicatorWeight: 5,
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    LogListContainer(),
+                    LogListContainer(isLocal: true),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

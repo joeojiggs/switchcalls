@@ -38,6 +38,12 @@
       "languageVersion": "2.9"
     },
     {
+      "name": "call_log",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/call_log-2.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
       "name": "characters",
       "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/characters-1.1.0-nullsafety.3",
       "packageUri": "lib/",
@@ -416,6 +422,12 @@
       "languageVersion": "1.11"
     },
     {
+      "name": "sms",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/sms-0.2.4",
+      "packageUri": "lib/",
+      "languageVersion": "1.19"
+    },
+    {
       "name": "source_span",
       "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/source_span-1.8.0-nullsafety.2",
       "packageUri": "lib/",
@@ -518,7 +530,7 @@
       "languageVersion": "2.1"
     }
   ],
-  "generated": "2020-12-26T23:34:19.179343Z",
+  "generated": "2020-12-28T15:13:40.612382Z",
   "generator": "pub",
   "generatorVersion": "2.10.4"
 }
