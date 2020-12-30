@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:switchcalls/screens/callscreens/dial_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 
 class FloatingColumn extends StatelessWidget {
@@ -7,17 +8,26 @@ class FloatingColumn extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: UniversalVariables.fabGradient,
+        InkWell(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(
+              builder: (context) {
+                return DialScreen();
+              },
+            ));
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: UniversalVariables.fabGradient,
+            ),
+            child: Icon(
+              Icons.dialpad,
+              color: Colors.white,
+              size: 25,
+            ),
+            padding: EdgeInsets.all(15),
           ),
-          child: Icon(
-            Icons.dialpad,
-            color: Colors.white,
-            size: 25,
-          ),
-          padding: EdgeInsets.all(15),
         ),
         SizedBox(height: 15),
         Container(

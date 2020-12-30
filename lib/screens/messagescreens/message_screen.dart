@@ -11,7 +11,7 @@ import 'package:switchcalls/models/message.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/image_upload_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
-import 'package:switchcalls/resources/chat_methods.dart';
+import 'package:switchcalls/resources/calls/chat_methods.dart';
 import 'package:switchcalls/resources/storage_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/screens/messagescreens/widgets/cached_image.dart';

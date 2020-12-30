@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:flutter_phone_state/flutter_phone_state.dart';
+import 'package:intl/intl.dart';
 import 'package:switchcalls/constants/strings.dart';
 import 'package:switchcalls/models/log.dart';
 import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
@@ -17,6 +22,9 @@ class LogListContainer extends StatefulWidget {
 }
 
 class _LogListContainerState extends State<LogListContainer> {
+  StreamController<Iterable<CallLogEntry>> phoneCallCont =
+      StreamController<Iterable<CallLogEntry>>.broadcast();
+  StreamSubscription<Iterable<CallLogEntry>> phoneCallSub;
   getIcon(String callStatus) {
     Icon _icon;
     double _iconSize = 15;
@@ -95,52 +103,89 @@ class _LogListContainerState extends State<LogListContainer> {
     );
   }
 
-  Future<Iterable<CallLogEntry>> getLocalLogs() async {
-    return await CallLog.get();
+  Stream<Iterable<CallLogEntry>> getLocalLogs() async* {
+    while (true) {
+      await Future.delayed(Duration(milliseconds: 500));
+      yield await CallLog.get();
+    }
+  }
+
+  Widget _localLogView() {
+    return StreamBuilder<Iterable<CallLogEntry>>(
+      stream: phoneCallCont.stream,
+      builder: (BuildContext context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasData) {
+          List<CallLogEntry> logList = snapshot.data.toList();
+          return ListView.builder(
+            itemCount: logList.length,
+            itemBuilder: (context, index) {
+              CallLogEntry _log = logList[index];
+              return ListTile(
+                leading: getLocalIcon(_log.callType),
+                title: Text(
+                  _log.name ?? _log.number,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 17,
+                  ),
+                ),
+                subtitle: Text(
+                  DateFormat().format(
+                      DateTime.fromMillisecondsSinceEpoch(_log.timestamp)),
+                  style: TextStyle(
+                    fontSize: 13,
+                  ),
+                ),
+                trailing: IconButton(
+                  icon: Icon(Icons.call),
+                  onPressed: () async {
+                    debugPrint('CALLING');
+                    await FlutterPhoneDirectCaller.callNumber(_log.number);
+                  },
+                ),
+              );
+            },
+          );
+        }
+        return QuietBox();
+      },
+    );
+  }
+
+  watchEvents(PhoneCall phoneCall) {
+    phoneCall.eventStream.listen((PhoneCallEvent event) {
+      print("Event $event");
+    });
+    print("Call is complete");
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isLocal) {
+      phoneCallSub = getLocalLogs().listen((event) {
+        phoneCallCont.add(event);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.isLocal) {
+      print('Closing Streams');
+      phoneCallCont.close();
+      phoneCallSub.cancel();
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.isLocal) {
-      return FutureBuilder<Iterable<CallLogEntry>>(
-        future: getLocalLogs(),
-        builder: (BuildContext context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasData) {
-            List<CallLogEntry> logList = snapshot.data.toList();
-            return ListView.builder(
-              itemCount: logList.length,
-              itemBuilder: (context, index) {
-                CallLogEntry _log = logList[index];
-                return ListTile(
-                  leading: getLocalIcon(_log.callType),
-                  title: Text(
-                    _log.name ?? _log.number,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 17,
-                    ),
-                  ),
-                  subtitle: Text(
-                    DateTime.fromMillisecondsSinceEpoch(_log.timestamp)
-                        .toString(),
-                    style: TextStyle(
-                      fontSize: 13,
-                    ),
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.call),
-                    onPressed: () {},
-                  ),
-                );
-              },
-            );
-          }
-          return QuietBox();
-        },
-      );
+      return _localLogView();
     }
     return FutureBuilder<dynamic>(
       future: LogRepository.getLogs(),

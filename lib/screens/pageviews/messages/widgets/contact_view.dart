@@ -4,7 +4,7 @@ import 'package:switchcalls/models/contact.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
-import 'package:switchcalls/resources/chat_methods.dart';
+import 'package:switchcalls/resources/calls/chat_methods.dart';
 import 'package:switchcalls/screens/messagescreens/message_screen.dart';
 import 'package:switchcalls/screens/messagescreens/widgets/cached_image.dart';
 import 'package:switchcalls/screens/pageviews/messages/widgets/online_dot_indicator.dart';

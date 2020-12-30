@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:sms/sms.dart';
 import 'package:switchcalls/models/contact.dart';
 import 'package:switchcalls/provider/user_provider.dart';
-import 'package:switchcalls/resources/chat_methods.dart';
+import 'package:switchcalls/resources/calls/chat_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/screens/messagescreens/message_screen.dart';
 import 'package:switchcalls/screens/messagescreens/text_message_screen.dart';
@@ -100,17 +100,16 @@ class _LocalChatLisContainerState extends State<LocalChatLisContainer> {
 
   @override
   void initState() {
-    SmsSender sender = new SmsSender();
-    deliveredSub = sender.onSmsDelivered.listen((SmsMessage message) {
-      print('NOTIFICATION\n${message.address} received your message.');
-      setState(() {});
-    });
+    // deliveredSub = sender.onSmsDelivered.listen((SmsMessage message) {
+    //   print('NOTIFICATION\n${message.address} received your message.');
+    //   setState(() {});
+    // });
     super.initState();
   }
 
   @override
   void dispose() {
-    deliveredSub.cancel();
+    // deliveredSub.cancel();
     super.dispose();
   }
 
@@ -206,32 +205,30 @@ class ChatListContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
 
-    return Container(
-      child: StreamBuilder<QuerySnapshot>(
-        stream: _chatMethods.fetchContacts(
-          userId: userProvider.getUser.uid,
-        ),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            var docList = snapshot.data.documents;
-
-            if (docList.isEmpty) {
-              return QuietBox();
-            }
-            return ListView.builder(
-              padding: EdgeInsets.all(10),
-              itemCount: docList.length,
-              itemBuilder: (context, index) {
-                Contact contact = Contact.fromMap(docList[index].data);
-
-                return ContactView(contact);
-              },
-            );
-          }
-
-          return Center(child: CircularProgressIndicator());
-        },
+    return StreamBuilder<QuerySnapshot>(
+      stream: _chatMethods.fetchContacts(
+        userId: userProvider.getUser.uid,
       ),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          var docList = snapshot.data.documents;
+
+          if (docList.isEmpty) {
+            return QuietBox();
+          }
+          return ListView.builder(
+            padding: EdgeInsets.all(10),
+            itemCount: docList.length,
+            itemBuilder: (context, index) {
+              Contact contact = Contact.fromMap(docList[index].data);
+
+              return ContactView(contact);
+            },
+          );
+        }
+
+        return Center(child: CircularProgressIndicator());
+      },
     );
   }
 }

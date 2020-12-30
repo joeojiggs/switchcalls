@@ -47,8 +47,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         dbName: userProvider.getUser.uid,
       );
 
-      receivedSub =
-          receiver.onSmsReceived.listen((SmsMessage msg) => print(msg.body));
+      receivedSub = receiver.onSmsReceived.listen((SmsMessage msg) {
+        print('NOTIFICATION\n${msg.address} received your message.');
+        setState(() {});
+      });
     });
 
     WidgetsBinding.instance.addObserver(this);
