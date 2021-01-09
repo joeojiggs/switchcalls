@@ -21,7 +21,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     _authMethods.getCurrentUser().then((FirebaseUser user) {

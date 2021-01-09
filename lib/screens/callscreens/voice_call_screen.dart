@@ -7,7 +7,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:switchcalls/configs/agora_configs.dart';
 import 'package:switchcalls/models/call.dart';
-import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/call_methods.dart';
 import 'package:switchcalls/widgets/cached_image.dart';

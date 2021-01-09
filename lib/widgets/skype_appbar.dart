@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:switchcalls/screens/chatlist/widgets/user_circle.dart';
 import 'package:switchcalls/widgets/appbar.dart';
 
 class SkypeAppBar extends StatelessWidget implements PreferredSizeWidget {
