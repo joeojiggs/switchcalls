@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
-import 'package:switchcalls/screens/messagescreens/message_screen.dart';
+import 'package:switchcalls/screens/chatlist/views/message_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 
@@ -21,7 +21,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     _authMethods.getCurrentUser().then((FirebaseUser user) {

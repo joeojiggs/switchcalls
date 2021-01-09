@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:switchcalls/utils/universal_variables.dart';
 
 class CustomTile extends StatelessWidget {
   final Widget leading;

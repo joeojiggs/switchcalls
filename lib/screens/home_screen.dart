@@ -10,10 +10,11 @@ import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
-import 'package:switchcalls/screens/pageviews/contact/contact_screen.dart';
-import 'package:switchcalls/screens/pageviews/messages/message_list_screen.dart';
-import 'package:switchcalls/screens/pageviews/logs/log_screen.dart';
+import 'package:switchcalls/screens/chatlist/message_list_screen.dart';
+import 'package:switchcalls/screens/logs/log_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
+
+import 'contact/contact_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -47,8 +48,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         dbName: userProvider.getUser.uid,
       );
 
-      receivedSub =
-          receiver.onSmsReceived.listen((SmsMessage msg) => print(msg.body));
+      receivedSub = receiver.onSmsReceived.listen((SmsMessage msg) {
+        print('NOTIFICATION\n${msg.address} received your message.');
+        setState(() {});
+      });
     });
 
     WidgetsBinding.instance.addObserver(this);

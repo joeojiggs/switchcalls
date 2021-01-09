@@ -5,7 +5,7 @@ import 'package:switchcalls/models/log.dart';
 import 'package:switchcalls/resources/call_methods.dart';
 import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/screens/callscreens/call_screen.dart';
-import 'package:switchcalls/screens/messagescreens/widgets/cached_image.dart';
+import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/utils/permissions.dart';
 
 class PickupScreen extends StatefulWidget {
@@ -96,15 +96,14 @@ class _PickupScreenState extends State<PickupScreen> {
                     onPressed: () async {
                       isCallMissed = false;
                       addToLocalStorage(callStatus: CALL_STATUS_RECEIVED);
-                      await Permissions.cameraAndMicrophonePermissionsGranted()
-                          ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              CallScreen(call: widget.call),
-                        ),
-                      )
-                          : {};
+                      if (await Permissions
+                          .cameraAndMicrophonePermissionsGranted())
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CallScreen(call: widget.call),
+                          ),
+                        );
                     }),
               ],
             ),
