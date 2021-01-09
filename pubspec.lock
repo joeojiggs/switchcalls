@@ -224,7 +224,7 @@ packages:
     source: hosted
     version: "0.8.0"
   flutter_masked_text:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_masked_text
       url: "https://pub.dartlang.org"
@@ -340,6 +340,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.11.4"
+  mask_text_input_formatter:
+    dependency: "direct main"
+    description:
+      name: mask_text_input_formatter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.1"
   matcher:
     dependency: transitive
     description:

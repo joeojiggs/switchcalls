@@ -1,5 +1,6 @@
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:sms/sms.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/appbar.dart';
@@ -47,7 +48,10 @@ class _TextScreenState extends State<TextScreen> {
             icon: Icon(
               Icons.phone,
             ),
-            onPressed: () {},
+            onPressed: () async {
+              await FlutterPhoneDirectCaller.callNumber(
+                  widget.thread.contact.address);
+            },
           )
         ],
       ),

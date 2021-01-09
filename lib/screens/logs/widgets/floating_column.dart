@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:switchcalls/screens/callscreens/dial_screen.dart';
+import 'package:switchcalls/screens/logs/views/dial_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 
 class FloatingColumn extends StatelessWidget {

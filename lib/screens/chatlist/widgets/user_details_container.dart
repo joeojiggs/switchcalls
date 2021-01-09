@@ -4,7 +4,7 @@ import 'package:switchcalls/enum/user_state.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
-import 'package:switchcalls/screens/messagescreens/widgets/cached_image.dart';
+import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/screens/login_screen.dart';
 import 'package:switchcalls/widgets/appbar.dart';
 

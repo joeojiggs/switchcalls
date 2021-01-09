@@ -14,7 +14,7 @@ import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/resources/calls/chat_methods.dart';
 import 'package:switchcalls/resources/storage_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
-import 'package:switchcalls/screens/messagescreens/widgets/cached_image.dart';
+import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/utils/call_utilities.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
@@ -98,10 +98,10 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             _imageUploadProvider.getViewState == ViewState.LOADING
                 ? Container(
-              alignment: Alignment.centerRight,
-              margin: EdgeInsets.only(right: 15),
-              child: CircularProgressIndicator(),
-            )
+                    alignment: Alignment.centerRight,
+                    margin: EdgeInsets.only(right: 15),
+                    child: CircularProgressIndicator(),
+                  )
                 : Container(),
             chatControls(),
             showEmojiPicker ? Container(child: emojiContainer()) : Container(),
@@ -186,7 +186,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Container(
       margin: EdgeInsets.only(top: 12),
       constraints:
-      BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
+          BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
       decoration: BoxDecoration(
         color: UniversalVariables.senderColor,
         borderRadius: BorderRadius.only(
@@ -205,20 +205,20 @@ class _ChatScreenState extends State<ChatScreen> {
   getMessage(Message message) {
     return message.type != MESSAGE_TYPE_IMAGE
         ? Text(
-      message.message,
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 16.0,
-      ),
-    )
+            message.message,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16.0,
+            ),
+          )
         : message.photoUrl != null
-        ? CachedImage(
-      message.photoUrl,
-      height: 250,
-      width: 250,
-      radius: 10,
-    )
-        : Text("Url was null");
+            ? CachedImage(
+                message.photoUrl,
+                height: 250,
+                width: 250,
+                radius: 10,
+              )
+            : Text("Url was null");
   }
 
   Widget receiverLayout(Message message) {
@@ -227,7 +227,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Container(
       margin: EdgeInsets.only(top: 12),
       constraints:
-      BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
+          BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
       decoration: BoxDecoration(
         color: UniversalVariables.receiverColor,
         borderRadius: BorderRadius.only(
@@ -390,7 +390,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                         borderSide: BorderSide.none),
                     contentPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                     filled: true,
                     fillColor: UniversalVariables.separatorColor,
                   ),
@@ -417,28 +417,28 @@ class _ChatScreenState extends State<ChatScreen> {
           isWriting
               ? Container()
               : Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Icon(Icons.record_voice_over),
-          ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Icon(Icons.record_voice_over),
+                ),
           isWriting
               ? Container()
               : GestureDetector(
-            child: Icon(Icons.camera_alt),
-            onTap: () => pickImage(source: ImageSource.camera),
-          ),
+                  child: Icon(Icons.camera_alt),
+                  onTap: () => pickImage(source: ImageSource.camera),
+                ),
           isWriting
               ? Container(
-              margin: EdgeInsets.only(left: 10),
-              decoration: BoxDecoration(
-                  gradient: UniversalVariables.fabGradient,
-                  shape: BoxShape.circle),
-              child: IconButton(
-                icon: Icon(
-                  Icons.send,
-                  size: 15,
-                ),
-                onPressed: () => sendMessage(),
-              ))
+                  margin: EdgeInsets.only(left: 10),
+                  decoration: BoxDecoration(
+                      gradient: UniversalVariables.fabGradient,
+                      shape: BoxShape.circle),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.send,
+                      size: 15,
+                    ),
+                    onPressed: () => sendMessage(),
+                  ))
               : Container()
         ],
       ),
@@ -474,19 +474,27 @@ class _ChatScreenState extends State<ChatScreen> {
             Icons.video_call,
           ),
           onPressed: () async =>
-          await Permissions.cameraAndMicrophonePermissionsGranted()
-              ? CallUtils.dial(
-            from: sender,
-            to: widget.receiver,
-            context: context,
-          )
-              : {},
+              await Permissions.cameraAndMicrophonePermissionsGranted()
+                  ? CallUtils.dial(
+                      from: sender,
+                      to: widget.receiver,
+                      context: context,
+                    )
+                  : {},
         ),
         IconButton(
           icon: Icon(
             Icons.phone,
           ),
-          onPressed: () {},
+          onPressed: () async {
+            if (await Permissions.cameraAndMicrophonePermissionsGranted())
+              return CallUtils.dialAudio(
+                from: sender,
+                to: widget.receiver,
+                context: context,
+              );
+            return;
+          },
         )
       ],
     );

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
-import 'package:switchcalls/screens/pageviews/logs/widgets/floating_column.dart';
+import 'package:switchcalls/screens/logs/widgets/floating_column.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/skype_appbar.dart';
 
-import 'widgets/log_list_container.dart';
+import 'views/local_log_list_container.dart';
+import 'views/log_list_container.dart';
 
 class LogScreen extends StatelessWidget {
   @override
@@ -33,7 +34,7 @@ class LogScreen extends StatelessWidget {
                 tabs: [
                   Padding(
                     padding: const EdgeInsets.all(15.0),
-                    child: Icon(Icons.network_locked),
+                    child: Icon(Icons.call),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(15.0),
@@ -48,7 +49,7 @@ class LogScreen extends StatelessWidget {
                 child: TabBarView(
                   children: [
                     LogListContainer(),
-                    LogListContainer(isLocal: true),
+                    LocalLogListContainer(),
                   ],
                 ),
               ),

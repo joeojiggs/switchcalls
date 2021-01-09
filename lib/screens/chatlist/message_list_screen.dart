@@ -9,13 +9,11 @@ import 'package:switchcalls/models/contact.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/calls/chat_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
-import 'package:switchcalls/screens/messagescreens/message_screen.dart';
-import 'package:switchcalls/screens/messagescreens/text_message_screen.dart';
-import 'package:switchcalls/screens/pageviews/messages/widgets/contact_view.dart';
-import 'package:switchcalls/screens/pageviews/messages/widgets/quiet_box.dart';
-import 'package:switchcalls/screens/pageviews/messages//widgets/user_circle.dart';
+import 'package:switchcalls/screens/chatlist/views/text_message_screen.dart';
+import 'package:switchcalls/screens/chatlist/widgets/contact_view.dart';
+import 'package:switchcalls/widgets/quiet_box.dart';
+import 'package:switchcalls/screens/chatlist/widgets/user_circle.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
-import 'package:switchcalls/utils/utilities.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 import 'package:switchcalls/widgets/skype_appbar.dart';
 
@@ -92,32 +90,21 @@ class LocalChatLisContainer extends StatefulWidget {
 class _LocalChatLisContainerState extends State<LocalChatLisContainer> {
   final SmsQuery query = new SmsQuery();
   SmsSender sender = new SmsSender();
-  StreamSubscription<SmsMessage> deliveredSub;
 
-  Future<List<SmsThread>> getMessages() async {
-    return await query.getAllThreads;
-  }
-
-  @override
-  void initState() {
-    // deliveredSub = sender.onSmsDelivered.listen((SmsMessage message) {
-    //   print('NOTIFICATION\n${message.address} received your message.');
-    //   setState(() {});
-    // });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    // deliveredSub.cancel();
-    super.dispose();
+  Future<List<SmsThread>> getthreads() async {
+    try {
+      return await query.getAllThreads;
+    } on Exception catch (e) {
+      print(e.toString());
+      throw Exception();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: FutureBuilder<List<SmsThread>>(
-        future: getMessages(),
+        future: getthreads(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             print('Getting');
@@ -128,16 +115,16 @@ class _LocalChatLisContainerState extends State<LocalChatLisContainer> {
               child: Icon(Icons.cancel, size: 80),
             );
           if (snapshot.hasData) {
-            List<SmsThread> messages = snapshot.data;
+            List<SmsThread> threads = snapshot.data;
             return ListView.builder(
-              itemCount: messages.length,
+              itemCount: threads.length,
               itemBuilder: (__, index) {
-                SmsThread _message = messages[index];
+                SmsThread _thread = threads[index];
                 return CustomTile(
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => TextScreen(thread: _message),
+                      builder: (context) => TextScreen(thread: _thread),
                     ),
                   ),
                   leading: CircleAvatar(
@@ -148,11 +135,11 @@ class _LocalChatLisContainerState extends State<LocalChatLisContainer> {
                       0.5,
                     ),
                     radius: 30,
-                    child: _message.contact.photo != null
-                        ? Image.memory(_message.contact.photo?.bytes)
-                        : _message.contact?.fullName?.isNotEmpty ?? false
+                    child: _thread.contact.photo != null
+                        ? Image.memory(_thread.contact.photo?.bytes)
+                        : _thread.contact?.fullName?.isNotEmpty ?? false
                             ? Text(
-                                _message.contact.fullName[0].toUpperCase(),
+                                _thread.contact.fullName[0].toUpperCase(),
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: UniversalVariables.lightBlueColor,
@@ -160,7 +147,7 @@ class _LocalChatLisContainerState extends State<LocalChatLisContainer> {
                                 ),
                               )
                             : Text(
-                                _message.contact.address[0].toUpperCase(),
+                                _thread.contact.address[0].toUpperCase(),
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: UniversalVariables.lightBlueColor,
@@ -169,14 +156,14 @@ class _LocalChatLisContainerState extends State<LocalChatLisContainer> {
                               ),
                   ),
                   title: Text(
-                    _message.contact.fullName ?? _message.contact.address,
+                    _thread.contact.fullName ?? _thread.contact.address,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 17,
                     ),
                   ),
                   subtitle: Text(
-                    _message.messages[0].body,
+                    _thread.messages[0].body,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

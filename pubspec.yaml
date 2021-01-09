@@ -74,6 +74,10 @@ dependencies:
       url: https://github.com/yanisalfian/flutter-phone-direct-caller.git
   flutter_dialpad: ^1.0.0
 
+  # phone text formatter
+  mask_text_input_formatter: ^1.2.1
+  flutter_masked_text: ^0.8.0
+
   #permission_handler: ^5.0.1+1
 
   #agora_rtc_engine:

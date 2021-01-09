@@ -5,9 +5,9 @@ import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/resources/calls/chat_methods.dart';
-import 'package:switchcalls/screens/messagescreens/message_screen.dart';
-import 'package:switchcalls/screens/messagescreens/widgets/cached_image.dart';
-import 'package:switchcalls/screens/pageviews/messages/widgets/online_dot_indicator.dart';
+import 'package:switchcalls/screens/chatlist/views/message_screen.dart';
+import 'package:switchcalls/widgets/cached_image.dart';
+import 'package:switchcalls/screens/chatlist/widgets/online_dot_indicator.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 
@@ -56,9 +56,7 @@ class ViewLayout extends StatelessWidget {
       onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChatScreen(
-              receiver: contact,
-            ),
+            builder: (context) => ChatScreen(receiver: contact),
           )),
       title: Text(
         (contact != null ? contact.name : null) != null ? contact.name : "..",
