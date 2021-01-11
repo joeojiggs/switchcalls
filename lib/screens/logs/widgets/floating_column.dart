@@ -29,22 +29,22 @@ class FloatingColumn extends StatelessWidget {
             padding: EdgeInsets.all(15),
           ),
         ),
-        SizedBox(height: 15),
-        Container(
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: UniversalVariables.blackColor,
-              border: Border.all(
-                width: 2,
-                color: UniversalVariables.gradientColorEnd,
-              )),
-          child: Icon(
-            Icons.add_call,
-            color: UniversalVariables.gradientColorEnd,
-            size: 25,
-          ),
-          padding: EdgeInsets.all(15),
-        )
+        // SizedBox(height: 15),
+        // Container(
+        //   decoration: BoxDecoration(
+        //       shape: BoxShape.circle,
+        //       color: UniversalVariables.blackColor,
+        //       border: Border.all(
+        //         width: 2,
+        //         color: UniversalVariables.gradientColorEnd,
+        //       )),
+        //   child: Icon(
+        //     Icons.add_call,
+        //     color: UniversalVariables.gradientColorEnd,
+        //     size: 25,
+        //   ),
+        //   padding: EdgeInsets.all(15),
+        // )
       ],
     );
   }

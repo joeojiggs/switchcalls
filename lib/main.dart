@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:switchcalls/provider/image_upload_provider.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
@@ -24,6 +25,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(create: (_) => ImageUploadProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(lazy: true, create: (_) => ContactsProvider()),
       ],
       child: MaterialApp(
         title: "Switch Calls",

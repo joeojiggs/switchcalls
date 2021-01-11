@@ -33,16 +33,28 @@ class LogScreen extends StatelessWidget {
               TabBar(
                 tabs: [
                   Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Icon(Icons.call),
+                    padding: EdgeInsets.all(15.0),
+                    child: Text(
+                      'Free Calls',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Icon(Icons.network_cell),
+                    padding: EdgeInsets.all(15.0),
+                    child: Text(
+                      'Local Calls',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
                 indicatorColor: UniversalVariables.blueColor,
-                indicatorSize: TabBarIndicatorSize.tab,
+                indicatorSize: TabBarIndicatorSize.label,
                 indicatorWeight: 5,
               ),
               Expanded(

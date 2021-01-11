@@ -6,11 +6,12 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:sms/sms.dart';
 import 'package:switchcalls/enum/user_state.dart';
+import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
-import 'package:switchcalls/screens/chatlist/message_list_screen.dart';
+import 'package:switchcalls/screens/messages/message_list_screen.dart';
 import 'package:switchcalls/screens/logs/log_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 
@@ -29,12 +30,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   StreamSubscription<SmsMessage> receivedSub;
 
   UserProvider userProvider;
+  ContactsProvider contactsProvider;
 
   @override
   void initState() {
     super.initState();
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
+      contactsProvider.init().then((value) => contactsProvider.pause());
       userProvider = Provider.of<UserProvider>(context, listen: false);
       await userProvider.refreshUser();
 
@@ -63,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    contactsProvider.close();
     //TODO: this isnt supposed to be cancelled, Fix it.
     receivedSub.cancel();
   }

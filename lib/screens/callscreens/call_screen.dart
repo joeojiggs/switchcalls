@@ -70,7 +70,6 @@ class _CallScreenState extends State<CallScreen> {
             // snapshot is null which means that call is hanged and documents are deleted
             Navigator.pop(context);
             break;
-
           default:
             break;
         }
@@ -93,11 +92,8 @@ class _CallScreenState extends State<CallScreen> {
       });
     };
 
-    AgoraRtcEngine.onJoinChannelSuccess = (
-      String channel,
-      int uid,
-      int elapsed,
-    ) {
+    AgoraRtcEngine.onJoinChannelSuccess =
+        (String channel, int uid, int elapsed) {
       setState(() {
         final info = 'onJoinChannel: $channel, uid: $uid';
         _infoStrings.add(info);
