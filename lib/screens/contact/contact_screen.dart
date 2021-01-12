@@ -18,19 +18,19 @@ class _ContactListScreenState extends State<ContactListScreen> {
   List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = new Map();
   TextEditingController searchController = new TextEditingController();
-  ContactsProvider _contacts;
+  // ContactsProvider _contacts;
 
   @override
   void initState() {
-    _contacts = Provider.of<ContactsProvider>(context, listen: false);
-    _contacts.resume();
+    // _contacts = Provider.of<ContactsProvider>(context, listen: false);
+    // _contacts.resume();
 
     super.initState();
     getPermissions();
   }
  @override
   void dispose() {
-    _contacts.pause();
+    // _contacts.pause();
     super.dispose();
   }
   getPermissions() async {

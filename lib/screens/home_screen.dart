@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       );
 
       receivedSub = receiver.onSmsReceived.listen((SmsMessage msg) {
-        print('NOTIFICATION\n${msg.address} received your message.');
+        print('NOTIFICATION\n${msg.address} sent you a message.');
         setState(() {});
       });
     });

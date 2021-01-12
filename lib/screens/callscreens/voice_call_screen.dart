@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
-import 'package:switchcalls/configs/agora_configs.dart';
 import 'package:switchcalls/models/call.dart';
 import 'package:switchcalls/provider/agora_provider.dart';
 import 'package:switchcalls/provider/user_provider.dart';
@@ -33,6 +32,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
 
   @override
   void initState() {
+    //TODO: Test, add timer and contacts
     super.initState();
     addPostFrameCallback();
     // initializeAgora();
@@ -183,7 +183,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
                 padding: const EdgeInsets.all(8.0),
                 alignment: Alignment.center,
                 child: Text(
-                  widget.call.callerName,
+                  widget.call.receiverName,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 25,
@@ -192,7 +192,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
               ),
               Expanded(
                 child: CachedImage(
-                  widget.call.callerPic,
+                  widget.call.receiverPic,
                   fit: BoxFit.fitWidth,
                   // isRound: true,
                   radius: 0,
@@ -229,6 +229,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
                         child: GestureDetector(
                           onTap: () async {
                             debugPrint('ENDING CALL');
+                            callMethods.endCall(call: widget.call);
                           },
                           child: Container(
                             decoration: BoxDecoration(

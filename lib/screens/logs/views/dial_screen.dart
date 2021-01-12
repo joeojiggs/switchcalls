@@ -106,6 +106,7 @@ class _DialScreenState extends State<DialScreen> {
                           leading: Icon(Icons.add),
                           title: Text('Add to Contacts'),
                           onTap: () {
+                            //TODO: Add contacts feature
                             print('You tapped me! Whyyy???');
                           },
                         ),

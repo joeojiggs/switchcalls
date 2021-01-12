@@ -9,6 +9,7 @@ import 'package:switchcalls/resources/call_methods.dart';
 import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/screens/callscreens/call_screen.dart';
 import 'package:switchcalls/screens/callscreens/voice_call_screen.dart';
+
 class CallUtils {
   static final CallMethods callMethods = CallMethods();
 
@@ -21,6 +22,7 @@ class CallUtils {
       receiverName: to.name,
       receiverPic: to.profilePhoto,
       channelId: Random().nextInt(1000).toString(),
+      isVideo: true,
     );
 
     Log log = Log(
@@ -30,6 +32,7 @@ class CallUtils {
       receiverName: to.name,
       receiverPic: to.profilePhoto,
       timestamp: DateTime.now().toString(),
+      isVideo: 0,
     );
 
     bool callMade = await callMethods.makeCall(call: call);
@@ -48,7 +51,8 @@ class CallUtils {
       );
     }
   }
-   static dialAudio({User from, User to, context}) async {
+
+  static dialAudio({User from, User to, context}) async {
     Call call = Call(
       callerId: from.uid,
       callerName: from.name,
@@ -57,6 +61,7 @@ class CallUtils {
       receiverName: to.name,
       receiverPic: to.profilePhoto,
       channelId: Random().nextInt(1000).toString(),
+      isVideo: false,
     );
 
     Log log = Log(
@@ -66,15 +71,16 @@ class CallUtils {
       receiverName: to.name,
       receiverPic: to.profilePhoto,
       timestamp: DateTime.now().toString(),
+      isVideo: 1,
     );
 
-    // bool callMade = await callMethods.makeCall(call: call);
+    bool callMade = await callMethods.makeCall(call: call);
 
-    // call.hasDialled = true;
+    call.hasDialled = true;
 
-    // if (callMade) {
+    if (callMade) {
       // enter log
-      // LogRepository.addLogs(log);
+      LogRepository.addLogs(log);
 
       Navigator.push(
         context,
@@ -82,6 +88,6 @@ class CallUtils {
           builder: (context) => VoiceCallScreen(call: call),
         ),
       );
-    // }
+    }
   }
 }

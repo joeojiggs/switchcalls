@@ -25,7 +25,7 @@ class ContactsProvider extends ChangeNotifier {
 
     _contactSub = contacts().listen((event) {
       _contacts = event.toList();
-      print(contactList);
+      // print(contactList);
       _contactsCont.add(event);
       if (topause) pause();
     });

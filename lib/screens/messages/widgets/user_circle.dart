@@ -12,6 +12,7 @@ class UserCircle extends StatelessWidget {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
 
     return GestureDetector(
+      //TODO: Change this to the popup menu
       onTap: () => showModalBottomSheet(
         isScrollControlled: true,
         context: context,

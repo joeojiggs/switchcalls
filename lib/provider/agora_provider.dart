@@ -26,7 +26,7 @@ class AgoraProvider extends ChangeNotifier {
       _infoStrings.add('Agora Engine is not starting');
       return;
     }
-    
+
     await _initAgoraRtcEngine();
     _addAgoraEventHandlers(call);
     await AgoraRtcEngine.enableWebSdkInteroperability(true);
@@ -37,15 +37,22 @@ class AgoraProvider extends ChangeNotifier {
   }
 
   Future<void> _initAgoraRtcEngine() async {
-    await AgoraRtcEngine.create(APP_ID);
-    await AgoraRtcEngine.disableVideo();
-    print('\n\n AgoraRtcEngine Initialized... \n\n');
+    try {
+      await AgoraRtcEngine.create(APP_ID);
+      // await AgoraRtcEngine.enableVideo();
+
+      await AgoraRtcEngine.disableVideo();
+      print('\n\n AgoraRtcEngine Initialized... \n\n');
+    } on Exception catch (e) {
+      print('_initAgoraRtcEngine Errorr: $e');
+    }
   }
 
   void _addAgoraEventHandlers(Call call) {
     AgoraRtcEngine.onError = (dynamic code) {
       final info = 'onError: $code';
       _infoStrings.add(info);
+      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onJoinChannelSuccess =
@@ -53,43 +60,51 @@ class AgoraProvider extends ChangeNotifier {
       final info = 'onJoinChannel: $channel, uid: $uid';
       print('call connected');
       _infoStrings.add(info);
+      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onUserJoined = (int uid, int elapsed) {
       final info = 'onUserJoined: $uid';
       _infoStrings.add(info);
       _users.add(uid);
+      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onUpdatedUserInfo = (AgoraUserInfo userInfo, int i) {
       final info = 'onUpdatedUserInfo: ${userInfo.toString()}';
       _infoStrings.add(info);
+      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onRejoinChannelSuccess = (String string, int a, int b) {
       final info = 'onRejoinChannelSuccess: $string';
       _infoStrings.add(info);
+      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onUserOffline = (int a, int b) {
       callMethods.endCall(call: call);
       final info = 'onUserOffline: a: ${a.toString()}, b: ${b.toString()}';
       _infoStrings.add(info);
+      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onRegisteredLocalUser = (String s, int i) {
       final info = 'onRegisteredLocalUser: string: s, i: ${i.toString()}';
       _infoStrings.add(info);
+      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onLeaveChannel = () {
       _infoStrings.add('onLeaveChannel');
       _users.clear();
+      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onConnectionLost = () {
       final info = 'onConnectionLost';
       _infoStrings.add(info);
+      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onUserOffline = (int uid, int reason) {
@@ -98,16 +113,14 @@ class AgoraProvider extends ChangeNotifier {
       final info = 'userOffline: $uid';
       _infoStrings.add(info);
       _users.remove(uid);
+      print(_infoStrings.last);
     };
 
-    AgoraRtcEngine.onFirstRemoteVideoFrame = (
-      int uid,
-      int width,
-      int height,
-      int elapsed,
-    ) {
+    AgoraRtcEngine.onFirstRemoteVideoFrame =
+        (int uid, int width, int height, int elapsed) {
       final info = 'firstRemoteVideo: $uid ${width}x $height';
       _infoStrings.add(info);
+      print(_infoStrings.last);
     };
   }
 

@@ -54,7 +54,7 @@ class LogScreen extends StatelessWidget {
                   ),
                 ],
                 indicatorColor: UniversalVariables.blueColor,
-                indicatorSize: TabBarIndicatorSize.label,
+                indicatorSize: TabBarIndicatorSize.tab,
                 indicatorWeight: 5,
               ),
               Expanded(

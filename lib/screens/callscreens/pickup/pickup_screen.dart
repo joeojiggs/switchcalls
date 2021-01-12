@@ -8,6 +8,8 @@ import 'package:switchcalls/screens/callscreens/call_screen.dart';
 import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/utils/permissions.dart';
 
+import '../voice_call_screen.dart';
+
 class PickupScreen extends StatefulWidget {
   final Call call;
 
@@ -34,6 +36,7 @@ class _PickupScreenState extends State<PickupScreen> {
       receiverPic: widget.call.receiverPic,
       timestamp: DateTime.now().toString(),
       callStatus: callStatus,
+      isVideo: widget.call.isVideo ? 0 : 1,
     );
 
     LogRepository.addLogs(log);
@@ -57,7 +60,9 @@ class _PickupScreenState extends State<PickupScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "Incoming...",
+              widget.call.isVideo
+                  ? "Incoming Video Call..."
+                  : "Incoming Voice Call...",
               style: TextStyle(
                 fontSize: 30,
               ),
@@ -91,20 +96,23 @@ class _PickupScreenState extends State<PickupScreen> {
                 ),
                 SizedBox(width: 25),
                 IconButton(
-                    icon: Icon(Icons.call),
-                    color: Colors.green,
-                    onPressed: () async {
-                      isCallMissed = false;
-                      addToLocalStorage(callStatus: CALL_STATUS_RECEIVED);
-                      if (await Permissions
-                          .cameraAndMicrophonePermissionsGranted())
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CallScreen(call: widget.call),
-                          ),
-                        );
-                    }),
+                  icon: Icon(Icons.call),
+                  color: Colors.green,
+                  onPressed: () async {
+                    isCallMissed = false;
+                    addToLocalStorage(callStatus: CALL_STATUS_RECEIVED);
+                    if (await Permissions
+                        .cameraAndMicrophonePermissionsGranted())
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => widget.call.isVideo
+                              ? CallScreen(call: widget.call)
+                              : VoiceCallScreen(call: widget.call),
+                        ),
+                      );
+                  },
+                ),
               ],
             ),
           ],

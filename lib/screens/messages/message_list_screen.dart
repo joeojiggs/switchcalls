@@ -91,6 +91,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                     builder: (context) => SearchScreen(show: true)),
               );
             }
+            //TODO: New Message for text messages
             // () =>
             // await showModalBottomSheet(
             //   isScrollControlled: true,
@@ -184,10 +185,12 @@ class LocalChatLisContainer extends StatefulWidget {
 class _LocalChatLisContainerState extends State<LocalChatLisContainer> {
   final SmsQuery query = new SmsQuery();
   SmsSender sender = new SmsSender();
+  List colors = [Colors.green, Colors.indigo, Colors.yellow, Colors.orange];
 
   Future<List<SmsThread>> getthreads() async {
     try {
-      return await query.getAllThreads;
+      List<SmsThread> data = await query.getAllThreads;
+      return data;
     } on Exception catch (e) {
       print(e.toString());
       throw Exception();
@@ -222,13 +225,8 @@ class _LocalChatLisContainerState extends State<LocalChatLisContainer> {
                     ),
                   ),
                   leading: CircleAvatar(
-                    backgroundColor: Color.fromRGBO(
-                      Random().nextInt(255),
-                      Random().nextInt(255),
-                      Random().nextInt(255),
-                      0.5,
-                    ),
-                    radius: 30,
+                    backgroundColor: colors[Random().nextInt(4)],
+                    radius: 25,
                     child: _thread.contact.photo != null
                         ? Image.memory(_thread.contact.photo?.bytes)
                         : _thread.contact?.fullName?.isNotEmpty ?? false
@@ -236,7 +234,7 @@ class _LocalChatLisContainerState extends State<LocalChatLisContainer> {
                                 _thread.contact.fullName[0].toUpperCase(),
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: UniversalVariables.lightBlueColor,
+                                  color: Colors.white,
                                   fontSize: 18,
                                 ),
                               )
@@ -244,7 +242,7 @@ class _LocalChatLisContainerState extends State<LocalChatLisContainer> {
                                 _thread.contact.address[0].toUpperCase(),
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: UniversalVariables.lightBlueColor,
+                                  color: Colors.white,
                                   fontSize: 18,
                                 ),
                               ),

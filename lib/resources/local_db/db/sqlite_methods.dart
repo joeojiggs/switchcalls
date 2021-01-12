@@ -21,6 +21,7 @@ class SqliteMethods implements LogInterface {
   String receiverPic = 'receiver_pic';
   String callStatus = 'call_status';
   String timestamp = 'timestamp';
+  String isVideo = 'is_video';
 
   Future<Database> get db async {
     if (_db != null) {
@@ -38,13 +39,19 @@ class SqliteMethods implements LogInterface {
   init() async {
     Directory dir = await getApplicationDocumentsDirectory();
     String path = join(dir.path, databaseName);
+
+    /// only uncomment if you want to make a change to the database table 
+    /// structure without unistalling the app
+    // await deleteDatabase(path);
+    // print('deleted');
+
     var db = await openDatabase(path, version: 1, onCreate: _onCreate);
     return db;
   }
 
   _onCreate(Database db, int version) async {
     String createTableQuery =
-        "CREATE TABLE $tableName ($id INTEGER PRIMARY KEY, $callerName TEXT, $callerPic TEXT, $receiverName TEXT, $receiverPic TEXT, $callStatus TEXT, $timestamp TEXT)";
+        "CREATE TABLE $tableName ($id INTEGER PRIMARY KEY, $callerName TEXT, $callerPic TEXT, $receiverName TEXT, $receiverPic TEXT, $callStatus TEXT, $timestamp TEXT, $isVideo INTEGER)";
 
     await db.execute(createTableQuery);
     print("table created");
@@ -52,9 +59,13 @@ class SqliteMethods implements LogInterface {
 
   @override
   addLogs(Log log) async {
-    var dbClient = await db;
-    print("the log has been added in sqlite db");
-    await dbClient.insert(tableName, log.toMap(log));
+    try {
+      var dbClient = await db;
+      await dbClient.insert(tableName, log.toMap(log));
+      print("the log has been added in sqlite db");
+    } on Exception catch (e) {
+      print('addLogs: $e');
+    }
   }
 
   updateLogs(Log log) async {
@@ -84,6 +95,7 @@ class SqliteMethods implements LogInterface {
           receiverPic,
           callStatus,
           timestamp,
+          isVideo,
         ],
       );
 
