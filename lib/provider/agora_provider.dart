@@ -26,11 +26,11 @@ class AgoraProvider extends ChangeNotifier {
       _infoStrings.add('Agora Engine is not starting');
       return;
     }
-
+    
     await _initAgoraRtcEngine();
     _addAgoraEventHandlers(call);
     await AgoraRtcEngine.enableWebSdkInteroperability(true);
-    print(params.toString());
+    // print(jsonEncode(params));
     await AgoraRtcEngine.setParameters(
         '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
     await AgoraRtcEngine.joinChannel(null, call.channelId, null, 0);
@@ -51,6 +51,7 @@ class AgoraProvider extends ChangeNotifier {
     AgoraRtcEngine.onJoinChannelSuccess =
         (String channel, int uid, int elapsed) {
       final info = 'onJoinChannel: $channel, uid: $uid';
+      print('call connected');
       _infoStrings.add(info);
     };
 
@@ -109,6 +110,26 @@ class AgoraProvider extends ChangeNotifier {
       _infoStrings.add(info);
     };
   }
+
+  Future<bool> onToggleMute(bool isMute) async {
+    await AgoraRtcEngine.muteLocalAudioStream(!isMute);
+    return !isMute;
+  }
+
+  void close() {
+    // clear users
+    try {
+      _users.clear();
+      // destroy sdk
+      AgoraRtcEngine.leaveChannel();
+      AgoraRtcEngine.destroy();
+    } on Exception catch (e) {
+      print('close error: $e');
+    }
+  }
+
+  List<int> get users => _users;
+  List<String> get infoStrings => _infoStrings;
 
   /// Helper function to get list of native views
 

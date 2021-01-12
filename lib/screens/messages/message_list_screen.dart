@@ -21,7 +21,6 @@ import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 import 'package:switchcalls/widgets/skype_appbar.dart';
 
-import 'views/message_screen.dart';
 import 'widgets/new_chat_button.dart';
 
 class ChatListScreen extends StatefulWidget {

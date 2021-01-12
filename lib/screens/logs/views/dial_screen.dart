@@ -15,18 +15,12 @@ class _DialScreenState extends State<DialScreen> {
   String phoneNumber = '';
   Map<String, Color> contactsColorMap = new Map();
   ContactsProvider _contacts;
-  Iterable<Contact> _contactList;
+  List<Contact> _contactList = [];
 
   @override
   void initState() {
     _contacts = Provider.of<ContactsProvider>(context, listen: false);
     _contacts.resume();
-    setState(() {
-      _contactList = _contacts.contactList;
-      getAllContacts(_contacts.contactList.toList());
-      // print(_contacts.contactList);
-    });
-
     controller.addListener(() {});
     super.initState();
   }
@@ -57,17 +51,17 @@ class _DialScreenState extends State<DialScreen> {
         colorIndex = 0;
       }
     });
-    // return _contacts;
-    if (mounted) {
-      setState(() {
-        _contactList = _contacts;
-      });
-    }
+    return _contacts;
+    // if (mounted) {
+    //   setState(() {
+    //     _contactList = _contacts;
+    //   });
+    // }
   }
 
-  filterContacts(List<Contact> contacts) {
+  void filterContacts(List<Contact> contacts) {
     List<Contact> _contacts = [];
-    _contacts.addAll(contacts ?? []);
+    _contacts.addAll(contacts);
     if (controller.text.isNotEmpty) {
       _contacts.retainWhere((contact) {
         String searchTerm = controller.text.toLowerCase();
@@ -91,69 +85,83 @@ class _DialScreenState extends State<DialScreen> {
       });
     }
     // return _contacts;
-    setState(() {
-      _contactList = _contacts;
-    });
+    // setState(() {
+    _contactList = getAllContacts(_contacts);
+    // print(_contactList);
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    // getAllContacts(_contacts.contactList.toList());
-    filterContacts(_contacts.contactList.toList());
-    // showModalBottomSheet(
-    //   context: context,
-    //   isScrollControlled: false,
-    //   builder: (context) => _buildDialer(),
-    // );
     return Scaffold(
       body: Container(
         // color: UniversalVariables.blackColor,
         child: Stack(
           children: [
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: _contactList?.length ?? 0,
-              itemBuilder: (context, index) {
-                Contact contact = _contactList.toList()[index];
-
-                var baseColor =
-                    contactsColorMap[contact.displayName] as dynamic;
-                Color color1 = baseColor[800];
-                Color color2 = baseColor[400];
-                return ListTile(
-                  onTap: () async {
-                    debugPrint('CALLING');
-                    await FlutterPhoneDirectCaller.callNumber(
-                        contact.phones.elementAt(0).value);
-                    controller.clear();
-                  },
-                  title: Text(contact.displayName),
-                  subtitle: Text(contact.phones.length > 0
-                      ? contact.phones.elementAt(0).value
-                      : ''),
-                  leading: (contact.avatar != null && contact.avatar.length > 0)
-                      ? CircleAvatar(
-                          backgroundImage: MemoryImage(contact.avatar),
-                        )
-                      : Container(
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                  colors: [
-                                    color1,
-                                    color2,
-                                  ],
-                                  begin: Alignment.bottomLeft,
-                                  end: Alignment.topRight)),
-                          child: CircleAvatar(
-                            child: Text(contact.initials(),
-                                style: TextStyle(color: Colors.white)),
-                            backgroundColor: Colors.transparent,
-                          ),
+            controller.text.length < 1
+                ? Container()
+                : controller.text.length > 0 && _contactList.length < 1
+                    ? SafeArea(
+                        child: ListTile(
+                          leading: Icon(Icons.add),
+                          title: Text('Add to Contacts'),
+                          onTap: () {
+                            print('You tapped me! Whyyy???');
+                          },
                         ),
-                );
-              },
-            ),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _contactList.length,
+                        itemBuilder: (context, index) {
+                          Contact contact = _contactList[index];
+
+                          var baseColor =
+                              contactsColorMap[contact.displayName] as dynamic;
+                          Color color1 = baseColor[800];
+                          Color color2 = baseColor[400];
+                          return ListTile(
+                            onTap: () async {
+                              debugPrint('CALLING');
+                              await FlutterPhoneDirectCaller.callNumber(
+                                  contact.phones.elementAt(0).value);
+                              controller.clear();
+                            },
+                            title: Text(contact.displayName),
+                            subtitle: Text(
+                              contact.phones.length > 0
+                                  ? contact.phones.elementAt(0).value
+                                  : '',
+                            ),
+                            leading: (contact.avatar != null &&
+                                    contact.avatar.length > 0)
+                                ? CircleAvatar(
+                                    backgroundImage:
+                                        MemoryImage(contact.avatar),
+                                  )
+                                : Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          color1,
+                                          color2,
+                                        ],
+                                        begin: Alignment.bottomLeft,
+                                        end: Alignment.topRight,
+                                      ),
+                                    ),
+                                    child: CircleAvatar(
+                                      child: Text(
+                                        contact.initials(),
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      backgroundColor: Colors.transparent,
+                                    ),
+                                  ),
+                          );
+                        },
+                      ),
             _buildDialer(),
           ],
         ),
@@ -178,12 +186,12 @@ class _DialScreenState extends State<DialScreen> {
                     readOnly: true,
                     controller: controller,
                     textAlign: TextAlign.center,
-                    // inputFormatters: [maskFormatter],
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
+                    onChanged: (val) => filterContacts(_contacts.contactList),
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
                         icon: Icon(Icons.backspace),
@@ -193,7 +201,9 @@ class _DialScreenState extends State<DialScreen> {
                           if (len > 0)
                             controller.text =
                                 controller.text.substring(0, len - 1);
-                          setState(() {});
+                          setState(() {
+                            filterContacts(_contacts.contactList);
+                          });
                         },
                       ),
                       border: InputBorder.none,
@@ -202,33 +212,41 @@ class _DialScreenState extends State<DialScreen> {
                   ),
                 ),
                 Divider(),
-                Row(
-                  children: [
-                    _buildCallDigits('1', controller),
-                    _buildCallDigits('2', controller),
-                    _buildCallDigits('3', controller),
-                  ],
+                Flexible(
+                  child: Row(
+                    children: [
+                      _buildCallDigits('1', controller),
+                      _buildCallDigits('2', controller),
+                      _buildCallDigits('3', controller),
+                    ],
+                  ),
                 ),
-                Row(
-                  children: [
-                    _buildCallDigits('4', controller),
-                    _buildCallDigits('5', controller),
-                    _buildCallDigits('6', controller),
-                  ],
+                Flexible(
+                  child: Row(
+                    children: [
+                      _buildCallDigits('4', controller),
+                      _buildCallDigits('5', controller),
+                      _buildCallDigits('6', controller),
+                    ],
+                  ),
                 ),
-                Row(
-                  children: [
-                    _buildCallDigits('7', controller),
-                    _buildCallDigits('8', controller),
-                    _buildCallDigits('9', controller),
-                  ],
+                Flexible(
+                  child: Row(
+                    children: [
+                      _buildCallDigits('7', controller),
+                      _buildCallDigits('8', controller),
+                      _buildCallDigits('9', controller),
+                    ],
+                  ),
                 ),
-                Row(
-                  children: [
-                    _buildCallDigits('*', controller),
-                    _buildCallDigits('0', controller),
-                    _buildCallDigits('#', controller),
-                  ],
+                Flexible(
+                  child: Row(
+                    children: [
+                      _buildCallDigits('*', controller),
+                      _buildCallDigits('0', controller),
+                      _buildCallDigits('#', controller),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -237,8 +255,6 @@ class _DialScreenState extends State<DialScreen> {
         Expanded(
           flex: 2,
           child: Container(
-            // width: double.infinity,
-            // height: double.infinity,
             alignment: Alignment.center,
             color: UniversalVariables.blackColor,
             child: Card(
@@ -272,23 +288,16 @@ class _DialScreenState extends State<DialScreen> {
     );
   }
 
-  // DialPad(
-  //   enableDtmf: true,
-  //   dialButtonIconColor: UniversalVariables.blueColor,
-  //   buttonTextColor: Colors.white,
-  //   backspaceButtonIconColor: Colors.white,
-  //   buttonColor: UniversalVariables.senderColor,
-  // ),
   Expanded _buildCallDigits(String digit, TextEditingController control) {
     return Expanded(
       child: InkWell(
         onTap: () {
           control.text = control.text + digit;
-          setState(() {});
+          setState(() {
+            filterContacts(_contacts.contactList.toList());
+          });
         },
         child: Container(
-          height: 80,
-          // color: Colors.red,
           alignment: Alignment.center,
           child: Text(
             digit.toString(),

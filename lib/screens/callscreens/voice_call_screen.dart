@@ -7,6 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:switchcalls/configs/agora_configs.dart';
 import 'package:switchcalls/models/call.dart';
+import 'package:switchcalls/provider/agora_provider.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/call_methods.dart';
 import 'package:switchcalls/widgets/cached_image.dart';
@@ -25,20 +26,27 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
   final CallMethods callMethods = CallMethods();
   UserProvider userProvider;
   StreamSubscription callStreamSubscription;
+  AgoraProvider agoraProvider;
 
   bool muted = false;
-  static final _users = <int>[];
+  List<int> _users = <int>[];
 
   @override
   void initState() {
     super.initState();
     addPostFrameCallback();
-    initializeAgora();
+    // initializeAgora();
+  }
+
+  void myAgoraInit() async {
+    await agoraProvider.initializeAgora(widget.call);
+    _users = agoraProvider.users;
   }
 
   void addPostFrameCallback() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       userProvider = Provider.of<UserProvider>(context, listen: false);
+      agoraProvider = Provider.of<AgoraProvider>(context, listen: false);
 
       callStreamSubscription = callMethods
           .callStream(uid: userProvider.getUser.uid)
@@ -54,35 +62,34 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
             break;
         }
       });
+      myAgoraInit();
     });
   }
 
-  Future<void> initializeAgora() async {
-    if (APP_ID.isEmpty) {
-      // setState(() {
-      // _infoStrings.add(
-      //     'APP_ID missing, please provide your APP_ID in settings.dart',
-      //   );
-      // _infoStrings.add('Agora Engine is not starting');
-      // });
-      return;
-    }
+  // Future<void> initializeAgora() async {
+  //   if (APP_ID.isEmpty) {
+  //     // setState(() {
+  //     // _infoStrings.add(
+  //     //     'APP_ID missing, please provide your APP_ID in settings.dart',
+  //     //   );
+  //     // _infoStrings.add('Agora Engine is not starting');
+  //     // });
+  //     return;
+  //   }
 
-    await _initAgoraRtcEngine();
-    // _addAgoraEventHandlers();
-    await AgoraRtcEngine.enableWebSdkInteroperability(true);
-    await AgoraRtcEngine.setParameters(
-        '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
-    await AgoraRtcEngine.joinChannel(null, widget.call.channelId, null, 0);
-  }
+  //   await _initAgoraRtcEngine();
+  //   // _addAgoraEventHandlers();
+  //   await AgoraRtcEngine.enableWebSdkInteroperability(true);
+  //   await AgoraRtcEngine.setParameters(
+  //       '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
+  //   await AgoraRtcEngine.joinChannel(null, widget.call.channelId, null, 0);
+  // }
 
-  Future<void> _initAgoraRtcEngine() async {
-    await AgoraRtcEngine.create(APP_ID);
-    await AgoraRtcEngine.disableVideo();
-    print('\n\n HERE \n\n');
-  }
-
-  
+  // Future<void> _initAgoraRtcEngine() async {
+  //   await AgoraRtcEngine.create(APP_ID);
+  //   await AgoraRtcEngine.disableVideo();
+  //   print('\n\n HERE \n\n');
+  // }
 
   /// Helper function to get list of native views
   List<Widget> _getRenderViews() {
@@ -146,20 +153,16 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
     );
   }
 
-  Future<void> _onToggleMute() async {
-    await AgoraRtcEngine.muteLocalAudioStream(!muted);
-    setState(() {
-      muted = !muted;
-    });
-  }
+  // Future<void> _onToggleMute() async {
+  //   await AgoraRtcEngine.muteLocalAudioStream(!muted);
+  //   setState(() {
+  //     muted = !muted;
+  //   });
+  // }
 
   @override
   void dispose() {
-    // clear users
-    _users.clear();
-    // destroy sdk
-    AgoraRtcEngine.leaveChannel();
-    AgoraRtcEngine.destroy();
+    agoraProvider.close();
     callStreamSubscription.cancel();
     super.dispose();
   }
@@ -204,7 +207,10 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
                     Expanded(
                       child: Center(
                         child: InkWell(
-                          onTap: () => _onToggleMute(),
+                          onTap: () async {
+                            muted = await agoraProvider.onToggleMute(muted);
+                            setState(() {});
+                          },
                           child: Padding(
                             padding: EdgeInsets.all(25.0),
                             child: Icon(

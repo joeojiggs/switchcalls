@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
-      contactsProvider.init().then((value) => contactsProvider.pause());
+      contactsProvider.init(true);
       userProvider = Provider.of<UserProvider>(context, listen: false);
       await userProvider.refreshUser();
 

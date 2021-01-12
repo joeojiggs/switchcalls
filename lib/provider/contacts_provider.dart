@@ -9,7 +9,7 @@ class ContactsProvider extends ChangeNotifier {
   StreamController<Iterable<Contact>> _contactsCont =
       StreamController<Iterable<Contact>>.broadcast();
   StreamSubscription<Iterable<Contact>> _contactSub;
-  Iterable<Contact> _contacts;
+  List<Contact> _contacts = [];
 
   static Future<ContactsProvider> getInstance() async {
     if (provider == null) {
@@ -20,13 +20,14 @@ class ContactsProvider extends ChangeNotifier {
     return provider;
   }
 
-  Future<void> init() async {
+  Future<void> init([bool topause = false]) async {
     await Permissions.contactPermissionsGranted();
 
     _contactSub = contacts().listen((event) {
-      _contacts = event;
+      _contacts = event.toList();
       print(contactList);
       _contactsCont.add(event);
+      if (topause) pause();
     });
     print('STARTED');
   }
@@ -59,5 +60,5 @@ class ContactsProvider extends ChangeNotifier {
   }
 
   StreamController<Iterable<Contact>> get controller => _contactsCont;
-  Iterable<Contact> get contactList => _contacts;
+  List<Contact> get contactList => _contacts;
 }

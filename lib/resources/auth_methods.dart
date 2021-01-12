@@ -15,7 +15,7 @@ class AuthMethods {
   static final Firestore firestore = Firestore.instance;
 
   static final CollectionReference _userCollection =
-  _firestore.collection(USERS_COLLECTION);
+      _firestore.collection(USERS_COLLECTION);
 
   Future<FirebaseUser> getCurrentUser() async {
     FirebaseUser currentUser;
@@ -27,14 +27,14 @@ class AuthMethods {
     FirebaseUser currentUser = await getCurrentUser();
 
     DocumentSnapshot documentSnapshot =
-    await _userCollection.document(currentUser.uid).get();
+        await _userCollection.document(currentUser.uid).get();
     return User.fromMap(documentSnapshot.data);
   }
 
   Future<User> getUserDetailsById(id) async {
     try {
       DocumentSnapshot documentSnapshot =
-      await _userCollection.document(id).get();
+          await _userCollection.document(id).get();
       return User.fromMap(documentSnapshot.data);
     } catch (e) {
       print(e);
@@ -46,7 +46,7 @@ class AuthMethods {
     try {
       GoogleSignInAccount _signInAccount = await _googleSignIn.signIn();
       GoogleSignInAuthentication _signInAuthentication =
-      await _signInAccount.authentication;
+          await _signInAccount.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.getCredential(
           accessToken: _signInAuthentication.accessToken,
@@ -93,7 +93,7 @@ class AuthMethods {
     List<User> userList = List<User>();
 
     QuerySnapshot querySnapshot =
-    await firestore.collection(USERS_COLLECTION).getDocuments();
+        await firestore.collection(USERS_COLLECTION).getDocuments();
     for (var i = 0; i < querySnapshot.documents.length; i++) {
       if (querySnapshot.documents[i].documentID != currentUser.uid) {
         userList.add(User.fromMap(querySnapshot.documents[i].data));
@@ -113,12 +113,16 @@ class AuthMethods {
     }
   }
 
-  void setUserState({@required String userId, @required UserState userState}) {
-    int stateNum = Utils.stateToNum(userState);
+  void setUserState({@required String userId, @required UserState userState}) async {
+    try {
+      int stateNum = Utils.stateToNum(userState);
 
-    _userCollection.document(userId).updateData({
-      "state": stateNum,
-    });
+     await _userCollection.document(userId).updateData({
+        "state": stateNum,
+      });
+    } on Exception catch (e) {
+      print('SET USER STATE ERROR: $e');
+    }
   }
 
   Stream<DocumentSnapshot> getUserStream({@required String uid}) =>

@@ -1,5 +1,7 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:switchcalls/utils/permissions.dart';
 
 class ContactListScreen extends StatefulWidget {
@@ -16,13 +18,21 @@ class _ContactListScreenState extends State<ContactListScreen> {
   List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = new Map();
   TextEditingController searchController = new TextEditingController();
+  ContactsProvider _contacts;
 
   @override
   void initState() {
+    _contacts = Provider.of<ContactsProvider>(context, listen: false);
+    _contacts.resume();
+
     super.initState();
     getPermissions();
   }
-
+ @override
+  void dispose() {
+    _contacts.pause();
+    super.dispose();
+  }
   getPermissions() async {
     if (await Permissions.contactPermissionsGranted()) {
       getAllContacts();
