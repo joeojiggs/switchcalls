@@ -6,6 +6,7 @@ import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/call_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_screen.dart';
 
+//TODO: Add this to all the screens
 class PickupLayout extends StatelessWidget {
   final Widget scaffold;
   final CallMethods callMethods = CallMethods();
