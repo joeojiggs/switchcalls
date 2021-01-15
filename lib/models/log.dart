@@ -6,6 +6,7 @@ class Log {
   String receiverPic;
   String callStatus;
   String timestamp;
+  int isVideo;
 
   Log({
     this.logId,
@@ -15,6 +16,7 @@ class Log {
     this.receiverPic,
     this.callStatus,
     this.timestamp,
+    this.isVideo,
   });
 
   // to map
@@ -27,6 +29,7 @@ class Log {
     logMap["receiver_pic"] = log.receiverPic;
     logMap["call_status"] = log.callStatus;
     logMap["timestamp"] = log.timestamp;
+    logMap["is_video"] = log.isVideo;
     return logMap;
   }
 
@@ -38,5 +41,6 @@ class Log {
     this.receiverPic = logMap["receiver_pic"];
     this.callStatus = logMap["call_status"];
     this.timestamp = logMap["timestamp"];
+    this.isVideo = logMap["is_video"];
   }
 }
