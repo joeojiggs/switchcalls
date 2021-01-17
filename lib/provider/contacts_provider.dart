@@ -21,15 +21,15 @@ class ContactsProvider extends ChangeNotifier {
   }
 
   Future<void> init([bool topause = false]) async {
-    await Permissions.contactPermissionsGranted();
-
-    _contactSub = contacts().listen((event) {
-      _contacts = event.toList();
-      // print(contactList);
-      _contactsCont.add(event);
-      if (topause) pause();
-    });
-    print('STARTED');
+    if (await Permissions.contactPermissionsGranted()) {
+      _contactSub = contacts().listen((event) {
+        _contacts = event.toList();
+        // print(contactList);
+        _contactsCont.add(event);
+        if (topause) pause();
+      });
+      print('STARTED');
+    }
   }
 
   void pause() {

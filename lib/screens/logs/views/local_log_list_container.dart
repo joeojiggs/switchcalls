@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:call_log/call_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
-import 'package:flutter_phone_state/phone_event.dart';
+// import 'package:flutter_phone_state/phone_event.dart';
 import 'package:intl/intl.dart';
+import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/widgets/quiet_box.dart';
 
 class LocalLogListContainer extends StatefulWidget {
@@ -59,17 +60,23 @@ class _LocalLogListContainerState extends State<LocalLogListContainer> {
     );
   }
 
-  watchEvents(PhoneCall phoneCall) {
-    phoneCall.eventStream.listen((PhoneCallEvent event) {
-      print("Event $event");
-    });
-    print("Call is complete");
-  }
+  // watchEvents(PhoneCall phoneCall) {
+  //   phoneCall.eventStream.listen((PhoneCallEvent event) {
+  //     print("Event $event");
+  //   });
+  //   print("Call is complete");
+  // }
 
   Stream<Iterable<CallLogEntry>> getLocalLogs() async* {
-    while (true) {
-      await Future.delayed(Duration(milliseconds: 500));
-      yield await CallLog.get();
+    try {
+      if (await Permissions.contactPermissionsGranted()) {
+        while (true) {
+          await Future.delayed(Duration(milliseconds: 500));
+          yield await CallLog.get();
+        }
+      }
+    } on Exception catch (e) {
+      print(e.toString());
     }
   }
 

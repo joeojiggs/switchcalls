@@ -17,6 +17,7 @@ import 'package:switchcalls/screens/messages/widgets/contact_view.dart';
 import 'package:switchcalls/screens/messages/widgets/user_circle.dart';
 import 'package:switchcalls/screens/search_screen.dart';
 import 'package:switchcalls/widgets/quiet_box.dart';
+import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 import 'package:switchcalls/widgets/skype_appbar.dart';
@@ -189,8 +190,11 @@ class _LocalChatLisContainerState extends State<LocalChatLisContainer> {
 
   Future<List<SmsThread>> getthreads() async {
     try {
-      List<SmsThread> data = await query.getAllThreads;
-      return data;
+      if (await Permissions.smsPermissionsGranted()) {
+        List<SmsThread> data = await query.getAllThreads;
+        return data;
+      }
+      throw Exception();
     } on Exception catch (e) {
       print(e.toString());
       throw Exception();
