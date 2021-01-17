@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:contacts_service/contacts_service.dart';
 
@@ -93,78 +94,81 @@ class _DialScreenState extends State<DialScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        // color: UniversalVariables.blackColor,
-        child: Stack(
-          children: [
-            controller.text.length < 1
-                ? Container()
-                : controller.text.length > 0 && _contactList.length < 1
-                    ? SafeArea(
-                        child: ListTile(
-                          leading: Icon(Icons.add),
-                          title: Text('Add to Contacts'),
-                          onTap: () {
-                            //TODO: Add contacts feature
-                            print('You tapped me! Whyyy???');
+    return PickupLayout(
+      scaffold: Scaffold(
+        body: Container(
+          // color: UniversalVariables.blackColor,
+          child: Stack(
+            children: [
+              controller.text.length < 1
+                  ? Container()
+                  : controller.text.length > 0 && _contactList.length < 1
+                      ? SafeArea(
+                          child: ListTile(
+                            leading: Icon(Icons.add),
+                            title: Text('Add to Contacts'),
+                            onTap: () {
+                              //TODO: Add contacts feature
+                              print('You tapped me! Whyyy???');
+                            },
+                          ),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _contactList.length,
+                          itemBuilder: (context, index) {
+                            Contact contact = _contactList[index];
+
+                            var baseColor =
+                                contactsColorMap[contact.displayName]
+                                    as dynamic;
+                            Color color1 = baseColor[800];
+                            Color color2 = baseColor[400];
+                            return ListTile(
+                              onTap: () async {
+                                debugPrint('CALLING');
+                                await FlutterPhoneDirectCaller.callNumber(
+                                    contact.phones.elementAt(0).value);
+                                controller.clear();
+                              },
+                              title: Text(contact.displayName),
+                              subtitle: Text(
+                                contact.phones.length > 0
+                                    ? contact.phones.elementAt(0).value
+                                    : '',
+                              ),
+                              leading: (contact.avatar != null &&
+                                      contact.avatar.length > 0)
+                                  ? CircleAvatar(
+                                      backgroundImage:
+                                          MemoryImage(contact.avatar),
+                                    )
+                                  : Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            color1,
+                                            color2,
+                                          ],
+                                          begin: Alignment.bottomLeft,
+                                          end: Alignment.topRight,
+                                        ),
+                                      ),
+                                      child: CircleAvatar(
+                                        child: Text(
+                                          contact.initials(),
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        backgroundColor: Colors.transparent,
+                                      ),
+                                    ),
+                            );
                           },
                         ),
-                      )
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _contactList.length,
-                        itemBuilder: (context, index) {
-                          Contact contact = _contactList[index];
-
-                          var baseColor =
-                              contactsColorMap[contact.displayName] as dynamic;
-                          Color color1 = baseColor[800];
-                          Color color2 = baseColor[400];
-                          return ListTile(
-                            onTap: () async {
-                              debugPrint('CALLING');
-                              await FlutterPhoneDirectCaller.callNumber(
-                                  contact.phones.elementAt(0).value);
-                              controller.clear();
-                            },
-                            title: Text(contact.displayName),
-                            subtitle: Text(
-                              contact.phones.length > 0
-                                  ? contact.phones.elementAt(0).value
-                                  : '',
-                            ),
-                            leading: (contact.avatar != null &&
-                                    contact.avatar.length > 0)
-                                ? CircleAvatar(
-                                    backgroundImage:
-                                        MemoryImage(contact.avatar),
-                                  )
-                                : Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          color1,
-                                          color2,
-                                        ],
-                                        begin: Alignment.bottomLeft,
-                                        end: Alignment.topRight,
-                                      ),
-                                    ),
-                                    child: CircleAvatar(
-                                      child: Text(
-                                        contact.initials(),
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      backgroundColor: Colors.transparent,
-                                    ),
-                                  ),
-                          );
-                        },
-                      ),
-            _buildDialer(),
-          ],
+              _buildDialer(),
+            ],
+          ),
         ),
       ),
     );
