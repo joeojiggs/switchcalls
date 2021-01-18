@@ -73,6 +73,7 @@ class _ChatListScreenState extends State<ChatListScreen>
 
   @override
   Widget build(BuildContext context) {
+    getThreads();
     return ChangeNotifierProvider<MessageListProvider>(
       create: (context) => MessageListProvider(),
       child: PickupLayout(
