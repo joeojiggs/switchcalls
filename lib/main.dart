@@ -10,6 +10,8 @@ import 'package:switchcalls/screens/login_screen.dart';
 import 'package:switchcalls/screens/search_screen.dart';
 
 import 'provider/agora_provider.dart';
+import 'provider/local_log_provider.dart';
+import 'provider/local_message_provider.dart';
 
 void main() => runApp(MyApp());
 
@@ -28,6 +30,8 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => ImageUploadProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(lazy: true, create: (_) => ContactsProvider()),
+        ChangeNotifierProvider(lazy: true, create: (_) => LogsProvider()),
+        ChangeNotifierProvider(lazy: true, create: (_) => MessageProvider()),
         ChangeNotifierProvider(lazy: true, create: (_) => AgoraProvider()),
       ],
       child: MaterialApp(

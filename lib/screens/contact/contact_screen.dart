@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:switchcalls/utils/permissions.dart';
+import 'package:switchcalls/widgets/quiet_box.dart';
 
 class ContactListScreen extends StatefulWidget {
   ContactListScreen({Key key, this.title}) : super(key: key);
@@ -18,22 +19,24 @@ class _ContactListScreenState extends State<ContactListScreen> {
   List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = new Map();
   TextEditingController searchController = new TextEditingController();
-  // ContactsProvider _contacts;
+  ContactsProvider _contactsProvider;
 
   @override
   void initState() {
-    // _contacts = Provider.of<ContactsProvider>(context, listen: false);
-    // _contacts.resume();
+    _contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
+    _contactsProvider.resume();
 
     super.initState();
     getPermissions();
   }
- @override
+
+  @override
   void dispose() {
-    // _contacts.pause();
+    _contactsProvider.pause();
     super.dispose();
   }
-  getPermissions() async {
+
+  void getPermissions() async {
     if (await Permissions.contactPermissionsGranted()) {
       getAllContacts();
       searchController.addListener(() {
@@ -48,10 +51,11 @@ class _ContactListScreenState extends State<ContactListScreen> {
     });
   }
 
-  getAllContacts() async {
+  void getAllContacts() async {
     List colors = [Colors.green, Colors.indigo, Colors.yellow, Colors.orange];
     int colorIndex = 0;
-    List<Contact> _contacts = (await ContactsService.getContacts()).toList();
+    List<Contact> _contacts = _contactsProvider.contactList;
+    //(await ContactsService.getContacts()).toList();
     print('\n\n\n HERE \n\n');
     _contacts.forEach((contact) {
       Color baseColor = colors[colorIndex];
@@ -68,7 +72,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
     }
   }
 
-  filterContacts() {
+  void filterContacts() {
     List<Contact> _contacts = [];
     _contacts.addAll(contacts);
     if (searchController.text.isNotEmpty) {
@@ -101,16 +105,16 @@ class _ContactListScreenState extends State<ContactListScreen> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
-    return Container(
-      child: FutureBuilder<dynamic>(
-        future: getAllContacts(),
-        builder: (BuildContext context, snapshot) {
-          if (contacts.isNotEmpty) {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(widget.title),
-              ),
-              body: Container(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Container(
+        child: StreamBuilder<Iterable<Contact>>(
+          stream: _contactsProvider.controller.stream,
+          builder: (BuildContext context, snapshot) {
+            if (contacts.isNotEmpty) {
+              return Container(
                 padding: EdgeInsets.all(20),
                 child: Column(
                   children: <Widget>[
@@ -143,42 +147,48 @@ class _ContactListScreenState extends State<ContactListScreen> {
                           Color color1 = baseColor[800];
                           Color color2 = baseColor[400];
                           return ListTile(
-                              title: Text(contact.displayName),
-                              subtitle: Text(contact.phones.length > 0
-                                  ? contact.phones.elementAt(0).value
-                                  : ''),
-                              leading: (contact.avatar != null &&
-                                      contact.avatar.length > 0)
-                                  ? CircleAvatar(
-                                      backgroundImage:
-                                          MemoryImage(contact.avatar),
-                                    )
-                                  : Container(
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          gradient: LinearGradient(
-                                              colors: [
-                                                color1,
-                                                color2,
-                                              ],
-                                              begin: Alignment.bottomLeft,
-                                              end: Alignment.topRight)),
-                                      child: CircleAvatar(
-                                          child: Text(contact.initials(),
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                          backgroundColor:
-                                              Colors.transparent)));
+                            title: Text(contact.displayName),
+                            subtitle: Text(contact.phones.length > 0
+                                ? contact.phones.elementAt(0).value
+                                : ''),
+                            leading: (contact.avatar != null &&
+                                    contact.avatar.length > 0)
+                                ? CircleAvatar(
+                                    backgroundImage:
+                                        MemoryImage(contact.avatar),
+                                  )
+                                : Container(
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: LinearGradient(
+                                            colors: [
+                                              color1,
+                                              color2,
+                                            ],
+                                            begin: Alignment.bottomLeft,
+                                            end: Alignment.topRight)),
+                                    child: CircleAvatar(
+                                      child: Text(contact.initials(),
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                      backgroundColor: Colors.transparent,
+                                    ),
+                                  ),
+                          );
                         },
                       ),
                     ),
                   ],
                 ),
-              ),
-            );
-          }
-          return Center(child: CircularProgressIndicator());
-        },
+              );
+            }
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                contacts.isEmpty)
+              return Center(child: CircularProgressIndicator());
+
+            return QuietBox();
+          },
+        ),
       ),
     );
   }

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 // import 'package:flutter_phone_state/phone_event.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:switchcalls/provider/local_log_provider.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/widgets/quiet_box.dart';
 
@@ -14,51 +16,13 @@ class LocalLogListContainer extends StatefulWidget {
 }
 
 class _LocalLogListContainerState extends State<LocalLogListContainer> {
-  StreamController<Iterable<CallLogEntry>> phoneCallCont =
-      StreamController<Iterable<CallLogEntry>>.broadcast();
+  LogsProvider _logsProvider;
+  List<CallLogEntry> _logsList = [];
 
-  StreamSubscription<Iterable<CallLogEntry>> phoneCallSub;
+  // StreamController<Iterable<CallLogEntry>> phoneCallCont =
+  //     StreamController<Iterable<CallLogEntry>>.broadcast();
 
-  Widget getLocalIcon(CallType callStatus) {
-    Icon _icon;
-    double _iconSize = 15;
-
-    switch (callStatus) {
-      case CallType.outgoing:
-        _icon = Icon(
-          Icons.call_made,
-          size: _iconSize,
-          color: Colors.green,
-        );
-        break;
-
-      case CallType.missed:
-        _icon = Icon(
-          Icons.call_missed,
-          color: Colors.red,
-          size: _iconSize,
-        );
-        break;
-      case CallType.incoming:
-        _icon = Icon(
-          Icons.call_received,
-          color: Colors.grey,
-          size: _iconSize,
-        );
-        break;
-      default:
-        _icon = Icon(
-          Icons.call_missed,
-          color: Colors.red,
-          size: _iconSize,
-        );
-        break;
-    }
-    return Container(
-      margin: EdgeInsets.only(right: 5),
-      child: _icon,
-    );
-  }
+  // StreamSubscription<Iterable<CallLogEntry>> phoneCallSub;
 
   // watchEvents(PhoneCall phoneCall) {
   //   phoneCall.eventStream.listen((PhoneCallEvent event) {
@@ -67,39 +31,29 @@ class _LocalLogListContainerState extends State<LocalLogListContainer> {
   //   print("Call is complete");
   // }
 
-  Stream<Iterable<CallLogEntry>> getLocalLogs() async* {
-    try {
-      if (await Permissions.contactPermissionsGranted()) {
-        while (true) {
-          await Future.delayed(Duration(milliseconds: 500));
-          yield await CallLog.get();
-        }
-      }
-    } on Exception catch (e) {
-      print(e.toString());
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    phoneCallSub = getLocalLogs().listen((event) {
-      phoneCallCont.add(event);
-    });
+    _logsProvider = Provider.of<LogsProvider>(context, listen: false);
+    _logsProvider.init();
+    // phoneCallSub = getLocalLogs().listen((event) {
+    //   phoneCallCont.add(event);
+    // });
   }
 
   @override
   void dispose() {
+    _logsProvider.pause();
     print('Closing Streams');
-    phoneCallCont.close();
-    phoneCallSub.cancel();
+    // phoneCallCont.close();
+    // phoneCallSub.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<Iterable<CallLogEntry>>(
-      stream: phoneCallCont.stream,
+      stream: _logsProvider.controller.stream,
       builder: (BuildContext context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -139,6 +93,47 @@ class _LocalLogListContainerState extends State<LocalLogListContainer> {
         }
         return QuietBox(isCall: true);
       },
+    );
+  }
+
+  Widget getLocalIcon(CallType callStatus) {
+    Icon _icon;
+    double _iconSize = 15;
+
+    switch (callStatus) {
+      case CallType.outgoing:
+        _icon = Icon(
+          Icons.call_made,
+          size: _iconSize,
+          color: Colors.green,
+        );
+        break;
+
+      case CallType.missed:
+        _icon = Icon(
+          Icons.call_missed,
+          color: Colors.red,
+          size: _iconSize,
+        );
+        break;
+      case CallType.incoming:
+        _icon = Icon(
+          Icons.call_received,
+          color: Colors.grey,
+          size: _iconSize,
+        );
+        break;
+      default:
+        _icon = Icon(
+          Icons.call_missed,
+          color: Colors.red,
+          size: _iconSize,
+        );
+        break;
+    }
+    return Container(
+      margin: EdgeInsets.only(right: 5),
+      child: _icon,
     );
   }
 }

@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:sms/sms.dart';
 import 'package:switchcalls/enum/user_state.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
+import 'package:switchcalls/provider/local_log_provider.dart';
+import 'package:switchcalls/provider/local_message_provider.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
@@ -31,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   UserProvider userProvider;
   ContactsProvider contactsProvider;
+  LogsProvider logsProvider;
 
   @override
   void initState() {
@@ -38,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
+      logsProvider = Provider.of<LogsProvider>(context, listen: false);
       contactsProvider.init(true);
       userProvider = Provider.of<UserProvider>(context, listen: false);
       await userProvider.refreshUser();
@@ -68,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
     contactsProvider.close();
+    logsProvider.close();
     //TODO: this isnt supposed to be cancelled, Fix it.
     receivedSub.cancel();
   }
