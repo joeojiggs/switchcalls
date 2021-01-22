@@ -25,6 +25,7 @@ import 'package:switchcalls/widgets/skype_appbar.dart';
 
 import 'providers/message_list_provider.dart';
 import 'widgets/new_chat_button.dart';
+import 'widgets/user_details_container.dart';
 
 class ChatListScreen extends StatefulWidget {
   @override
@@ -72,15 +73,20 @@ class _ChatListScreenState extends State<ChatListScreen>
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didUpdateWidget(covariant ChatListScreen oldWidget) {
     getThreads();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return ChangeNotifierProvider<MessageListProvider>(
       create: (context) => MessageListProvider(),
       child: PickupLayout(
         scaffold: Scaffold(
           backgroundColor: UniversalVariables.blackColor,
           appBar: SkypeAppBar(
-            title: UserCircle(),
+            title: 'Messages',
             actions: <Widget>[
               IconButton(
                 icon: Icon(
@@ -91,12 +97,23 @@ class _ChatListScreenState extends State<ChatListScreen>
                   Navigator.pushNamed(context, "/search_screen");
                 },
               ),
-              IconButton(
-                icon: Icon(
-                  Icons.more_vert,
-                  color: Colors.white,
-                ),
-                onPressed: () {},
+              PopupMenuButton(
+                itemBuilder: (__) {
+                  return [
+                    PopupMenuItem(
+                      child: Text('Profile'),
+                      value: 0,
+                    ),
+                  ];
+                },
+                onSelected: (index) async {
+                  await showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    backgroundColor: UniversalVariables.blackColor,
+                    builder: (context) => UserDetailsContainer(),
+                  );
+                },
               ),
             ],
           ),
@@ -377,29 +394,37 @@ class ChatListContainer extends StatelessWidget {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
 
     return StreamBuilder<QuerySnapshot>(
-      stream: _chatMethods.fetchContacts(
-        userId: userProvider.getUser.uid,
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          var docList = snapshot.data.documents;
-
-          if (docList.isEmpty) {
+        stream: _chatMethods.fetchContacts(
+          userId: userProvider.getUser.uid,
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data.documents.isEmpty) {
             return QuietBox();
           }
-          return ListView.builder(
-            padding: EdgeInsets.all(10),
-            itemCount: docList.length,
-            itemBuilder: (context, index) {
-              Contact contact = Contact.fromMap(docList[index].data);
+          var docList = snapshot.data?.documents ?? [];
 
-              return ContactView(contact);
-            },
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.all(10),
+                itemCount: docList.length,
+                itemBuilder: (context, index) {
+                  Contact contact = Contact.fromMap(docList[index].data);
+
+                  return ContactView(contact);
+                },
+              ),
+              snapshot.connectionState == ConnectionState.waiting
+                  ? Center(child: CircularProgressIndicator())
+                  : Container(),
+              Container(),
+            ],
           );
         }
 
-        return Center(child: CircularProgressIndicator());
-      },
-    );
+        // return Container;
+        );
   }
 }

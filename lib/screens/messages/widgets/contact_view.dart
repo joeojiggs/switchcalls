@@ -30,6 +30,7 @@ class ContactView extends StatelessWidget {
             contact: user,
           );
         }
+        if (snapshot.data == null) return Container();
         return Center(
           child: CircularProgressIndicator(),
         );

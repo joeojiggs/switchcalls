@@ -1,6 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
+import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
+import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
+import 'package:switchcalls/utils/universal_variables.dart';
 
 import 'home_screen.dart';
 import 'login_screen.dart';
@@ -11,15 +16,22 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final AuthMethods _authMethods = AuthMethods();
+  UserProvider userProvider;
+  AuthMethods authMethods = AuthMethods();
 
   void decideNavigation() async {
-    FirebaseUser user = await _authMethods.getCurrentUser();
-    await Future.delayed(Duration(seconds: 1));
-    if (user != null) {
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (await authMethods.getCurrentUser() != null) {
+      await userProvider.refreshUser();
+      LogRepository.init(
+        isHive: false,
+        dbName: userProvider.getUser.uid,
+      );
+      await Future.delayed(Duration(seconds: 1));
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => HomeScreen()));
     } else {
+      await Future.delayed(Duration(seconds: 2));
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginScreen()));
     }
@@ -27,13 +39,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    decideNavigation();
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      decideNavigation();
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: UniversalVariables.blackColor,
       body: Center(
         child: Image.asset(
           'assets/icon.png',

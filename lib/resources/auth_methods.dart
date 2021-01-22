@@ -89,6 +89,21 @@ class AuthMethods {
         .setData(user.toMap(user));
   }
 
+  Future<void> updatePhoneNumber(String phone) async {
+    try {
+      User user = await getUserDetails();
+      user.phoneNumber = '+234' + phone.substring(1);
+      print(user.phoneNumber);
+
+      // firestore
+      //     .collection(USERS_COLLECTION)
+      //     .document(currentUser.uid)
+      //     .updateData(user.toMap(user));
+    } catch (e) {
+      print(e.toString);
+    }
+  }
+
   Future<List<User>> fetchAllUsers(FirebaseUser currentUser) async {
     List<User> userList = List<User>();
 
@@ -113,11 +128,12 @@ class AuthMethods {
     }
   }
 
-  void setUserState({@required String userId, @required UserState userState}) async {
+  void setUserState(
+      {@required String userId, @required UserState userState}) async {
     try {
       int stateNum = Utils.stateToNum(userState);
 
-     await _userCollection.document(userId).updateData({
+      await _userCollection.document(userId).updateData({
         "state": stateNum,
       });
     } on Exception catch (e) {

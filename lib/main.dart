@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ImageUploadProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(lazy: true, create: (_) => UserProvider()),
         ChangeNotifierProvider(lazy: true, create: (_) => ContactsProvider()),
         ChangeNotifierProvider(lazy: true, create: (_) => LogsProvider()),
         ChangeNotifierProvider(lazy: true, create: (_) => MessageProvider()),

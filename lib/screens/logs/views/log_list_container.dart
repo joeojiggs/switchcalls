@@ -49,7 +49,14 @@ class _LogListContainerState extends State<LogListContainer> {
       child: _icon,
     );
   }
-
+  // void getFreeCallLog(){
+  //   if (LogRepository.dbObject == null){
+  //     await LogRepository.init(
+  //       isHive: false,
+  //       dbName: userProvider.getUser.uid,
+  //     );
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<dynamic>(

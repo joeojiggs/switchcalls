@@ -6,6 +6,7 @@ class User {
   String status;
   int state;
   String profilePhoto;
+  String phoneNumber;
 
   User({
     this.uid,
@@ -15,6 +16,7 @@ class User {
     this.status,
     this.state,
     this.profilePhoto,
+    this.phoneNumber,
   });
 
   Map toMap(User user) {
@@ -26,6 +28,7 @@ class User {
     data["status"] = user.status;
     data["state"] = user.state;
     data["profile_photo"] = user.profilePhoto;
+    data["phone_number"] = user.phoneNumber;
     return data;
   }
 
@@ -38,5 +41,6 @@ class User {
     this.status = mapData['status'];
     this.state = mapData['state'];
     this.profilePhoto = mapData['profile_photo'];
+    this.phoneNumber = mapData['phone_number'];
   }
 }
