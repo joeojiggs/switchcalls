@@ -6,7 +6,7 @@ import 'package:switchcalls/provider/image_upload_provider.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/screens/home_screen.dart';
-import 'package:switchcalls/screens/login_screen.dart';
+import 'package:switchcalls/screens/auth/views/login_screen.dart';
 import 'package:switchcalls/screens/search_screen.dart';
 
 import 'provider/agora_provider.dart';
@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(lazy: true, create: (_) => ContactsProvider()),
         ChangeNotifierProvider(lazy: true, create: (_) => LogsProvider()),
         ChangeNotifierProvider(lazy: true, create: (_) => MessageProvider()),
-        ChangeNotifierProvider(lazy: true, create: (_) => AgoraProvider()),
+        ChangeNotifierProvider(create: (_) => AgoraProvider()),
       ],
       child: MaterialApp(
         title: "Switch Calls",
@@ -47,5 +47,11 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-// more button and notification on the mesaage screen appbar
-// add call button on the call page
+/*
+  CURRENT TODOS
+  // Let all permissions be asked for at the beginning
+  // Remove box in contact screen
+  // Add menu in call section
+  // Delivery receipt for free messages
+  Arrrange free messages and calls according to date
+*/

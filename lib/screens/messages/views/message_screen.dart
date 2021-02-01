@@ -197,12 +197,31 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       child: Padding(
         padding: EdgeInsets.all(10),
-        child: getMessage(message),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: getMessage(message),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.done,
+                  color: UniversalVariables.blueColor,
+                  size: 15,
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
 
-  getMessage(Message message) {
+  Widget getMessage(Message message) {
     return message.type != MESSAGE_TYPE_IMAGE
         ? Text(
             message.message,
@@ -290,7 +309,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         title: "Media",
                         subtitle: "Share Photos and Video",
                         icon: Icons.image,
-                        onTap: () => pickImage(source: ImageSource.gallery),
+                        onTap: () {
+                          Navigator.pop(context);
+                          pickImage(source: ImageSource.gallery);
+                        },
                       ),
                       ModalTile(
                         title: "File",

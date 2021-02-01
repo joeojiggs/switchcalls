@@ -34,11 +34,14 @@ class LogsProvider extends ChangeNotifier {
         print('STARTED');
       }
     }
+    _logsCont.add(null);
   }
 
   void pause() {
-    _logsSub.pause();
-    print('PAUSED');
+    if (_logsSub != null) {
+      _logsSub.pause();
+      print('PAUSED');
+    }
   }
 
   void resume() {

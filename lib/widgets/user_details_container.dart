@@ -5,10 +5,10 @@ import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/widgets/cached_image.dart';
-import 'package:switchcalls/screens/login_screen.dart';
+import 'package:switchcalls/screens/auth/views/login_screen.dart';
 import 'package:switchcalls/widgets/appbar.dart';
 
-import 'shimmering_logo.dart';
+import '../screens/messages/widgets/shimmering_logo.dart';
 
 class UserDetailsContainer extends StatelessWidget {
   final AuthMethods authMethods = AuthMethods();
@@ -74,34 +74,73 @@ class UserDetailsBody extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          CachedImage(
-            user.profilePhoto,
-            isRound: true,
-            radius: 50,
+          Center(
+            child: CachedImage(
+              user.profilePhoto,
+              isRound: true,
+              radius: 200,
+            ),
           ),
-          SizedBox(width: 15),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                user.name,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
+          SizedBox(height: 30),
+          Center(
+            child: Text(
+              user.name,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.white,
               ),
-              SizedBox(height: 10),
-              Text(
-                user.email,
-                style: TextStyle(fontSize: 14, color: Colors.white),
-              ),
-            ],
+            ),
           ),
+          SizedBox(height: 10),
+          Center(
+            child: Text(
+              user.phoneNumber,
+              style:
+                  TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.7)),
+            ),
+          ),
+          SizedBox(height: 30),
+          _buildInfoTiles("Username:", user.username),
+          SizedBox(height: 10),
+          _buildInfoTiles("Email Address:", user.email),
         ],
       ),
+    );
+  }
+
+  Row _buildInfoTiles(String title, String info) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        SizedBox(width: 30),
+        Flexible(
+          flex: 2,
+          child: Text(
+            info,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

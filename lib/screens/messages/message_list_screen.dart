@@ -25,7 +25,7 @@ import 'package:switchcalls/widgets/skype_appbar.dart';
 
 import 'providers/message_list_provider.dart';
 import 'widgets/new_chat_button.dart';
-import 'widgets/user_details_container.dart';
+import '../../widgets/user_details_container.dart';
 
 class ChatListScreen extends StatefulWidget {
   @override
@@ -43,9 +43,15 @@ class _ChatListScreenState extends State<ChatListScreen>
   List<SmsThread> messages = [];
 
   getThreads() async {
-    messages = await _messageProvider.getthreads();
-    isLoading = false;
-    if (mounted) setState(() {});
+    try {
+      messages = await _messageProvider.getthreads();
+      isLoading = false;
+      if (mounted) setState(() {});
+    } catch (e) {
+      print(e.toString());
+      isLoading = false;
+      if (mounted) setState(() {});
+    }
   }
 
   @override
@@ -264,7 +270,10 @@ class LocalChatLisContainer extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => TextScreen(thread: _thread),
+          builder: (context) => TextScreen(
+            contact: _thread.contact,
+            messages: _thread.messages,
+          ),
         ),
       ),
       leading: CircleAvatar(
@@ -394,15 +403,13 @@ class ChatListContainer extends StatelessWidget {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
 
     return StreamBuilder<QuerySnapshot>(
-        stream: _chatMethods.fetchContacts(
-          userId: userProvider.getUser.uid,
-        ),
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data.documents.isEmpty) {
-            return QuietBox();
-          }
-          var docList = snapshot.data?.documents ?? [];
-
+      stream: _chatMethods.fetchContacts(
+        userId: userProvider.getUser.uid,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            snapshot.data.documents.isNotEmpty) {
+          var docList = snapshot.data?.documents?.reversed?.toList() ?? [];
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -423,8 +430,11 @@ class ChatListContainer extends StatelessWidget {
             ],
           );
         }
-
-        // return Container;
-        );
+        if (snapshot.hasData && snapshot.data.documents.isEmpty) {
+          return QuietBox();
+        }
+        return Container();
+      },
+    );
   }
 }

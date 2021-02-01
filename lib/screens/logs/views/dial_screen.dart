@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -12,6 +14,7 @@ class DialScreen extends StatefulWidget {
 }
 
 class _DialScreenState extends State<DialScreen> {
+  AuthMethods authMethods = AuthMethods();
   TextEditingController controller = TextEditingController();
   String phoneNumber = '';
   Map<String, Color> contactsColorMap = new Map();
@@ -31,6 +34,16 @@ class _DialScreenState extends State<DialScreen> {
     _contacts.pause();
     controller.dispose();
     super.dispose();
+  }
+
+  String formatNumber(String number) {
+    if (number.length == 11 && number.startsWith('0')) {
+      return '+234' + number.substring(1);
+    }
+    if (number.length == 14 && number.startsWith('+234')) {
+      return number;
+    }
+    return number;
   }
 
   String flattenPhoneNumber(String phoneStr) {
@@ -163,6 +176,25 @@ class _DialScreenState extends State<DialScreen> {
                                         backgroundColor: Colors.transparent,
                                       ),
                                     ),
+                              trailing: FutureBuilder<User>(
+                                initialData: null,
+                                future: authMethods.getUserByPhone(formatNumber(
+                                    contact.phones.elementAt(0).value)),
+                                builder: (context, snapshot) {
+                                  return Container(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(3.0),
+                                      child: Icon(
+                                        Icons.call,
+                                        size: 30,
+                                        color: snapshot.data != null
+                                            ? UniversalVariables.blueColor
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                             );
                           },
                         ),

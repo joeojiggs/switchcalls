@@ -3,41 +3,68 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
 
 class Permissions {
-  static Future<bool> cameraAndMicrophonePermissionsGranted() async {
-    PermissionStatus cameraPermissionStatus = await _getCameraPermission();
-    PermissionStatus microphonePermissionStatus =
-        await _getMicrophonePermission();
+  static Future<void> askNecessaryPermissions() async {
+    //messages,contacts, take pics and record video, make and manage phone calls,
+    try {
+      await Permission.sms.request();
+      await Permission.contacts.request();
+      // await Permission.speech.request();
+      // await Permission.microphone.request();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
-    if (cameraPermissionStatus == PermissionStatus.granted &&
-        microphonePermissionStatus == PermissionStatus.granted) {
-      return true;
-    } else {
-      _handleInvalidPermissions(
-          cameraPermissionStatus, microphonePermissionStatus);
+  static Future<bool> cameraAndMicrophonePermissionsGranted() async {
+    try {
+      PermissionStatus cameraPermissionStatus = await _getCameraPermission();
+      PermissionStatus microphonePermissionStatus =
+          await _getMicrophonePermission();
+
+      if (cameraPermissionStatus == PermissionStatus.granted &&
+          microphonePermissionStatus == PermissionStatus.granted) {
+        return true;
+      } else {
+        _handleInvalidPermissions(
+            cameraPermissionStatus, microphonePermissionStatus);
+        return false;
+      }
+    } catch (e) {
+      print(e.toString());
       return false;
     }
   }
 
   static Future<bool> contactPermissionsGranted() async {
-    PermissionStatus contactPermissionStatus = await _getContactPermission();
-    PermissionStatus phonePermissionStatus = await _getPhonePermission();
+    try {
+      PermissionStatus contactPermissionStatus = await _getContactPermission();
+      PermissionStatus phonePermissionStatus = await _getPhonePermission();
 
-    if (contactPermissionStatus == PermissionStatus.granted &&
-        phonePermissionStatus == PermissionStatus.granted) {
-      return true;
-    } else {
-      _handleInvalidPermissions2(contactPermissionStatus);
+      if (contactPermissionStatus == PermissionStatus.granted &&
+          phonePermissionStatus == PermissionStatus.granted) {
+        return true;
+      } else {
+        _handleInvalidPermissions2(contactPermissionStatus);
+        return false;
+      }
+    } catch (e) {
+      print(e.toString());
       return false;
     }
   }
 
   static Future<bool> smsPermissionsGranted() async {
-    PermissionStatus smsPermissionStatus = await _getSmsPermission();
+    try {
+      PermissionStatus smsPermissionStatus = await _getSmsPermission();
 
-    if (smsPermissionStatus == PermissionStatus.granted ) {
-      return true;
-    } else {
-      _handleInvalidPermissions2(smsPermissionStatus);
+      if (smsPermissionStatus == PermissionStatus.granted) {
+        return true;
+      } else {
+        _handleInvalidPermissions2(smsPermissionStatus);
+        return false;
+      }
+    } catch (e) {
+      print(e.toString());
       return false;
     }
   }

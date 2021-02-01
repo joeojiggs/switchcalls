@@ -8,7 +8,7 @@ import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 
 import 'home_screen.dart';
-import 'login_screen.dart';
+import 'auth/views/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   @override

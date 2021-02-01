@@ -5,11 +5,13 @@ import 'package:sms/sms.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/appbar.dart';
+import 'package:sms/contact.dart';
 
 class TextScreen extends StatefulWidget {
-  final SmsThread thread;
+  final Contact contact;
+  final List<SmsMessage> messages;
 
-  const TextScreen({Key key, this.thread}) : super(key: key);
+  const TextScreen({Key key, this.contact, this.messages}) : super(key: key);
   @override
   _TextScreenState createState() => _TextScreenState();
 }
@@ -43,7 +45,7 @@ class _TextScreenState extends State<TextScreen> {
           ),
           centerTitle: false,
           title: Text(
-            widget.thread.contact.fullName ?? widget.thread.contact.address,
+            widget.contact.fullName ?? widget.contact.address,
           ),
           actions: <Widget>[
             IconButton(
@@ -52,7 +54,7 @@ class _TextScreenState extends State<TextScreen> {
               ),
               onPressed: () async {
                 await FlutterPhoneDirectCaller.callNumber(
-                    widget.thread.contact.address);
+                    widget.contact.address);
               },
             )
           ],
@@ -64,9 +66,9 @@ class _TextScreenState extends State<TextScreen> {
                 padding: EdgeInsets.all(10),
                 controller: _listScrollController,
                 reverse: true,
-                itemCount: widget.thread.messages.length,
+                itemCount: widget.messages.length,
                 itemBuilder: (context, index) {
-                  SmsMessage _message = widget.thread.messages[index];
+                  SmsMessage _message = widget.messages[index];
                   // mention the arrow syntax if you get the time
                   return Container(
                     margin: EdgeInsets.symmetric(vertical: 15),
@@ -194,7 +196,7 @@ class _TextScreenState extends State<TextScreen> {
       var text = textFieldController.text;
 
       sender.sendSms(
-        SmsMessage(widget.thread.contact.address, text),
+        SmsMessage(widget.contact.address, text),
         simCard: currentCard,
       );
 

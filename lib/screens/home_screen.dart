@@ -15,6 +15,7 @@ import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/screens/messages/message_list_screen.dart';
 import 'package:switchcalls/screens/logs/log_screen.dart';
+import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 
 import 'contact/contact_screen.dart';
@@ -55,6 +56,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       dbName: userProvider.getUser.uid,
     );
 
+    await Permissions.askNecessaryPermissions();
+
     _authMethods.setUserState(
       userId: userProvider.getUser.uid,
       userState: UserState.Online,
@@ -64,7 +67,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
       logsProvider = Provider.of<LogsProvider>(context, listen: false);
       contactsProvider.init(true);
-
       receivedSub = receiver.onSmsReceived.listen((SmsMessage msg) {
         print('NOTIFICATION\n${msg.address} sent you a message.');
         setState(() {});
@@ -282,9 +284,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       color: UniversalVariables.lightBlueColor,
                       child: Text('CONTINUE'),
                       onPressed: () async {
-                        if (key.currentState.validate())
+                        if (key.currentState.validate()) {
                           await _authMethods
                               .updatePhoneNumber(_textEditingController.text);
+                          Navigator.pop(context);
+                        }
                       },
                     ),
                   ],

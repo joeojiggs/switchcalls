@@ -42,17 +42,33 @@ class AuthMethods {
     }
   }
 
-  Future<FirebaseUser> signIn() async {
+  Future<User> addGoogleAcct() async {
     try {
       GoogleSignInAccount _signInAccount = await _googleSignIn.signIn();
-      GoogleSignInAuthentication _signInAuthentication =
-          await _signInAccount.authentication;
+      if (_signInAccount == null) {
+        throw 'Error! User did not register account';
+      }
+      FirebaseUser signedInUser = await getCurrentUser();
 
-      final AuthCredential credential = GoogleAuthProvider.getCredential(
-          accessToken: _signInAuthentication.accessToken,
-          idToken: _signInAuthentication.idToken);
+      User user = User(
+        uid: signedInUser.uid,
+        phoneNumber: signedInUser.phoneNumber,
+        email: _signInAccount.email,
+        name: _signInAccount.displayName,
+        profilePhoto: _signInAccount.photoUrl,
+        username: Utils.getUsername(_signInAccount.displayName),
+      );
 
-      FirebaseUser user = await _auth.signInWithCredential(credential);
+      // GoogleSignInAuthentication _signInAuthentication =
+      //     await _signInAccount.authentication;
+
+      // final AuthCredential credential = GoogleAuthProvider.getCredential(
+      //     accessToken: _signInAuthentication.accessToken,
+      //     idToken: _signInAuthentication.idToken);
+
+      // credential;
+
+      // FirebaseUser user = await _auth.signInWithCredential(credential);
       return user;
     } catch (e) {
       print("Auth methods error");
@@ -64,7 +80,7 @@ class AuthMethods {
   Future<bool> authenticateUser(FirebaseUser user) async {
     QuerySnapshot result = await firestore
         .collection(USERS_COLLECTION)
-        .where(EMAIL_FIELD, isEqualTo: user.email)
+        .where('phone_number', isEqualTo: user.phoneNumber)
         .getDocuments();
 
     final List<DocumentSnapshot> docs = result.documents;
@@ -73,20 +89,20 @@ class AuthMethods {
     return docs.length == 0 ? true : false;
   }
 
-  Future<void> addDataToDb(FirebaseUser currentUser) async {
-    String username = Utils.getUsername(currentUser.email);
+  Future<void> addDataToDb(User currentUser) async {
+    // String username = Utils.getUsername(currentUser.email);
 
-    User user = User(
-        uid: currentUser.uid,
-        email: currentUser.email,
-        name: currentUser.displayName,
-        profilePhoto: currentUser.photoUrl,
-        username: username);
+    // User user = User(
+    //     uid: currentUser.uid,
+    //     email: currentUser.email,
+    //     name: currentUser.displayName,
+    //     profilePhoto: currentUser.photoUrl,
+    //     username: username);
 
     firestore
         .collection(USERS_COLLECTION)
         .document(currentUser.uid)
-        .setData(user.toMap(user));
+        .setData(currentUser.toMap(currentUser));
   }
 
   Future<void> updatePhoneNumber(String phone) async {
@@ -95,13 +111,33 @@ class AuthMethods {
       user.phoneNumber = '+234' + phone.substring(1);
       print(user.phoneNumber);
 
-      // firestore
-      //     .collection(USERS_COLLECTION)
-      //     .document(currentUser.uid)
-      //     .updateData(user.toMap(user));
+      await firestore
+          .collection(USERS_COLLECTION)
+          .document(user.uid)
+          .updateData(user.toMap(user));
     } catch (e) {
       print(e.toString);
     }
+  }
+
+  Future<User> getUserByPhone(String number) async {
+    print(number);
+    QuerySnapshot docs = (await _userCollection.getDocuments());
+    DocumentSnapshot doc = docs.documents.firstWhere(
+        (element) => element.data['phone_number'] == number,
+        orElse: () => null);
+    if (doc != null) return User.fromMap(doc.data);
+    return null;
+  }
+
+  Future<User> getUserByProfilePic(String url) async {
+    print(url);
+    QuerySnapshot docs = (await _userCollection.getDocuments());
+    DocumentSnapshot doc = docs.documents.firstWhere(
+        (element) => element.data['profile_photo'] == url,
+        orElse: () => null);
+    if (doc != null) return User.fromMap(doc.data);
+    return null;
   }
 
   Future<List<User>> fetchAllUsers(FirebaseUser currentUser) async {
