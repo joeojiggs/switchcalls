@@ -6,8 +6,7 @@ import 'package:switchcalls/utils/permissions.dart';
 
 class ContactsProvider extends ChangeNotifier {
   static ContactsProvider provider;
-  StreamController<Iterable<Contact>> _contactsCont =
-      StreamController<Iterable<Contact>>.broadcast();
+  StreamController<Iterable<Contact>> _contactsCont;
   StreamSubscription<Iterable<Contact>> _contactSub;
   List<Contact> _contacts = [];
 
@@ -22,6 +21,7 @@ class ContactsProvider extends ChangeNotifier {
 
   Future<void> init([bool topause = false]) async {
     try {
+      _contactsCont = StreamController<Iterable<Contact>>.broadcast();
       if (await Permissions.contactPermissionsGranted()) {
         _contactSub = contacts().listen((event) {
           _contacts = event.toList();

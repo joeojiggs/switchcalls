@@ -58,7 +58,11 @@ class _LocalLogListContainerState extends State<LocalLogListContainer> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
+        if (!snapshot.hasData) return QuietBox(isCall: true);
         if (snapshot.hasData) {
+          if (snapshot.data == null) {
+            return QuietBox(isCall: true);
+          }
           List<CallLogEntry> logList = snapshot.data.toList();
           return ListView.builder(
             itemCount: logList.length,

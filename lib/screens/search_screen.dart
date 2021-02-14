@@ -37,6 +37,12 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
+  }
+
   searchAppBar(BuildContext context) {
     return GradientAppBar(
       backgroundColorStart: UniversalVariables.gradientColorStart,
@@ -68,8 +74,7 @@ class _SearchScreenState extends State<SearchScreen> {
               suffixIcon: IconButton(
                 icon: Icon(Icons.close, color: Colors.white),
                 onPressed: () {
-                  WidgetsBinding.instance
-                      .addPostFrameCallback((_) => searchController.clear());
+                  searchController.clear();
                 },
               ),
               border: InputBorder.none,

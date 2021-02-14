@@ -23,10 +23,19 @@ class LogListContainer extends StatefulWidget {
 class _LogListContainerState extends State<LogListContainer> {
   AuthMethods authMethods = AuthMethods();
   UserProvider userProvider;
+
   Future<void> getUser() async {
     userProvider = Provider.of<UserProvider>(context, listen: false);
     await userProvider.refreshUser();
     SchedulerBinding.instance.addPostFrameCallback((_) async {});
+  }
+
+  Stream<List<Log>> streamLogs() async* {
+    while (true) {
+      await Future.delayed(Duration(milliseconds: 500));
+      yield await LogRepository.getLogs();
+    }
+    ;
   }
 
   @override
@@ -73,8 +82,8 @@ class _LogListContainerState extends State<LogListContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Log>>(
-      future: LogRepository.getLogs(),
+    return StreamBuilder<List<Log>>(
+      stream: streamLogs(),
       builder: (BuildContext context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());

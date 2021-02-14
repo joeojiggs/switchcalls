@@ -232,7 +232,19 @@ class _ContactListScreenState extends State<ContactListScreen> {
                 ),
               );
             }
-            return Container();
+            return Container(
+              child: Center(
+                child: Text(
+                  (snapshot?.connectionState?.toString()) ??
+                      '' + (snapshot?.error?.toString()) ??
+                      '' + snapshot?.data?.toString(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+            );
           },
         ),
       ),

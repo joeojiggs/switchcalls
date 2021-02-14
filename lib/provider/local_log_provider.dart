@@ -21,20 +21,24 @@ class LogsProvider extends ChangeNotifier {
   }
 
   Future<void> init([bool topause = false]) async {
-    if (await Permissions.contactPermissionsGranted()) {
-      if (_logsSub != null)
-        resume();
-      else {
-        _logsSub = getLocalLogs().listen((event) {
-          _logs = event.toList();
-          // print(contactList);
-          _logsCont.add(event);
-          if (topause) pause();
-        });
-        print('STARTED');
-      }
+    if (_logsSub != null && _logs.isNotEmpty)
+      resume();
+    else {
+      _logsSub = getLocalLogs().listen((event) {
+        _logs = event.toList();
+        // print(contactList);
+        _logsCont.add(event);
+        if (topause) pause();
+      });
+      print('STARTED');
     }
-    _logsCont.add(null);
+    // bool per = await Permissions.contactPermissionsGranted();
+    // if (per) {
+    // _logsSub = getLocalLogs().listen((event) {
+    // }
+    // }
+    // per = await Permissions.contactPermissionsGranted();
+    // _logsCont.add(null);
   }
 
   void pause() {
@@ -44,9 +48,11 @@ class LogsProvider extends ChangeNotifier {
     }
   }
 
-  void resume() {
-    _logsSub.resume();
-    print('RESUMED');
+  void resume() async {
+    if (await Permissions.contactPermissionsGranted()) {
+      _logsSub.resume();
+      print('RESUMED');
+    }
   }
 
   void close() {
@@ -59,13 +65,17 @@ class LogsProvider extends ChangeNotifier {
 
   Stream<Iterable<CallLogEntry>> getLocalLogs() async* {
     try {
-      if (await Permissions.contactPermissionsGranted()) {
-        while (true) {
-          await Future.delayed(Duration(milliseconds: 500));
+      bool per = await Permissions.contactPermissionsGranted();
+      while (true) {
+        // if (!per) per = await Permissions.contactPermissionsGranted();
+        await Future.delayed(Duration(milliseconds: 500));
+        if (!per)
+          yield [];
+        else {
           yield await CallLog.get();
         }
       }
-    } on Exception catch (e) {
+    } catch (e) {
       print(e.toString());
     }
   }

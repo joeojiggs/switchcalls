@@ -35,9 +35,14 @@ class LoginScreenState extends State<LoginScreen> {
                 Consumer<LoginProvider>(
                   builder: (context, model, child) {
                     return model.isLoginPressed
-                        ? Center(
-                            child: CircularProgressIndicator(),
-                          )
+                        ? Container(
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                          color: Colors.black26,
+                          child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                        )
                         : Container();
                   },
                 )
@@ -90,73 +95,80 @@ class LoginScreenState extends State<LoginScreen> {
             flex: 1,
             child: Form(
               key: model.key,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  model.showPin
-                      ? TextFormField(
-                        controller: model.phoneNumController,
-                          focusNode: model.phoneNumberFocus,
-                          keyboardType: TextInputType.phone,
-                          validator: model.showPhone
-                              ? model.validatePhone
-                              : model.validatePin,
-                          decoration: InputDecoration(
-                            hintText: model.showPhone ? 'Phone Number' : 'Pin',
-                            filled: true,
-                            // fillColor:
-                            border: OutlineInputBorder(),
-                            enabledBorder: OutlineInputBorder(),
-                          ),
-                        )
-                      : Container(),
-                  Container(
-                    margin: EdgeInsets.all(30),
-                    padding: EdgeInsets.all(0),
-                    decoration: BoxDecoration(
-                      color: Colors.amber,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(25),
-                          bottomRight: Radius.circular(25)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 3,
-                          blurRadius: 5,
-                          offset: Offset(0, 2), // changes position of shadow
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      model.showPin
+                          ? TextFormField(
+                              controller: model.phoneNumController,
+                              focusNode: model.phoneNumberFocus,
+                              keyboardType: TextInputType.phone,
+                              validator: model.showPhone
+                                  ? model.validatePhone
+                                  : model.validatePin,
+                              decoration: InputDecoration(
+                                hintText:
+                                    model.showPhone ? 'Phone Number' : 'Pin',
+                                filled: true,
+                                // fillColor:
+                                border: OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(),
+                              ),
+                            )
+                          : Container(),
+                      Container(
+                        margin: EdgeInsets.all(30),
+                        padding: EdgeInsets.all(0),
+                        decoration: BoxDecoration(
+                          color: Colors.amber,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(25),
+                              bottomRight: Radius.circular(25)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 3,
+                              blurRadius: 5,
+                              offset:
+                                  Offset(0, 2), // changes position of shadow
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: Colors.white,
-                      child: FlatButton(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          model.showPhone
-                              ? "SIGNIN"
-                              : model.showPin
-                                  ? 'PROCEED'
-                                  : 'ADD GOOGLE MAIL',
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.2,
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.white,
+                          highlightColor: Colors.white,
+                          child: FlatButton(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                              model.showPhone
+                                  ? "SIGNIN"
+                                  : model.showPin
+                                      ? 'PROCEED'
+                                      : 'ADD GOOGLE MAIL',
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            onPressed: () => model.showPhone
+                                ? model.getStarted()
+                                : model.showPin
+                                    ? model.verifyOtp()
+                                    : model.addGoogleAccount(),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
-                        ),
-                        onPressed: () => model.showPhone
-                            ? model.getStarted()
-                            : model.showPin
-                                ? model.verifyOtp()
-                                : model.addGoogleAccount(),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),

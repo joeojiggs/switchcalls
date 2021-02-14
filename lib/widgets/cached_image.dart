@@ -36,13 +36,15 @@ class CachedImage extends StatelessWidget {
             placeholder: (context, url) =>
                 Center(child: CircularProgressIndicator()),
             errorWidget: (context, url, error) =>
-                Image.network(noImageAvailable, fit: BoxFit.cover),
+            Container(color: Colors.red),
+                // Image.network(noImageAvailable, fit: BoxFit.cover),
           ),
         ),
       );
     } catch (e) {
       print(e);
-      return Image.network(noImageAvailable, fit: BoxFit.cover);
+      return Container();
+      // Image.network(noImageAvailable, fit: BoxFit.cover);
     }
   }
 }

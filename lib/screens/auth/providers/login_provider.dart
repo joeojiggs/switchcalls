@@ -108,14 +108,18 @@ class LoginProvider extends ChangeNotifier {
   void codeAutoRetrievalTimeout(String id) {}
 
   void verificationCompleted(AuthCredential credential) async {
-    showLoader();
+    try {
+      showLoader();
 
-    await auth.signInWithCredential(credential);
+      await auth.signInWithCredential(credential);
 
-    FirebaseUser user = await auth.currentUser();
+      FirebaseUser user = await auth.currentUser();
 
-    if (user != null) {
-      readUserData(user);
+      if (user != null) {
+        readUserData(user);
+      }
+    } catch (e) {
+      throw e.toString();
     }
   }
 

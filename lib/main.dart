@@ -53,5 +53,13 @@ class _MyAppState extends State<MyApp> {
   // Remove box in contact screen
   // Add menu in call section
   // Delivery receipt for free messages
-  Arrrange free messages and calls according to date
+Arrrange free messages 
+  // calls according to date
+    //contact screen
+    // free call screen update after call 
+    // editable user name
+    // xicon in search screen
+//Notifications
+    //remove schedule and polls
+    //remove quieyt box when searchngb in local call section
 */
