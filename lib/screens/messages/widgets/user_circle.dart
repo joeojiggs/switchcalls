@@ -4,7 +4,7 @@ import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/utilities.dart';
 
-import 'user_details_container.dart';
+import '../../../widgets/user_details_container.dart';
 
 class UserCircle extends StatelessWidget {
   @override

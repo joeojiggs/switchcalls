@@ -6,10 +6,13 @@ import 'package:switchcalls/provider/image_upload_provider.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/screens/home_screen.dart';
-import 'package:switchcalls/screens/login_screen.dart';
+import 'package:switchcalls/screens/auth/views/login_screen.dart';
 import 'package:switchcalls/screens/search_screen.dart';
 
 import 'provider/agora_provider.dart';
+import 'provider/local_log_provider.dart';
+import 'provider/local_message_provider.dart';
+import 'screens/splash_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,16 +22,16 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final AuthMethods _authMethods = AuthMethods();
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ImageUploadProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(lazy: true, create: (_) => UserProvider()),
         ChangeNotifierProvider(lazy: true, create: (_) => ContactsProvider()),
-        ChangeNotifierProvider(lazy: true, create: (_) => AgoraProvider()),
+        ChangeNotifierProvider(lazy: true, create: (_) => LogsProvider()),
+        ChangeNotifierProvider(lazy: true, create: (_) => MessageProvider()),
+        ChangeNotifierProvider(create: (_) => AgoraProvider()),
       ],
       child: MaterialApp(
         title: "Switch Calls",
@@ -38,20 +41,25 @@ class _MyAppState extends State<MyApp> {
           '/search_screen': (context) => SearchScreen(),
         },
         theme: ThemeData(brightness: Brightness.dark),
-        home: FutureBuilder(
-          future: _authMethods.getCurrentUser(),
-          builder: (context, AsyncSnapshot<FirebaseUser> snapshot) {
-            if (snapshot.hasData) {
-              return HomeScreen();
-            } else {
-              return LoginScreen();
-            }
-          },
-        ),
+        home: SplashScreen(),
       ),
     );
   }
 }
 
-// more button and notification on the mesaage screen appbar
-// add call button on the call page
+/*
+  CURRENT TODOS
+  // Let all permissions be asked for at the beginning
+  // Remove box in contact screen
+  // Add menu in call section
+  // Delivery receipt for free messages
+Arrrange free messages 
+  // calls according to date
+    //contact screen
+    // free call screen update after call 
+    // editable user name
+    // xicon in search screen
+//Notifications
+    //remove schedule and polls
+    //remove quieyt box when searchngb in local call section
+*/

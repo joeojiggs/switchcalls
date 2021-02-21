@@ -2,13 +2,16 @@ import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:sms/sms.dart';
+import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/appbar.dart';
+import 'package:sms/contact.dart';
 
 class TextScreen extends StatefulWidget {
-  final SmsThread thread;
+  final Contact contact;
+  final List<SmsMessage> messages;
 
-  const TextScreen({Key key, this.thread}) : super(key: key);
+  const TextScreen({Key key, this.contact, this.messages}) : super(key: key);
   @override
   _TextScreenState createState() => _TextScreenState();
 }
@@ -28,88 +31,90 @@ class _TextScreenState extends State<TextScreen> {
   Radius messageRadius = Radius.circular(10);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: UniversalVariables.blackColor,
-      appBar: CustomAppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        centerTitle: false,
-        title: Text(
-          widget.thread.contact.fullName ?? widget.thread.contact.address,
-        ),
-        actions: <Widget>[
-          IconButton(
+    return PickupLayout(
+      scaffold: Scaffold(
+        backgroundColor: UniversalVariables.blackColor,
+        appBar: CustomAppBar(
+          leading: IconButton(
             icon: Icon(
-              Icons.phone,
+              Icons.arrow_back,
             ),
-            onPressed: () async {
-              await FlutterPhoneDirectCaller.callNumber(
-                  widget.thread.contact.address);
+            onPressed: () {
+              Navigator.pop(context);
             },
-          )
-        ],
-      ),
-      body: Column(
-        children: <Widget>[
-          Flexible(
-            child: ListView.builder(
-              padding: EdgeInsets.all(10),
-              controller: _listScrollController,
-              reverse: true,
-              itemCount: widget.thread.messages.length,
-              itemBuilder: (context, index) {
-                SmsMessage _message = widget.thread.messages[index];
-                // mention the arrow syntax if you get the time
-                return Container(
-                  margin: EdgeInsets.symmetric(vertical: 15),
-                  child: Container(
-                    alignment: _message.kind == SmsMessageKind.Sent
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
+          ),
+          centerTitle: false,
+          title: Text(
+            widget.contact.fullName ?? widget.contact.address,
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.phone,
+              ),
+              onPressed: () async {
+                await FlutterPhoneDirectCaller.callNumber(
+                    widget.contact.address);
+              },
+            )
+          ],
+        ),
+        body: Column(
+          children: <Widget>[
+            Flexible(
+              child: ListView.builder(
+                padding: EdgeInsets.all(10),
+                controller: _listScrollController,
+                reverse: true,
+                itemCount: widget.messages.length,
+                itemBuilder: (context, index) {
+                  SmsMessage _message = widget.messages[index];
+                  // mention the arrow syntax if you get the time
+                  return Container(
+                    margin: EdgeInsets.symmetric(vertical: 15),
                     child: Container(
-                      margin: EdgeInsets.only(top: 12),
-                      constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.65),
-                      decoration: BoxDecoration(
-                        color: _message.kind == SmsMessageKind.Sent
-                            ? UniversalVariables.senderColor
-                            : UniversalVariables.receiverColor,
-                        borderRadius: BorderRadius.only(
-                          topLeft: _message.kind == SmsMessageKind.Sent
-                              ? messageRadius
-                              : Radius.zero,
-                          bottomRight: _message.kind == SmsMessageKind.Sent
-                              ? Radius.zero
-                              : messageRadius,
-                          topRight: messageRadius,
-                          bottomLeft: messageRadius,
+                      alignment: _message.kind == SmsMessageKind.Sent
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: Container(
+                        margin: EdgeInsets.only(top: 12),
+                        constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.65),
+                        decoration: BoxDecoration(
+                          color: _message.kind == SmsMessageKind.Sent
+                              ? UniversalVariables.senderColor
+                              : UniversalVariables.receiverColor,
+                          borderRadius: BorderRadius.only(
+                            topLeft: _message.kind == SmsMessageKind.Sent
+                                ? messageRadius
+                                : Radius.zero,
+                            bottomRight: _message.kind == SmsMessageKind.Sent
+                                ? Radius.zero
+                                : messageRadius,
+                            topRight: messageRadius,
+                            bottomLeft: messageRadius,
+                          ),
                         ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          _message.body,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16.0,
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            _message.body,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-          chatControls(),
-          showEmojiPicker ? Container(child: emojiContainer()) : Container(),
-        ],
+            chatControls(),
+            showEmojiPicker ? Container(child: emojiContainer()) : Container(),
+          ],
+        ),
       ),
     );
   }
@@ -191,7 +196,7 @@ class _TextScreenState extends State<TextScreen> {
       var text = textFieldController.text;
 
       sender.sendSms(
-        SmsMessage(widget.thread.contact.address, text),
+        SmsMessage(widget.contact.address, text),
         simCard: currentCard,
       );
 

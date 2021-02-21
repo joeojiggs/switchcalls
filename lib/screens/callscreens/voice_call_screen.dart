@@ -66,31 +66,6 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
     });
   }
 
-  // Future<void> initializeAgora() async {
-  //   if (APP_ID.isEmpty) {
-  //     // setState(() {
-  //     // _infoStrings.add(
-  //     //     'APP_ID missing, please provide your APP_ID in settings.dart',
-  //     //   );
-  //     // _infoStrings.add('Agora Engine is not starting');
-  //     // });
-  //     return;
-  //   }
-
-  //   await _initAgoraRtcEngine();
-  //   // _addAgoraEventHandlers();
-  //   await AgoraRtcEngine.enableWebSdkInteroperability(true);
-  //   await AgoraRtcEngine.setParameters(
-  //       '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
-  //   await AgoraRtcEngine.joinChannel(null, widget.call.channelId, null, 0);
-  // }
-
-  // Future<void> _initAgoraRtcEngine() async {
-  //   await AgoraRtcEngine.create(APP_ID);
-  //   await AgoraRtcEngine.disableVideo();
-  //   print('\n\n HERE \n\n');
-  // }
-
   /// Helper function to get list of native views
   List<Widget> _getRenderViews() {
     final List<AgoraRenderWidget> list = [
@@ -153,13 +128,6 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
     );
   }
 
-  // Future<void> _onToggleMute() async {
-  //   await AgoraRtcEngine.muteLocalAudioStream(!muted);
-  //   setState(() {
-  //     muted = !muted;
-  //   });
-  // }
-
   @override
   void dispose() {
     agoraProvider.close();
@@ -170,99 +138,123 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height / 10 * 0.8,
-                color: UniversalVariables.blueColor,
-                padding: const EdgeInsets.all(8.0),
-                alignment: Alignment.center,
-                child: Text(
-                  widget.call.receiverName,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25,
+      body: VoiceCall(
+        muted: muted,
+        call: widget.call,
+        onToggleMute: () async {
+          muted = await agoraProvider.toggleMute(muted);
+          setState(() {});
+        },
+        onEndCall: () async {
+          debugPrint('ENDING CALL');
+          callMethods.endCall(call: widget.call);
+        },
+      ),
+    );
+  }
+}
+
+class VoiceCall extends StatelessWidget {
+  const VoiceCall({
+    Key key,
+    @required this.call,
+    @required this.muted,
+    this.onToggleMute,
+    this.onEndCall,
+  }) : super(key: key);
+
+  final Call call;
+  final bool muted;
+  final Function onToggleMute, onEndCall;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height / 10 * 0.8,
+              color: UniversalVariables.blueColor,
+              padding: const EdgeInsets.all(8.0),
+              alignment: Alignment.center,
+              child: Text(
+                call.receiverName,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
+            ),
+            Expanded(
+              child: CachedImage(
+                call.receiverPic,
+                fit: BoxFit.fitWidth,
+                // isRound: true,
+                radius: 0,
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height / 10 * 1.3,
+              color: UniversalVariables.blueColor,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: InkWell(
+                        onTap: onToggleMute,
+                        child: Padding(
+                          padding: EdgeInsets.all(25.0),
+                          child: Icon(
+                            muted ? Icons.mic : Icons.mic_off,
+                            size: 25,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Expanded(
-                child: CachedImage(
-                  widget.call.receiverPic,
-                  fit: BoxFit.fitWidth,
-                  // isRound: true,
-                  radius: 0,
-                ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height / 10 * 1.3,
-                color: UniversalVariables.blueColor,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: InkWell(
-                          onTap: () async {
-                            muted = await agoraProvider.onToggleMute(muted);
-                            setState(() {});
-                          },
+                  Expanded(
+                    child: Card(
+                      shape: CircleBorder(),
+                      elevation: 20,
+                      child: GestureDetector(
+                        onTap: onEndCall,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
                           child: Padding(
                             padding: EdgeInsets.all(25.0),
                             child: Icon(
-                              muted ? Icons.mic : Icons.mic_off,
-                              size: 25,
+                              Icons.call_end,
+                              size: 30,
                               color: Colors.white,
                             ),
                           ),
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Card(
-                        shape: CircleBorder(),
-                        elevation: 20,
-                        child: GestureDetector(
-                          onTap: () async {
-                            debugPrint('ENDING CALL');
-                            callMethods.endCall(call: widget.call);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(25.0),
-                              child: Icon(
-                                Icons.call_end,
-                                size: 30,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(25.0),
+                      child: Icon(
+                        Icons.volume_up,
+                        size: 25,
+                        color: Colors.white,
                       ),
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(25.0),
-                        child: Icon(
-                          Icons.volume_up,
-                          size: 25,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

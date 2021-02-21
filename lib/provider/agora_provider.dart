@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:async';
+
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:switchcalls/configs/agora_configs.dart';
@@ -8,6 +11,9 @@ class AgoraProvider extends ChangeNotifier {
   CallMethods callMethods = CallMethods();
   List<int> _users = <int>[];
   List<String> _infoStrings = <String>[];
+  bool isVideo = true;
+  StreamController<bool> _isVideoCont = StreamController<bool>.broadcast();
+  StreamSubscription<bool> _isVideoSub;
 
   Map<String, dynamic> params = {
     "che.video.lowBitRateStreamParameter": {
@@ -28,20 +34,23 @@ class AgoraProvider extends ChangeNotifier {
     }
 
     await _initAgoraRtcEngine();
+    // _isVideoSub = _isVideoStream().listen((event) {
+    //   _isVideoCont.add(event);
+    // });
     _addAgoraEventHandlers(call);
     await AgoraRtcEngine.enableWebSdkInteroperability(true);
     // print(jsonEncode(params));
-    await AgoraRtcEngine.setParameters(
-        '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
+    await AgoraRtcEngine.setParameters(jsonEncode(params));
     await AgoraRtcEngine.joinChannel(null, call.channelId, null, 0);
   }
 
   Future<void> _initAgoraRtcEngine() async {
     try {
       await AgoraRtcEngine.create(APP_ID);
-      // await AgoraRtcEngine.enableVideo();
+      await AgoraRtcEngine.enableVideo();
 
-      await AgoraRtcEngine.disableVideo();
+      await AgoraRtcEngine.setDefaultMuteAllRemoteVideoStreams(this.isVideo);
+      await toggleVideo(this.isVideo);
       print('\n\n AgoraRtcEngine Initialized... \n\n');
     } on Exception catch (e) {
       print('_initAgoraRtcEngine Errorr: $e');
@@ -124,18 +133,39 @@ class AgoraProvider extends ChangeNotifier {
     };
   }
 
-  Future<bool> onToggleMute(bool isMute) async {
+  Future<void> toggleVideo(bool isVideo) async {
+    this.isVideo = isVideo;
+    await AgoraRtcEngine.enableLocalVideo(isVideo);
+    await AgoraRtcEngine.muteLocalVideoStream(isVideo);
+    await AgoraRtcEngine.muteAllRemoteVideoStreams(isVideo);
+  }
+
+  Future<bool> toggleMute(bool isMute) async {
     await AgoraRtcEngine.muteLocalAudioStream(!isMute);
     return !isMute;
   }
 
+  Future<void> onSwitchCamera() async {
+    await AgoraRtcEngine.switchCamera();
+  }
+
+  // Stream<bool> _isVideoStream() async* {
+  //   while (true) {
+  //     await Future.delayed(Duration(seconds: 1));
+  //     yield isVideo;
+  //   }
+  // }
+
   void close() {
-    // clear users
     try {
+      // clear users
       _users.clear();
       // destroy sdk
       AgoraRtcEngine.leaveChannel();
       AgoraRtcEngine.destroy();
+      // close streams
+      // _isVideoCont.close();
+      // _isVideoSub.cancel();
     } on Exception catch (e) {
       print('close error: $e');
     }
@@ -143,7 +173,5 @@ class AgoraProvider extends ChangeNotifier {
 
   List<int> get users => _users;
   List<String> get infoStrings => _infoStrings;
-
-  /// Helper function to get list of native views
-
+  StreamController<bool> get controller => _isVideoCont;
 }

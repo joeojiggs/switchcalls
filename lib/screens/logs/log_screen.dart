@@ -3,6 +3,7 @@ import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/screens/logs/widgets/floating_column.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/skype_appbar.dart';
+import 'package:switchcalls/widgets/user_details_container.dart';
 
 import 'views/local_log_list_container.dart';
 import 'views/log_list_container.dart';
@@ -23,6 +24,24 @@ class LogScreen extends StatelessWidget {
               ),
               onPressed: () => Navigator.pushNamed(context, "/search_screen"),
             ),
+            PopupMenuButton(
+                itemBuilder: (__) {
+                  return [
+                    PopupMenuItem(
+                      child: Text('Profile'),
+                      value: 0,
+                    ),
+                  ];
+                },
+                onSelected: (index) async {
+                  await showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    backgroundColor: UniversalVariables.blackColor,
+                    builder: (context) => UserDetailsContainer(),
+                  );
+                },
+              ),
           ],
         ),
         floatingActionButton: FloatingColumn(),

@@ -22,6 +22,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<User> userList;
   String query = "";
   TextEditingController searchController = TextEditingController();
+  List<User> suggestionList = [];
 
   @override
   void initState() {
@@ -34,6 +35,12 @@ class _SearchScreenState extends State<SearchScreen> {
         });
       });
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
   }
 
   searchAppBar(BuildContext context) {
@@ -67,8 +74,7 @@ class _SearchScreenState extends State<SearchScreen> {
               suffixIcon: IconButton(
                 icon: Icon(Icons.close, color: Colors.white),
                 onPressed: () {
-                  WidgetsBinding.instance
-                      .addPostFrameCallback((_) => searchController.clear());
+                  searchController.clear();
                 },
               ),
               border: InputBorder.none,
@@ -86,7 +92,6 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   buildSuggestions(String query) {
-    List<User> suggestionList;
     if (widget.show) {
       suggestionList = query.isEmpty
           ? userList

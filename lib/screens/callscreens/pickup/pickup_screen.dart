@@ -107,7 +107,7 @@ class _PickupScreenState extends State<PickupScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => widget.call.isVideo
-                              ? CallScreen(call: widget.call)
+                              ? CallScreen(call: widget.call, isVideo: true)
                               : VoiceCallScreen(call: widget.call),
                         ),
                       );

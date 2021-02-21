@@ -6,8 +6,7 @@ import 'package:switchcalls/utils/permissions.dart';
 
 class ContactsProvider extends ChangeNotifier {
   static ContactsProvider provider;
-  StreamController<Iterable<Contact>> _contactsCont =
-      StreamController<Iterable<Contact>>.broadcast();
+  StreamController<Iterable<Contact>> _contactsCont;
   StreamSubscription<Iterable<Contact>> _contactSub;
   List<Contact> _contacts = [];
 
@@ -21,35 +20,44 @@ class ContactsProvider extends ChangeNotifier {
   }
 
   Future<void> init([bool topause = false]) async {
-    await Permissions.contactPermissionsGranted();
-
-    _contactSub = contacts().listen((event) {
-      _contacts = event.toList();
-      // print(contactList);
-      _contactsCont.add(event);
-      if (topause) pause();
-    });
-    print('STARTED');
+    try {
+      _contactsCont = StreamController<Iterable<Contact>>.broadcast();
+      if (await Permissions.contactPermissionsGranted()) {
+        _contactSub = contacts().listen((event) {
+          _contacts = event.toList();
+          // print(contactList);
+          _contactsCont.add(event);
+          if (topause) pause();
+        });
+        print('CONTACTS STARTED');
+      }
+      _contactsCont.add(null);
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   void pause() {
-    _contactSub.pause();
-    // _contactSub.cancel();
-    print('PAUSED');
+    if (_contactSub != null) {
+      _contactSub.pause();
+      // _contactSub.cancel();
+      print('CONTACTS PAUSED');
+    }
   }
 
   void resume() {
-    _contactSub.resume();
-    // contacts().listen((event) {
-    //   _contactsCont.add(event);
-    // });
-    print('RESUMED');
+    if (_contactSub != null) {
+      _contactSub.resume();
+      print('CONTACTS RESUMED');
+    } else {
+      init();
+    }
   }
 
   void close() {
     _contactsCont.close();
     _contactSub.cancel();
-    print('CLOSED');
+    print('CONTACTS CLOSED');
   }
 
   Stream<Iterable<Contact>> contacts() async* {
@@ -60,5 +68,8 @@ class ContactsProvider extends ChangeNotifier {
   }
 
   StreamController<Iterable<Contact>> get controller => _contactsCont;
-  List<Contact> get contactList => _contacts;
+  List<Contact> get contactList {
+    _contacts.sort((a, b) => a.displayName.compareTo(b.displayName));
+    return _contacts;
+  }
 }
