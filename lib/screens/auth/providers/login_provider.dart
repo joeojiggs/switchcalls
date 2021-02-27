@@ -119,7 +119,9 @@ class LoginProvider extends ChangeNotifier {
         readUserData(user);
       }
     } catch (e) {
-      throw e.toString();
+      print("ERROR:" + e.toString());
+      showLoader();
+      _showSnackBar(message: 'Unable to verify phone number');
     }
   }
 
