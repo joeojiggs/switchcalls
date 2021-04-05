@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:provider/provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:shimmer/shimmer.dart';
@@ -21,34 +22,31 @@ class LoginScreenState extends State<LoginScreen> {
     return ChangeNotifierProvider<LoginProvider>(
         create: (context) => LoginProvider(context),
         builder: (context, snapshot) {
-          return Scaffold(
-            backgroundColor: UniversalVariables.blackColor,
-            body: Stack(
-              children: [
-                Center(
-                  child: Consumer<LoginProvider>(
-                    builder: (context, model, child) {
-                      return loginButton(model);
-                    },
-                  ),
-                ),
-                Consumer<LoginProvider>(
-                  builder: (context, model, child) {
-                    return model.isLoginPressed
+          return Consumer<LoginProvider>(builder: (context, model, child) {
+            return WillPopScope(
+              onWillPop: () => model.pop(),
+              child: Scaffold(
+                backgroundColor: UniversalVariables.blackColor,
+                body: Stack(
+                  children: [
+                    Center(
+                      child: loginButton(model),
+                    ),
+                    model.isLoginPressed
                         ? Container(
-                          height: MediaQuery.of(context).size.height,
-                          width: MediaQuery.of(context).size.width,
-                          color: Colors.black26,
-                          child: Center(
+                            height: MediaQuery.of(context).size.height,
+                            width: MediaQuery.of(context).size.width,
+                            color: Colors.black26,
+                            child: Center(
                               child: CircularProgressIndicator(),
                             ),
-                        )
-                        : Container();
-                  },
-                )
-              ],
-            ),
-          );
+                          )
+                        : Container(),
+                  ],
+                ),
+              ),
+            );
+          });
         });
   }
 
@@ -102,19 +100,44 @@ class LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      model.showPin
+                      model.showPin && !model.showPhone
                           ? TextFormField(
-                              controller: model.phoneNumController,
+                              controller: model.pinController,
+                              textAlign: TextAlign.center,
+                              validator: (val) =>
+                                  model.validatePin(model.pinController.text),
                               focusNode: model.phoneNumberFocus,
                               keyboardType: TextInputType.phone,
-                              validator: model.showPhone
-                                  ? model.validatePhone
-                                  : model.validatePin,
                               decoration: InputDecoration(
-                                hintText:
-                                    model.showPhone ? 'Phone Number' : 'Pin',
+                                hintText: 'Pin',
                                 filled: true,
-                                // fillColor:
+                                border: OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(),
+                              ),
+                            )
+                          : Container(),
+                      model.showPhone
+                          ? InternationalPhoneNumberInput(
+                              onInputChanged: (val) {
+                                model.dialCode = val.dialCode;
+                                print(val.phoneNumber);
+                              },
+                              selectorConfig: SelectorConfig(
+                                selectorType:
+                                    PhoneInputSelectorType.BOTTOM_SHEET,
+                                backgroundColor: UniversalVariables.blackColor,
+                              ),
+                              textFieldController: model.phoneNumController,
+                              focusNode: model.phoneNumberFocus,
+                              initialValue:
+                                  PhoneNumber(dialCode: '=234', isoCode: 'NG'),
+                              validator: (val) => model
+                                  .validatePhone(model.phoneNumController.text),
+                              formatInput: true,
+                              isEnabled: true,
+                              inputDecoration: InputDecoration(
+                                hintText: 'Phone Number',
+                                filled: true,
                                 border: OutlineInputBorder(),
                                 enabledBorder: OutlineInputBorder(),
                               ),

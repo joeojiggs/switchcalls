@@ -25,7 +25,10 @@ class Utils {
 
   static Future<File> pickImage({@required ImageSource source}) async {
     PickedFile selectedImage = await ImagePicker().getImage(source: source);
-    return await compressImage(File(selectedImage.path));
+    if (selectedImage != null)
+      return await compressImage(File(selectedImage.path));
+    else
+      return null;
   }
 
   static Future<File> compressImage(File imageToCompress) async {
@@ -69,6 +72,7 @@ class Utils {
   static String formatDateString(String dateString) {
     DateTime dateTime = DateTime.parse(dateString);
     var formatter = DateFormat('dd/MM/yy');
-    return formatter.format(dateTime);
+    var timeformat = DateFormat.jm();
+    return formatter.format(dateTime) + '    ' + timeformat.format(dateTime);
   }
 }

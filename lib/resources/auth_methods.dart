@@ -85,6 +85,8 @@ class AuthMethods {
 
     final List<DocumentSnapshot> docs = result.documents;
 
+    print(docs);
+
     //if user is registered then length of list > 0 or else less than 0
     return docs.length == 0 ? true : false;
   }

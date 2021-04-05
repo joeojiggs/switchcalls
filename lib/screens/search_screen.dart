@@ -19,7 +19,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   AuthMethods _authMethods = AuthMethods();
 
-  List<User> userList;
+  List<User> userList = [];
   String query = "";
   TextEditingController searchController = TextEditingController();
   List<User> suggestionList = [];
