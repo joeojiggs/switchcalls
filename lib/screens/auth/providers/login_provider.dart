@@ -1,13 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
-import 'package:switchcalls/screens/auth/views/signup.dart';
+import 'package:switchcalls/utils/validator.dart';
+import 'package:switchcalls/utils/universal_variables.dart';
 
 import '../../home_screen.dart';
 
-class LoginProvider extends ChangeNotifier {
+class LoginProvider extends ChangeNotifier with FormValidator {
   LoginProvider(this.context);
 
   //
@@ -17,12 +19,8 @@ class LoginProvider extends ChangeNotifier {
   Firestore firestore = Firestore.instance;
 
   TextEditingController phoneNumController = TextEditingController();
-  TextEditingController pin1 = TextEditingController();
-  TextEditingController pin2 = TextEditingController();
-  TextEditingController pin3 = TextEditingController();
-  TextEditingController pin4 = TextEditingController();
-  TextEditingController pin5 = TextEditingController();
-  TextEditingController pin6 = TextEditingController();
+  TextEditingController pinController = TextEditingController();
+  String dialCode = '+234';
 
   bool isLoginPressed = false;
   bool showPhone = true;
@@ -35,36 +33,26 @@ class LoginProvider extends ChangeNotifier {
   String otpCode = "";
   var key = GlobalKey<FormState>();
 
-  String validatePhone(String value) {
-    if (phoneNumController.text.length == 0) {
-      return 'Please enter your phone number';
-    }
-    if (phoneNumController.text.length < 11) {
-      return "Please enter a valid phone number";
-    }
-    if (!phoneNumController.text.startsWith("0")) {
-      return "Invalid phone number format";
-    }
-    return null;
-  }
-
-  String validatePin(String value) {
-    if (phoneNumController.text.length == 0) {
-      return 'Please enter pin';
-    }
-    if (phoneNumController.text.length < 11) {
-      return "Please enter a valid pin";
-    }
-    return null;
-  }
-
   void showLoader() {
     isLoginPressed = !isLoginPressed;
     notifyListeners();
   }
 
+  String formatPhoneNum(String phone) {
+    if (phone.startsWith('0')) {
+      return phone.substring(1, phone.length);
+    }
+    return phone;
+  }
+
   void getStarted() async {
     try {
+      if (!key.currentState.validate()) {
+        return;
+      }
+
+      _showSnackBar(message: 'Invalid phone number');
+
       phoneNumberFocus.unfocus();
       String phoneNumber = phoneNumController.text;
 
@@ -72,12 +60,14 @@ class LoginProvider extends ChangeNotifier {
 
       showLoader();
 
-      String formattedPhone = phoneNumber.substring(1, phoneNumber.length);
-      phoneNumber = "+234$formattedPhone";
+      String formattedPhone = formatPhoneNum(phoneNumber);
+      phoneNumber = "$dialCode$formattedPhone";
 
       phoneNumberFocus.unfocus();
 
-      // phoneNumber ="+2348036007161";
+      print(phoneNumber);
+
+      // phoneNumber = "+234810283438";
 
       auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
@@ -130,19 +120,21 @@ class LoginProvider extends ChangeNotifier {
       showLoader();
     }
 
-    print("Exception thrown $e");
-    _showSnackBar(message: 'Unable to verify phone number');
+    print("Exception thrown ${e.code}");
+    if (e.code == 'invalidCredential')
+      _showSnackBar(message: 'Invalid phone number');
+    else
+      _showSnackBar(message: 'Unable to verify phone number');
   }
 
   void verifyOtp() async {
-    if (otpCode.length < 6) {
-      _showSnackBar(message: "Please enter complete OTP code");
+    if (!key.currentState.validate()) {
       return;
     }
 
-    showLoader();
+    phoneNumberFocus.unfocus();
 
-    // await Future.delayed(Duration(seconds: 3));
+    showLoader();
 
     AuthCredential credential;
 
@@ -209,9 +201,29 @@ class LoginProvider extends ChangeNotifier {
 
   SnackBar _showSnackBar({String message}) {
     return SnackBar(
-        content: Text(
-      message,
-      style: TextStyle(color: Colors.white),
-    ));
+      margin: EdgeInsets.all(20),
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: UniversalVariables.senderColor,
+      content: Text(
+        message,
+        style: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
+  Future<bool> pop() {
+    if (showPhone == true && isLoginPressed == false) {
+      return Future.value(true);
+    }
+
+    if (isLoginPressed == true) {
+      isLoginPressed = false;
+    } else if (showGoogle == false) {
+      showGoogle = true;
+    } else if (showPin == false) {
+      showPin = true;
+    }
+    notifyListeners();
+    return Future.value(false);
   }
 }

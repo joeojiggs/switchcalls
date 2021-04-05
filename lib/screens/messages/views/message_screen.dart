@@ -469,11 +469,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void pickImage({@required ImageSource source}) async {
     File selectedImage = await Utils.pickImage(source: source);
-    _storageMethods.uploadImage(
-        image: selectedImage,
-        receiverId: widget.receiver.uid,
-        senderId: _currentUserId,
-        imageUploadProvider: _imageUploadProvider);
+    if (selectedImage != null)
+      _storageMethods.uploadImage(
+          image: selectedImage,
+          receiverId: widget.receiver.uid,
+          senderId: _currentUserId,
+          imageUploadProvider: _imageUploadProvider);
   }
 
   CustomAppBar customAppBar(context) {
