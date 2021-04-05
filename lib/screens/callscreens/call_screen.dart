@@ -79,7 +79,7 @@ class _CallScreenState extends State<CallScreen> {
         // defining the logic
         switch (ds.data) {
           case null:
-            // snapshot is null which means that call is hanged and documents are deleted
+          // snapshot is null which means that call is hanged and documents are deleted
             Navigator.pop(context);
             break;
           default:
@@ -127,37 +127,37 @@ class _CallScreenState extends State<CallScreen> {
       backgroundColor: Colors.black,
       body: agoraProvider.isVideo ?? widget.isVideo
           ? VideoCall(
-              infoStrings: agoraProvider.infoStrings,
-              renderViews: _getRenderViews(),
-              muted: muted,
-              onToggleMute: () async {
-                // muted = await agoraProvider.toggleMute(muted);
-                // setState(() {});
-                await agoraProvider.toggleVideo(!agoraProvider.isVideo);
+        infoStrings: agoraProvider.infoStrings,
+        renderViews: _getRenderViews(),
+        muted: muted,
+        onToggleMute: () async {
+          // muted = await agoraProvider.toggleMute(muted);
+          // setState(() {});
+          await agoraProvider.toggleVideo(!agoraProvider.isVideo);
 
-                setState(() {});
-              },
-              onSwitchCamera: () async {
-                await agoraProvider.onSwitchCamera();
-              },
-              onEndCall: () {
-                debugPrint('ENDING CALL');
-                callMethods.endCall(call: widget.call);
-              },
-            )
+          setState(() {});
+        },
+        onSwitchCamera: () async {
+          await agoraProvider.onSwitchCamera();
+        },
+        onEndCall: () {
+          debugPrint('ENDING CALL');
+          callMethods.endCall(call: widget.call);
+        },
+      )
           : VoiceCall(
-              muted: muted,
-              call: widget.call,
-              onToggleMute: () async {
-                // await agoraProvider.toggleVideo(!agoraProvider.isVideo);
-                muted = await agoraProvider.toggleMute(muted);
-                setState(() {});
-              },
-              onEndCall: () async {
-                debugPrint('ENDING CALL');
-                callMethods.endCall(call: widget.call);
-              },
-            ),
+        muted: muted,
+        call: widget.call,
+        onToggleMute: () async {
+          // await agoraProvider.toggleVideo(!agoraProvider.isVideo);
+          muted = await agoraProvider.toggleMute(muted);
+          setState(() {});
+        },
+        onEndCall: () async {
+          debugPrint('ENDING CALL');
+          callMethods.endCall(call: widget.call);
+        },
+      ),
     );
   }
 }
