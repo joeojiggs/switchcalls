@@ -392,6 +392,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 TextField(
                   controller: textFieldController,
                   focusNode: textFieldFocus,
+                  textCapitalization: TextCapitalization.sentences,
                   onTap: () => hideEmojiContainer(),
                   style: TextStyle(
                     color: Colors.white,

@@ -21,6 +21,13 @@ class Utils {
     return firstNameInitial + lastNameInitial;
   }
 
+  static String toCamelCase(String name) {
+    List<String> nameSplit = name.split(" ");
+    nameSplit.map((e) => e.substring(0, 1) + e.substring(1)).toList();
+
+    return nameSplit.join(" ");
+  }
+
   // this is new
 
   static Future<File> pickImage({@required ImageSource source}) async {

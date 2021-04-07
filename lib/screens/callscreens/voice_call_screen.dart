@@ -182,7 +182,9 @@ class VoiceCall extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               alignment: Alignment.center,
               child: Text(
-                call.receiverName,
+                call.hasDialled
+                    ? call.receiverName ?? ''
+                    : call.callerName ?? '',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
@@ -191,7 +193,7 @@ class VoiceCall extends StatelessWidget {
             ),
             Expanded(
               child: CachedImage(
-                call.receiverPic,
+                call.hasDialled ? call.receiverPic ?? '' : call.callerPic ?? '',
                 fit: BoxFit.fitWidth,
                 // isRound: true,
                 radius: 0,

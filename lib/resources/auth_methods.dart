@@ -54,7 +54,7 @@ class AuthMethods {
         uid: signedInUser.uid,
         phoneNumber: signedInUser.phoneNumber,
         email: _signInAccount.email,
-        name: _signInAccount.displayName,
+        name: Utils.toCamelCase(_signInAccount.displayName),
         profilePhoto: _signInAccount.photoUrl,
         username: Utils.getUsername(_signInAccount.displayName),
       );

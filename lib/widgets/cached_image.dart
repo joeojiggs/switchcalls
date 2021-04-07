@@ -31,7 +31,7 @@ class CachedImage extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(isRound ? 50 : radius),
           child: CachedNetworkImage(
-            imageUrl: imageUrl,
+            imageUrl: imageUrl ?? noImageAvailable,
             fit: fit,
             placeholder: (context, url) =>
                 Center(child: CircularProgressIndicator()),

@@ -222,6 +222,8 @@ class LoginProvider extends ChangeNotifier with FormValidator {
       showGoogle = true;
     } else if (showPin == false) {
       showPin = true;
+    } else if (showPhone == false) {
+      showPhone = true;
     }
     notifyListeners();
     return Future.value(false);

@@ -131,7 +131,7 @@ class _LogListContainerState extends State<LogListContainer> {
                     ),
                   ),
                   title: Text(
-                    hasDialled ? _log.receiverName : _log.callerName,
+                    (hasDialled ? _log?.receiverName : _log?.callerName) ?? '',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 17,
