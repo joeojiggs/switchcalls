@@ -389,32 +389,35 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Stack(
               alignment: Alignment.centerRight,
               children: [
-                TextField(
-                  controller: textFieldController,
-                  focusNode: textFieldFocus,
-                  onTap: () => hideEmojiContainer(),
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                  onChanged: (val) {
-                    (val.length > 0 && val.trim() != "")
-                        ? setWritingTo(true)
-                        : setWritingTo(false);
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Type a message",
-                    hintStyle: TextStyle(
-                      color: UniversalVariables.greyColor,
+                Padding(
+                  padding: const EdgeInsets.only(right: 40.0),
+                  child: TextField(
+                    controller: textFieldController,
+                    focusNode: textFieldFocus,
+                    onTap: () => hideEmojiContainer(),
+                    style: TextStyle(
+                      color: Colors.white,
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: const BorderRadius.all(
-                          const Radius.circular(50.0),
-                        ),
-                        borderSide: BorderSide.none),
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                    filled: true,
-                    fillColor: UniversalVariables.separatorColor,
+                    onChanged: (val) {
+                      (val.length > 0 && val.trim() != "")
+                          ? setWritingTo(true)
+                          : setWritingTo(false);
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Type a message",
+                      hintStyle: TextStyle(
+                        color: UniversalVariables.greyColor,
+                      ),
+                      border: OutlineInputBorder(
+                          borderRadius: const BorderRadius.all(
+                            const Radius.circular(50.0),
+                          ),
+                          borderSide: BorderSide.none),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      filled: true,
+                      fillColor: UniversalVariables.separatorColor,
+                    ),
                   ),
                 ),
                 IconButton(
