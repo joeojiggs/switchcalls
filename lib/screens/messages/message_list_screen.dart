@@ -410,11 +410,12 @@ class ChatListContainer extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting ||
             snapshot.data.documents.isNotEmpty) {
           var docList = snapshot.data?.documents?.reversed?.toList() ?? [];
-          return Column(
-            mainAxisSize: MainAxisSize.min,
+          return ListView(
+            //mainAxisSize: MainAxisSize.min,
             children: [
               ListView.builder(
                 shrinkWrap: true,
+                reverse: true,
                 padding: EdgeInsets.all(10),
                 itemCount: docList.length,
                 itemBuilder: (context, index) {
