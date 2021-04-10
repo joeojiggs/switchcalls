@@ -79,7 +79,7 @@ class _CallScreenState extends State<CallScreen> {
         // defining the logic
         switch (ds.data) {
           case null:
-            // snapshot is null which means that call is hanged and documents are deleted
+          // snapshot is null which means that call is hanged and documents are deleted
             Navigator.pop(context);
             break;
           default:
@@ -137,24 +137,24 @@ class _CallScreenState extends State<CallScreen> {
 
                 setState(() {});
               },
-              onEndCall: () {
+              onEndCall: () async {
                 debugPrint('ENDING CALL');
-                callMethods.endCall(call: widget.call);
+                await callMethods.endCall(call: widget.call);
               },
             )
           : VoiceCall(
-              muted: muted,
-              call: widget.call,
-              onToggleMute: () async {
-                // await agoraProvider.toggleVideo(!agoraProvider.isVideo);
-                muted = await agoraProvider.toggleMute(muted);
-                setState(() {});
-              },
-              onEndCall: () async {
-                debugPrint('ENDING CALL');
-                callMethods.endCall(call: widget.call);
-              },
-            ),
+        muted: muted,
+        call: widget.call,
+        onToggleMute: () async {
+          // await agoraProvider.toggleVideo(!agoraProvider.isVideo);
+          muted = await agoraProvider.toggleMute(muted);
+          setState(() {});
+        },
+        onEndCall: () async {
+          debugPrint('ENDING CALL');
+          await callMethods.endCall(call: widget.call);
+        },
+      ),
     );
   }
 }
