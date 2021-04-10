@@ -12,8 +12,8 @@ class AgoraProvider extends ChangeNotifier {
   List<int> _users = <int>[];
   List<String> _infoStrings = <String>[];
   bool isVideo = true;
-  StreamController<bool> _isVideoCont = StreamController<bool>.broadcast();
-  StreamSubscription<bool> _isVideoSub;
+  // StreamController<bool> _isVideoCont = StreamController<bool>.broadcast();
+  // StreamSubscription<bool> _isVideoSub;
 
   Map<String, dynamic> params = {
     "che.video.lowBitRateStreamParameter": {
@@ -61,59 +61,51 @@ class AgoraProvider extends ChangeNotifier {
     AgoraRtcEngine.onError = (dynamic code) {
       final info = 'onError: $code';
       _infoStrings.add(info);
-      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onJoinChannelSuccess =
         (String channel, int uid, int elapsed) {
       final info = 'onJoinChannel: $channel, uid: $uid';
-      print('call connected');
+      print('\n\n\nCall Connected...\n\n\n');
       _infoStrings.add(info);
-      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onUserJoined = (int uid, int elapsed) {
       final info = 'onUserJoined: $uid';
       _infoStrings.add(info);
       _users.add(uid);
-      print(_infoStrings.last);
+      print('\n\n\n User Joined... \n\n\n');
     };
 
     AgoraRtcEngine.onUpdatedUserInfo = (AgoraUserInfo userInfo, int i) {
       final info = 'onUpdatedUserInfo: ${userInfo.toString()}';
       _infoStrings.add(info);
-      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onRejoinChannelSuccess = (String string, int a, int b) {
       final info = 'onRejoinChannelSuccess: $string';
       _infoStrings.add(info);
-      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onUserOffline = (int a, int b) {
       callMethods.endCall(call: call);
       final info = 'onUserOffline: a: ${a.toString()}, b: ${b.toString()}';
       _infoStrings.add(info);
-      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onRegisteredLocalUser = (String s, int i) {
       final info = 'onRegisteredLocalUser: string: s, i: ${i.toString()}';
       _infoStrings.add(info);
-      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onLeaveChannel = () {
       _infoStrings.add('onLeaveChannel');
       _users.clear();
-      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onConnectionLost = () {
       final info = 'onConnectionLost';
       _infoStrings.add(info);
-      print(_infoStrings.last);
     };
 
     AgoraRtcEngine.onUserOffline = (int uid, int reason) {
@@ -123,6 +115,7 @@ class AgoraProvider extends ChangeNotifier {
       _infoStrings.add(info);
       _users.remove(uid);
       print(_infoStrings.last);
+      notifyListeners();
     };
 
     AgoraRtcEngine.onFirstRemoteVideoFrame =
@@ -130,6 +123,7 @@ class AgoraProvider extends ChangeNotifier {
       final info = 'firstRemoteVideo: $uid ${width}x $height';
       _infoStrings.add(info);
       print(_infoStrings.last);
+      notifyListeners();
     };
   }
 
@@ -143,6 +137,19 @@ class AgoraProvider extends ChangeNotifier {
   Future<bool> toggleMute(bool isMute) async {
     await AgoraRtcEngine.muteLocalAudioStream(!isMute);
     return !isMute;
+  }
+
+  /// Helper function to get list of native views
+  Stream<List<Widget>> getRenderViews() async* {
+    while (true) {
+      await Future.delayed(Duration(seconds: 1));
+      List<AgoraRenderWidget> list = [
+        AgoraRenderWidget(0, local: true, preview: true),
+      ];
+      print('\n\n\n\n $_users \n\n\n\n');
+      _users.forEach((int uid) => list.add(AgoraRenderWidget(uid)));
+      yield list;
+    }
   }
 
   Future<void> onSwitchCamera() async {
@@ -160,12 +167,10 @@ class AgoraProvider extends ChangeNotifier {
     try {
       // clear users
       _users.clear();
+      _infoStrings.clear();
       // destroy sdk
       AgoraRtcEngine.leaveChannel();
       AgoraRtcEngine.destroy();
-      // close streams
-      // _isVideoCont.close();
-      // _isVideoSub.cancel();
     } on Exception catch (e) {
       print('close error: $e');
     }
@@ -173,5 +178,4 @@ class AgoraProvider extends ChangeNotifier {
 
   List<int> get users => _users;
   List<String> get infoStrings => _infoStrings;
-  StreamController<bool> get controller => _isVideoCont;
 }

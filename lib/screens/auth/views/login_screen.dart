@@ -20,9 +20,10 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<LoginProvider>(
-        create: (context) => LoginProvider(context),
-        builder: (context, snapshot) {
-          return Consumer<LoginProvider>(builder: (context, model, child) {
+      create: (context) => LoginProvider(context),
+      builder: (context, snapshot) {
+        return Consumer<LoginProvider>(
+          builder: (context, model, child) {
             return WillPopScope(
               onWillPop: () => model.pop(),
               child: Scaffold(
@@ -46,8 +47,10 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             );
-          });
-        });
+          },
+        );
+      },
+    );
   }
 
   Widget loginButton(LoginProvider model) {
