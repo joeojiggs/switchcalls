@@ -117,6 +117,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
     return Scaffold(
+      backgroundColor: UniversalVariables.blackColor,
       appBar: AppBar(
         title: Text(
           widget.title,
@@ -232,16 +233,15 @@ class _ContactListScreenState extends State<ContactListScreen> {
                 ),
               );
             }
-            return Container(
-              child: Center(
-                child: Text(
-                  (snapshot?.connectionState?.toString()) ??
-                      '' + (snapshot?.error?.toString()) ??
-                      '' + snapshot?.data?.toString(),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20,
-                  ),
+            return Center(
+              child: Text(
+                'No contacts were found. \n\n' +
+                        (snapshot?.connectionState?.toString()) ??
+                    '' + (snapshot?.error?.toString()) ??
+                    '' + snapshot?.data?.toString(),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20,
                 ),
               ),
             );

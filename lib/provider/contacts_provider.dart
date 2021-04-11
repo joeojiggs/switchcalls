@@ -69,7 +69,7 @@ class ContactsProvider extends ChangeNotifier {
 
   StreamController<Iterable<Contact>> get controller => _contactsCont;
   List<Contact> get contactList {
-    _contacts.sort((a, b) => a.displayName.compareTo(b.displayName));
+    _contacts.sort((a, b) => (a?.displayName ?? '').compareTo(b?.displayName ?? ''));
     return _contacts;
   }
 }

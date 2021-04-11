@@ -32,7 +32,7 @@ class _CallScreenState extends State<CallScreen> {
   AgoraProvider agoraProvider;
   StreamSubscription callStreamSubscription;
 
-  List<int> _users = <int>[];
+  // List<int> _users = <int>[];
   // final _infoStrings = <String>[];
   bool muted = false;
 
@@ -46,7 +46,7 @@ class _CallScreenState extends State<CallScreen> {
   void myAgoraInit() async {
     agoraProvider.isVideo = widget.isVideo;
     await agoraProvider.initializeAgora(widget.call);
-    _users = agoraProvider.users;
+    // _users = agoraProvider.users;
   }
 
   // Future<void> initializeAgora() async {
@@ -89,14 +89,14 @@ class _CallScreenState extends State<CallScreen> {
     });
   }
 
-  /// Helper function to get list of native views
-  List<Widget> _getRenderViews() {
-    final List<AgoraRenderWidget> list = [
-      AgoraRenderWidget(0, local: true, preview: true),
-    ];
-    _users.forEach((int uid) => list.add(AgoraRenderWidget(uid)));
-    return list;
-  }
+  // /// Helper function to get list of native views
+  // List<Widget> _getRenderViews() {
+  //   final List<AgoraRenderWidget> list = [
+  //     AgoraRenderWidget(0, local: true, preview: true),
+  //   ];
+  //   _users.forEach((int uid) => list.add(AgoraRenderWidget(uid)));
+  //   return list;
+  // }
 
   // void onToggleMute() {
   //   setState(() {
@@ -127,24 +127,21 @@ class _CallScreenState extends State<CallScreen> {
       backgroundColor: Colors.black,
       body: agoraProvider.isVideo ?? widget.isVideo
           ? VideoCall(
-        infoStrings: agoraProvider.infoStrings,
-        renderViews: _getRenderViews(),
-        muted: muted,
-        onToggleMute: () async {
-          // muted = await agoraProvider.toggleMute(muted);
-          // setState(() {});
-          await agoraProvider.toggleVideo(!agoraProvider.isVideo);
+              infoStrings: agoraProvider.infoStrings,
+              muted: muted,
+              agoraProvider: agoraProvider,
+              onToggleMute: () async {
+                // muted = await agoraProvider.toggleMute(muted);
+                // setState(() {});
+                await agoraProvider.toggleVideo(!agoraProvider.isVideo);
 
-          setState(() {});
-        },
-        onSwitchCamera: () async {
-          await agoraProvider.onSwitchCamera();
-        },
-        onEndCall: () {
-          debugPrint('ENDING CALL');
-          callMethods.endCall(call: widget.call);
-        },
-      )
+                setState(() {});
+              },
+              onEndCall: () async {
+                debugPrint('ENDING CALL');
+                await callMethods.endCall(call: widget.call);
+              },
+            )
           : VoiceCall(
         muted: muted,
         call: widget.call,
@@ -155,7 +152,7 @@ class _CallScreenState extends State<CallScreen> {
         },
         onEndCall: () async {
           debugPrint('ENDING CALL');
-          callMethods.endCall(call: widget.call);
+          await callMethods.endCall(call: widget.call);
         },
       ),
     );
@@ -166,7 +163,8 @@ class VideoCall extends StatelessWidget {
   final Function onToggleMute, onEndCall, onSwitchCamera;
   final bool muted;
   final List<String> infoStrings;
-  final List<Widget> renderViews;
+  final AgoraProvider agoraProvider;
+  final Call call;
 
   const VideoCall({
     Key key,
@@ -175,8 +173,10 @@ class VideoCall extends StatelessWidget {
     this.onSwitchCamera,
     this.muted,
     this.infoStrings,
-    this.renderViews,
-  }) : super(key: key);
+    this.agoraProvider,
+    this.call,
+  })  : assert(agoraProvider != null),
+        super(key: key);
 
   /// Video view wrapper
   Widget _videoView(view) {
@@ -194,8 +194,9 @@ class VideoCall extends StatelessWidget {
   }
 
   /// Video layout wrapper
-  Widget _viewRows() {
-    final views = renderViews;
+  Widget _viewRows(List<Widget> views) {
+    // List<Widget> views = agoraProvider.getRenderViews();
+    print(views);
     switch (views.length) {
       case 1:
         return Container(
@@ -318,7 +319,9 @@ class VideoCall extends StatelessWidget {
             padding: const EdgeInsets.all(15.0),
           ),
           RawMaterialButton(
-            onPressed: onSwitchCamera,
+            onPressed: () async {
+              await agoraProvider.onSwitchCamera();
+            },
             child: Icon(
               Icons.switch_camera,
               color: Colors.blueAccent,
@@ -338,13 +341,17 @@ class VideoCall extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: Center(
-        child: Stack(
-          children: <Widget>[
-            _viewRows(),
-            // _panel(),
-            _toolbar(),
-          ],
-        ),
+        child: StreamBuilder<List<Widget>>(
+            stream: agoraProvider.getRenderViews(),
+            builder: (context, snapshot) {
+              return Stack(
+                children: <Widget>[
+                  _viewRows(snapshot.data ?? []),
+                  _panel(),
+                  _toolbar(),
+                ],
+              );
+            }),
       ),
     );
   }
