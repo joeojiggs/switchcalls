@@ -91,6 +91,12 @@ dependencies:
   #agora_rtc_engine: ^3.0.1-dev.7
   #permission_handler: ^3.0.0
 
+  #ringtone
+  #ringtone: ^0.0.2
+  #ringtone_player: ^0.0.4 #latest version
+  flutter_ringtone_player:
+
+
   flutter_launcher_icons: ^0.8.0
 
 flutter_icons:
