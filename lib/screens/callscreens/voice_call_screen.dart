@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -66,67 +65,67 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
     });
   }
 
-  /// Helper function to get list of native views
-  List<Widget> _getRenderViews() {
-    final List<AgoraRenderWidget> list = [
-      AgoraRenderWidget(0, local: true, preview: true),
-    ];
-    // _users.forEach((int uid) => list.add(AgoraRenderWidget(uid)));
-    return list;
-  }
+  // /// Helper function to get list of native views
+  // List<Widget> _getRenderViews() {
+  //   final List<AgoraRenderWidget> list = [
+  //     AgoraRenderWidget(0, local: true, preview: true),
+  //   ];
+  //   // _users.forEach((int uid) => list.add(AgoraRenderWidget(uid)));
+  //   return list;
+  // }
 
-  /// Video layout wrapper
-  Widget _viewRows() {
-    final views = _getRenderViews();
-    switch (views.length) {
-      case 1:
-        return Container(
-            child: Column(
-          children: <Widget>[_videoView(views[0])],
-        ));
-      case 2:
-        return Container(
-            child: Column(
-          children: <Widget>[
-            _expandedVideoRow([views[0]]),
-            _expandedVideoRow([views[1]])
-          ],
-        ));
-      case 3:
-        return Container(
-            child: Column(
-          children: <Widget>[
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 3))
-          ],
-        ));
-      case 4:
-        return Container(
-            child: Column(
-          children: <Widget>[
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 4))
-          ],
-        ));
-      default:
-        return Container();
-    }
-  }
+  // /// Video layout wrapper
+  // Widget _viewRows() {
+  //   final views = _getRenderViews();
+  //   switch (views.length) {
+  //     case 1:
+  //       return Container(
+  //           child: Column(
+  //         children: <Widget>[_videoView(views[0])],
+  //       ));
+  //     case 2:
+  //       return Container(
+  //           child: Column(
+  //         children: <Widget>[
+  //           _expandedVideoRow([views[0]]),
+  //           _expandedVideoRow([views[1]])
+  //         ],
+  //       ));
+  //     case 3:
+  //       return Container(
+  //           child: Column(
+  //         children: <Widget>[
+  //           _expandedVideoRow(views.sublist(0, 2)),
+  //           _expandedVideoRow(views.sublist(2, 3))
+  //         ],
+  //       ));
+  //     case 4:
+  //       return Container(
+  //           child: Column(
+  //         children: <Widget>[
+  //           _expandedVideoRow(views.sublist(0, 2)),
+  //           _expandedVideoRow(views.sublist(2, 4))
+  //         ],
+  //       ));
+  //     default:
+  //       return Container();
+  //   }
+  // }
 
-  /// Video view wrapper
-  Widget _videoView(view) {
-    return Expanded(child: Container(child: view));
-  }
+  // /// Video view wrapper
+  // Widget _videoView(view) {
+  //   return Expanded(child: Container(child: view));
+  // }
 
-  /// Video view row wrapper
-  Widget _expandedVideoRow(List<Widget> views) {
-    final wrappedViews = views.map<Widget>(_videoView).toList();
-    return Expanded(
-      child: Row(
-        children: wrappedViews,
-      ),
-    );
-  }
+  // /// Video view row wrapper
+  // Widget _expandedVideoRow(List<Widget> views) {
+  //   final wrappedViews = views.map<Widget>(_videoView).toList();
+  //   return Expanded(
+  //     child: Row(
+  //       children: wrappedViews,
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {
