@@ -24,11 +24,16 @@ class AuthMethods {
   }
 
   Future<User> getUserDetails() async {
-    FirebaseUser currentUser = await getCurrentUser();
+    try {
+      FirebaseUser currentUser = await getCurrentUser();
 
-    DocumentSnapshot documentSnapshot =
-        await _userCollection.document(currentUser.uid).get();
-    return User.fromMap(documentSnapshot.data);
+      DocumentSnapshot documentSnapshot =
+          await _userCollection.document(currentUser.uid).get();
+      return User.fromMap(documentSnapshot.data);
+    } catch (e) {
+      print('\n\n GetUserDetails Error: $e\n\n');
+      return null;
+    }
   }
 
   Future<User> getUserDetailsById(id) async {

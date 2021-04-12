@@ -52,7 +52,7 @@ dependencies:
   cached_network_image: ^2.0.0
 
   # agora rtc engine
-  agora_rtc_engine: ^1.0.8
+  agora_rtc_engine: ^3.3.2
 
   # permission handler
   permission_handler: ^5.0.1+1

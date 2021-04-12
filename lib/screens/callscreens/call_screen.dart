@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -79,7 +78,7 @@ class _CallScreenState extends State<CallScreen> {
         // defining the logic
         switch (ds.data) {
           case null:
-          // snapshot is null which means that call is hanged and documents are deleted
+            // snapshot is null which means that call is hanged and documents are deleted
             Navigator.pop(context);
             break;
           default:
@@ -143,18 +142,18 @@ class _CallScreenState extends State<CallScreen> {
               },
             )
           : VoiceCall(
-        muted: muted,
-        call: widget.call,
-        onToggleMute: () async {
-          // await agoraProvider.toggleVideo(!agoraProvider.isVideo);
-          muted = await agoraProvider.toggleMute(muted);
-          setState(() {});
-        },
-        onEndCall: () async {
-          debugPrint('ENDING CALL');
-          await callMethods.endCall(call: widget.call);
-        },
-      ),
+              muted: muted,
+              call: widget.call,
+              onToggleMute: () async {
+                // await agoraProvider.toggleVideo(!agoraProvider.isVideo);
+                muted = await agoraProvider.toggleMute(muted);
+                setState(() {});
+              },
+              onEndCall: () async {
+                debugPrint('ENDING CALL');
+                await callMethods.endCall(call: widget.call);
+              },
+            ),
     );
   }
 }
@@ -180,7 +179,7 @@ class VideoCall extends StatelessWidget {
 
   /// Video view wrapper
   Widget _videoView(view) {
-    return Expanded(child: Container(child: view));
+    return Expanded(child: Center(child: Container(child: view)));
   }
 
   /// Video view row wrapper
