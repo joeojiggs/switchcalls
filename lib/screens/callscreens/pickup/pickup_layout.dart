@@ -5,6 +5,7 @@ import 'package:switchcalls/models/call.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/call_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_screen.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 //TODO: Add this to all the screens
 class PickupLayout extends StatelessWidget {
@@ -27,6 +28,7 @@ class PickupLayout extends StatelessWidget {
                 Call call = Call.fromMap(snapshot.data.data);
 
                 if (!call.hasDialled) {
+                  FlutterRingtonePlayer.playRingtone();
                   return PickupScreen(call: call);
                 }
               }

@@ -21,6 +21,8 @@ import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/utilities.dart';
 import 'package:switchcalls/widgets/appbar.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
+import 'package:intl/intl.dart';
+
 
 class ChatScreen extends StatefulWidget {
   final User receiver;
@@ -208,6 +210,10 @@ class _ChatScreenState extends State<ChatScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
+                Text(convertTimeStampToHumanDate(int.parse(message.timestamp.seconds.toString())), style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
+                Text(" | "),
+                Text(convertTimeStampToHumanHour(int.parse(message.timestamp.seconds.toString())), style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
+                Text(" "),
                 Icon(
                   Icons.done,
                   color: UniversalVariables.blueColor,
@@ -219,6 +225,16 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
     );
+  }
+
+  String convertTimeStampToHumanDate(int timeStamp) {
+    var dateToTimeStamp = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+    return DateFormat('dd/MM/yyyy').format(dateToTimeStamp);
+  }
+
+  String convertTimeStampToHumanHour(int timeStamp) {
+    var dateToTimeStamp = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+    return DateFormat('HH:mm').format(dateToTimeStamp);
   }
 
   Widget getMessage(Message message) {
@@ -257,7 +273,28 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       child: Padding(
         padding: EdgeInsets.all(10),
-        child: getMessage(message),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: getMessage(message),
+            ),
+            Row(
+                //mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                //crossAxisAlignment: CrossAxisAlignment.center,
+                //mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(convertTimeStampToHumanDate(int.parse(message.timestamp.seconds.toString())), style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
+                Text(" | "),
+                Text(convertTimeStampToHumanHour(int.parse(message.timestamp.seconds.toString())), style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
+                Text(" "),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -389,33 +426,35 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Stack(
               alignment: Alignment.centerRight,
               children: [
-                TextField(
-                  controller: textFieldController,
-                  focusNode: textFieldFocus,
-                  textCapitalization: TextCapitalization.sentences,
-                  onTap: () => hideEmojiContainer(),
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                  onChanged: (val) {
-                    (val.length > 0 && val.trim() != "")
-                        ? setWritingTo(true)
-                        : setWritingTo(false);
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Type a message",
-                    hintStyle: TextStyle(
-                      color: UniversalVariables.greyColor,
+                Padding(
+                  padding: const EdgeInsets.only(right: 40.0),
+                  child: TextField(
+                    controller: textFieldController,
+                    focusNode: textFieldFocus,
+                    onTap: () => hideEmojiContainer(),
+                    style: TextStyle(
+                      color: Colors.white,
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: const BorderRadius.all(
-                          const Radius.circular(50.0),
-                        ),
-                        borderSide: BorderSide.none),
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                    filled: true,
-                    fillColor: UniversalVariables.separatorColor,
+                    onChanged: (val) {
+                      (val.length > 0 && val.trim() != "")
+                          ? setWritingTo(true)
+                          : setWritingTo(false);
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Type a message",
+                      hintStyle: TextStyle(
+                        color: UniversalVariables.greyColor,
+                      ),
+                      border: OutlineInputBorder(
+                          borderRadius: const BorderRadius.all(
+                            const Radius.circular(50.0),
+                          ),
+                          borderSide: BorderSide.none),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      filled: true,
+                      fillColor: UniversalVariables.separatorColor,
+                    ),
                   ),
                 ),
                 IconButton(
