@@ -11,7 +11,7 @@
         <option name="modules">
           <set>
             <option value="C:/src/flutter/.pub-cache/git/flutter-phone-direct-caller-d910fe25dcf9219a6934f9c934139c56d52eff0c/android" />
-            <option value="C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/agora_rtc_engine-1.0.15/android" />
+            <option value="C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/agora_rtc_engine-3.3.2/android" />
             <option value="C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/call_log-2.1.0/android" />
             <option value="C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/cloud_firestore-0.12.11/android" />
             <option value="C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/contacts_service-0.3.10/android" />
