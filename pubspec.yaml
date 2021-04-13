@@ -95,6 +95,7 @@ dependencies:
   #ringtone: ^0.0.2
   #ringtone_player: ^0.0.4 #latest version
   flutter_ringtone_player:
+  fluttertoast: # ^8.0.3
 
 
   flutter_launcher_icons: ^0.8.0
