@@ -7,6 +7,7 @@ import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/screens/callscreens/call_screen.dart';
 import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/utils/permissions.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 import '../voice_call_screen.dart';
 
@@ -101,6 +102,7 @@ class _PickupScreenState extends State<PickupScreen> {
                   onPressed: () async {
                     isCallMissed = false;
                     addToLocalStorage(callStatus: CALL_STATUS_RECEIVED);
+                    FlutterRingtonePlayer.stop();
                     if (await Permissions
                         .cameraAndMicrophonePermissionsGranted())
                       Navigator.push(

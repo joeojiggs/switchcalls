@@ -26,7 +26,7 @@ class AgoraProvider extends ChangeNotifier {
       "frameRate": 5,
       "bitRate": 45
     },
-  };
+  }; 
 
   Future<void> initializeAgora(Call call) async {
     if (APP_ID.isEmpty) {

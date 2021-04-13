@@ -221,6 +221,7 @@ class _DialScreenState extends State<DialScreen> {
                 Container(
                   child: TextField(
                     readOnly: true,
+                    showCursor: true,
                     controller: controller,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -230,10 +231,8 @@ class _DialScreenState extends State<DialScreen> {
                     ),
                     onChanged: (val) => filterContacts(_contacts.contactList),
                     decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.backspace),
-                        color: UniversalVariables.greyColor,
-                        onPressed: () {
+                      suffixIcon: InkWell(
+                        onTap: () {
                           int len = controller.text.length;
                           if (len > 0)
                             controller.text =
@@ -242,6 +241,21 @@ class _DialScreenState extends State<DialScreen> {
                             filterContacts(_contacts.contactList);
                           });
                         },
+                        onLongPress: () {
+                          int len = controller.text.length;
+                          if (len > 0) controller.clear();
+                          setState(() {
+                            filterContacts(_contacts.contactList);
+                          });
+                        },
+                        child: IgnorePointer(
+                          ignoring: true,
+                          child: IconButton(
+                            icon: Icon(Icons.backspace),
+                            color: UniversalVariables.greyColor,
+                            onPressed: () {},
+                          ),
+                        ),
                       ),
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
@@ -253,26 +267,26 @@ class _DialScreenState extends State<DialScreen> {
                   child: Row(
                     children: [
                       _buildCallDigits('1', controller),
-                      _buildCallDigits('2', controller),
-                      _buildCallDigits('3', controller),
+                      _buildCallDigits('2', controller, "A B C"),
+                      _buildCallDigits('3', controller, "D E F"),
                     ],
                   ),
                 ),
                 Flexible(
                   child: Row(
                     children: [
-                      _buildCallDigits('4', controller),
-                      _buildCallDigits('5', controller),
-                      _buildCallDigits('6', controller),
+                      _buildCallDigits('4', controller, "G H I"),
+                      _buildCallDigits('5', controller, "J K L"),
+                      _buildCallDigits('6', controller, "M N O"),
                     ],
                   ),
                 ),
                 Flexible(
                   child: Row(
                     children: [
-                      _buildCallDigits('7', controller),
-                      _buildCallDigits('8', controller),
-                      _buildCallDigits('9', controller),
+                      _buildCallDigits('7', controller, "P Q R S"),
+                      _buildCallDigits('8', controller, "T U V"),
+                      _buildCallDigits('9', controller, "W X Y Z"),
                     ],
                   ),
                 ),
@@ -280,7 +294,7 @@ class _DialScreenState extends State<DialScreen> {
                   child: Row(
                     children: [
                       _buildCallDigits('*', controller),
-                      _buildCallDigits('0', controller),
+                      _buildCallDigits('0', controller, '+', true),
                       _buildCallDigits('#', controller),
                     ],
                   ),
@@ -309,7 +323,7 @@ class _DialScreenState extends State<DialScreen> {
                     shape: BoxShape.circle,
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(25.0),
+                    padding: EdgeInsets.all(20.0),
                     child: Icon(
                       Icons.call,
                       size: 30,
@@ -325,7 +339,8 @@ class _DialScreenState extends State<DialScreen> {
     );
   }
 
-  Expanded _buildCallDigits(String digit, TextEditingController control) {
+  Expanded _buildCallDigits(String digit, TextEditingController control,
+      [String subtitle = '', bool press = false]) {
     return Expanded(
       child: InkWell(
         onTap: () {
@@ -334,15 +349,37 @@ class _DialScreenState extends State<DialScreen> {
             filterContacts(_contacts.contactList.toList());
           });
         },
+        onLongPress: () {
+          if (press) {
+            control.text = control.text + subtitle;
+            setState(() {
+              filterContacts(_contacts.contactList.toList());
+            });
+          }
+        },
         child: Container(
           alignment: Alignment.center,
-          child: Text(
-            digit.toString(),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                digit.toString(),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
       ),

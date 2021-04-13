@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
+import 'package:switchcalls/widgets/toasts.dart';
 import 'package:switchcalls/utils/validator.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 
@@ -38,12 +39,12 @@ class LoginProvider extends ChangeNotifier with FormValidator {
     notifyListeners();
   }
 
-  String formatPhoneNum(String phone) {
-    if (phone.startsWith('0')) {
-      return phone.substring(1, phone.length);
-    }
-    return phone;
-  }
+  // String formatPhoneNum(String phone) {
+  //   if (phone.startsWith('0')) {
+  //     return phone.substring(1, phone.length);
+  //   }
+  //   return phone;
+  // }
 
   void getStarted() async {
     try {
@@ -51,17 +52,11 @@ class LoginProvider extends ChangeNotifier with FormValidator {
         return;
       }
 
-      _showSnackBar(message: 'Invalid phone number');
-
-      phoneNumberFocus.unfocus();
       String phoneNumber = phoneNumController.text;
-
-      print(phoneNumber);
 
       showLoader();
 
-      String formattedPhone = formatPhoneNum(phoneNumber);
-      phoneNumber = "$dialCode$formattedPhone";
+      phoneNumber = "$dialCode$phoneNumber";
 
       phoneNumberFocus.unfocus();
 
@@ -112,6 +107,7 @@ class LoginProvider extends ChangeNotifier with FormValidator {
       print("ERROR:" + e.toString());
       showLoader();
       _showSnackBar(message: 'Unable to verify phone number');
+      Toasts.error('Unable to verify phone number');
     }
   }
 
@@ -121,10 +117,13 @@ class LoginProvider extends ChangeNotifier with FormValidator {
     }
 
     print("Exception thrown ${e.code}");
-    if (e.code == 'invalidCredential')
+    if (e.code == 'invalidCredential') {
       _showSnackBar(message: 'Invalid phone number');
-    else
+      Toasts.error('Invalid phone number');
+    } else {
       _showSnackBar(message: 'Unable to verify phone number');
+      Toasts.error('Unable to verify phone number');
+    }
   }
 
   void verifyOtp() async {
@@ -148,6 +147,7 @@ class LoginProvider extends ChangeNotifier with FormValidator {
       }
       print(e);
       _showSnackBar(message: "Unable to verify your number");
+      Toasts.error('Unable to verify phone number');
       return;
     }
 
@@ -165,14 +165,18 @@ class LoginProvider extends ChangeNotifier with FormValidator {
   }
 
   Future<void> addGoogleAccount() async {
-    User user = await _authMethods.addGoogleAcct();
-    if (user == null) {
-      return;
+    try {
+      User user = await _authMethods.addGoogleAcct();
+      if (user == null) {
+        return;
+      }
+      _authMethods.addDataToDb(user).then((value) => Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) {
+            return HomeScreen();
+          })));
+    } catch (e) {
+      Toasts.error('Error adding Google Account');
     }
-    _authMethods.addDataToDb(user).then((value) => Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) {
-          return HomeScreen();
-        })));
   }
 
   void readUserData(FirebaseUser user) {
@@ -183,13 +187,6 @@ class LoginProvider extends ChangeNotifier with FormValidator {
         if (isLoginPressed) {
           showLoader();
         }
-
-        // _authMethods.addDataToDb(user).then((value) {
-        //   Navigator.pushReplacement(context,
-        //       MaterialPageRoute(builder: (context) {
-        //     return HomeScreen();
-        //   }));
-        // });
       } else {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {

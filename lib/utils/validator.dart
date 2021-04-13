@@ -3,11 +3,8 @@ mixin FormValidator {
     if (value.length == 0) {
       return 'Please enter your phone number';
     }
-    if (value.length < 6) {
+    if (value.length < 5) {
       return "Please enter a valid phone number";
-    }
-    if (!value.startsWith("0")) {
-      return "Phone number should start with a zero";
     }
     return null;
   }
