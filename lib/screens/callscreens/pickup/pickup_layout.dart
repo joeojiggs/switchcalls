@@ -32,6 +32,7 @@ class PickupLayout extends StatelessWidget {
                   return PickupScreen(call: call);
                 }
               }
+              FlutterRingtonePlayer.stop();
               return scaffold;
             },
           )
