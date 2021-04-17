@@ -16,7 +16,7 @@ class AgoraProvider extends ChangeNotifier {
   List<String> _infoStrings = <String>[];
   bool isVideo;
 
-  Map<String, dynamic> params = {
+  final Map<String, dynamic> params = {
     "che.video.inactive_enable_encoding_and_decoding": true,
     "che.video.lowBitRateStreamParameter": {
       "width": 120,
@@ -162,6 +162,7 @@ class AgoraProvider extends ChangeNotifier {
     }
   }
 
+  // TODO: fix the speaker issue, check docs for the correct function to use
   Future<bool> toggleSpeaker(bool isLoud) async {
     try {
       await _engine.setDefaultAudioRoutetoSpeakerphone(isLoud);

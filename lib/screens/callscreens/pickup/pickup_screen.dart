@@ -112,7 +112,6 @@ class _PickupScreenState extends State<PickupScreen> {
                             call: widget.call,
                             isVideo: widget.call.isVideo,
                           ),
-                          // : VoiceCallScreen(call: widget.call),
                         ),
                       );
                   },
