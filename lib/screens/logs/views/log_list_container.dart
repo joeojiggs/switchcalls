@@ -35,7 +35,6 @@ class _LogListContainerState extends State<LogListContainer> {
       await Future.delayed(Duration(milliseconds: 500));
       yield await LogRepository.getLogs();
     }
-    ;
   }
 
   @override

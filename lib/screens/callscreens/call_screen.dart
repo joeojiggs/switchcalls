@@ -26,7 +26,6 @@ class CallScreen extends StatefulWidget {
 
 class _CallScreenState extends State<CallScreen> {
   final CallMethods callMethods = CallMethods();
-
   UserProvider userProvider;
   AgoraProvider agoraProvider;
   StreamSubscription callStreamSubscription;
@@ -34,6 +33,7 @@ class _CallScreenState extends State<CallScreen> {
   // List<int> _users = <int>[];
   // final _infoStrings = <String>[];
   bool muted = false;
+  bool isLoud = false;
 
   @override
   void initState() {
@@ -70,8 +70,8 @@ class _CallScreenState extends State<CallScreen> {
   void addPostFrameCallback() {
     userProvider = Provider.of<UserProvider>(context, listen: false);
     agoraProvider = Provider.of<AgoraProvider>(context, listen: false);
-    myAgoraInit();
     SchedulerBinding.instance.addPostFrameCallback((_) {
+      myAgoraInit();
       callStreamSubscription = callMethods
           .callStream(uid: userProvider.getUser.uid)
           .listen((DocumentSnapshot ds) {
@@ -81,6 +81,7 @@ class _CallScreenState extends State<CallScreen> {
             // snapshot is null which means that call is hanged and documents are deleted
             Navigator.pop(context);
             break;
+
           default:
             break;
         }
@@ -110,14 +111,18 @@ class _CallScreenState extends State<CallScreen> {
 
   @override
   void dispose() {
-    // // clear users
-    // _users.clear();
-    // // destroy sdk
-    // AgoraRtcEngine.leaveChannel();
-    // AgoraRtcEngine.destroy();
-    agoraProvider.close();
-    callStreamSubscription.cancel();
-    super.dispose();
+    try {
+      // // clear users
+      // _users.clear();
+      // // destroy sdk
+      // AgoraRtcEngine.leaveChannel();
+      // AgoraRtcEngine.destroy();
+      agoraProvider.close();
+      callStreamSubscription.cancel();
+      super.dispose();
+    } catch (e) {
+      print('dispose error: $e');
+    }
   }
 
   @override
@@ -129,11 +134,10 @@ class _CallScreenState extends State<CallScreen> {
               infoStrings: agoraProvider.infoStrings,
               muted: muted,
               agoraProvider: agoraProvider,
+              call: widget.call,
               onToggleMute: () async {
-                // muted = await agoraProvider.toggleMute(muted);
-                // setState(() {});
-                await agoraProvider.toggleVideo(!agoraProvider.isVideo);
-
+                muted = await agoraProvider.toggleMute(muted);
+                // await agoraProvider.toggleVideo(!agoraProvider.isVideo);
                 setState(() {});
               },
               onEndCall: () async {
@@ -143,10 +147,16 @@ class _CallScreenState extends State<CallScreen> {
             )
           : VoiceCall(
               muted: muted,
+              isLoud: isLoud,
               call: widget.call,
+              agoraProvider: agoraProvider,
               onToggleMute: () async {
                 // await agoraProvider.toggleVideo(!agoraProvider.isVideo);
                 muted = await agoraProvider.toggleMute(muted);
+                setState(() {});
+              },
+              onToggleSpeaker: () async {
+                isLoud = await agoraProvider.toggleSpeaker(isLoud);
                 setState(() {});
               },
               onEndCall: () async {
@@ -159,7 +169,7 @@ class _CallScreenState extends State<CallScreen> {
 }
 
 class VideoCall extends StatelessWidget {
-  final Function onToggleMute, onEndCall, onSwitchCamera;
+  final Function onToggleMute, onEndCall;
   final bool muted;
   final List<String> infoStrings;
   final AgoraProvider agoraProvider;
@@ -167,13 +177,12 @@ class VideoCall extends StatelessWidget {
 
   const VideoCall({
     Key key,
-    this.onToggleMute,
-    this.onEndCall,
-    this.onSwitchCamera,
-    this.muted,
-    this.infoStrings,
-    this.agoraProvider,
-    this.call,
+    @required this.onToggleMute,
+    @required this.onEndCall,
+    @required this.muted,
+    @required this.infoStrings,
+    @required this.agoraProvider,
+    @required this.call,
   })  : assert(agoraProvider != null),
         super(key: key);
 
@@ -296,7 +305,7 @@ class VideoCall extends StatelessWidget {
           RawMaterialButton(
             onPressed: onToggleMute,
             child: Icon(
-              muted ? Icons.mic : Icons.mic_off,
+              muted ? Icons.mic_off : Icons.mic,
               color: muted ? Colors.white : Colors.blueAccent,
               size: 20.0,
             ),
@@ -341,16 +350,17 @@ class VideoCall extends StatelessWidget {
     return Container(
       child: Center(
         child: StreamBuilder<List<Widget>>(
-            stream: agoraProvider.getRenderViews(),
-            builder: (context, snapshot) {
-              return Stack(
-                children: <Widget>[
-                  _viewRows(snapshot.data ?? []),
-                  _panel(),
-                  _toolbar(),
-                ],
-              );
-            }),
+          stream: agoraProvider.getRenderViews(),
+          builder: (context, snapshot) {
+            return Stack(
+              children: <Widget>[
+                _viewRows(snapshot.data ?? []),
+                _panel(),
+                _toolbar(),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

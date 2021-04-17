@@ -9,7 +9,6 @@ import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
-import '../voice_call_screen.dart';
 
 class PickupScreen extends StatefulWidget {
   final Call call;
@@ -92,6 +91,7 @@ class _PickupScreenState extends State<PickupScreen> {
                   onPressed: () async {
                     isCallMissed = false;
                     addToLocalStorage(callStatus: CALL_STATUS_RECEIVED);
+                    FlutterRingtonePlayer.stop();
                     await callMethods.endCall(call: widget.call);
                   },
                 ),
@@ -108,9 +108,11 @@ class _PickupScreenState extends State<PickupScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => widget.call.isVideo
-                              ? CallScreen(call: widget.call, isVideo: true)
-                              : VoiceCallScreen(call: widget.call),
+                          builder: (context) => CallScreen(
+                            call: widget.call,
+                            isVideo: widget.call.isVideo,
+                          ),
+                          // : VoiceCallScreen(call: widget.call),
                         ),
                       );
                   },
