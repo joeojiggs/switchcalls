@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,10 +14,8 @@ import 'package:switchcalls/resources/calls/chat_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/screens/messages/views/text_message_screen.dart';
 import 'package:switchcalls/screens/messages/widgets/contact_view.dart';
-import 'package:switchcalls/screens/messages/widgets/user_circle.dart';
 import 'package:switchcalls/screens/search_screen.dart';
 import 'package:switchcalls/widgets/quiet_box.dart';
-import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 import 'package:switchcalls/widgets/skype_appbar.dart';

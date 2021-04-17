@@ -14,11 +14,9 @@ class AgoraProvider extends ChangeNotifier {
   CallMethods callMethods = CallMethods();
   List<int> _users = <int>[];
   List<String> _infoStrings = <String>[];
-  bool isVideo = true;
-  // StreamController<bool> _isVideoCont = StreamController<bool>.broadcast();
-  // StreamSubscription<bool> _isVideoSub;
+  bool isVideo;
 
-  Map<String, dynamic> params = {
+  final Map<String, dynamic> params = {
     "che.video.inactive_enable_encoding_and_decoding": true,
     "che.video.lowBitRateStreamParameter": {
       "width": 120,
@@ -26,7 +24,7 @@ class AgoraProvider extends ChangeNotifier {
       "frameRate": 5,
       "bitRate": 45
     },
-  }; 
+  };
 
   Future<void> initializeAgora(Call call) async {
     if (APP_ID.isEmpty) {
@@ -38,9 +36,7 @@ class AgoraProvider extends ChangeNotifier {
     }
 
     await _initAgoraRtcEngine(call);
-    // _addAgoraEventHandlers(call);
     // await _engine.enableWebSdkInteroperability(true);
-    // print(jsonEncode(params));
     await _engine.setParameters(jsonEncode(params));
     await _engine.joinChannel(null, call.channelId, null, 0);
   }
@@ -54,7 +50,7 @@ class AgoraProvider extends ChangeNotifier {
       // await _engine.muteAllRemoteVideoStreams(!this.isVideo);
       // await toggleVideo(this.isVideo);
       print('\n\n AgoraRtcEngine Initialized... \n\n');
-    } on Exception catch (e) {
+    } catch (e) {
       print('_initAgoraRtcEngine Errorr: $e');
     }
   }
@@ -121,15 +117,24 @@ class AgoraProvider extends ChangeNotifier {
   }
 
   Future<void> toggleVideo(bool isVideo) async {
-    this.isVideo = isVideo;
-    await _engine.enableLocalVideo(isVideo);
-    await _engine.muteLocalVideoStream(isVideo);
-    await _engine.muteAllRemoteVideoStreams(isVideo);
+    try {
+      this.isVideo = isVideo;
+      await _engine.enableLocalVideo(isVideo);
+      await _engine.muteLocalVideoStream(isVideo);
+      await _engine.muteAllRemoteVideoStreams(isVideo);
+    } catch (e) {
+      print('Toggle Video Error: $e');
+    }
   }
 
   Future<bool> toggleMute(bool isMute) async {
-    await _engine.muteLocalAudioStream(!isMute);
-    return !isMute;
+    try {
+      await _engine.muteLocalAudioStream(!isMute);
+      return !isMute;
+    } catch (e) {
+      print('Toggle Mute Error: $e');
+      return isMute;
+    }
   }
 
   /// Helper function to get list of native views
@@ -141,14 +146,34 @@ class AgoraProvider extends ChangeNotifier {
       ];
       print('\n\n\n\n $_users \n\n\n\n');
       _users.forEach(
-        (int uid) => list.add(RtcRemoteView.SurfaceView(uid: uid,)),
+        (int uid) => list.add(RtcRemoteView.SurfaceView(
+          uid: uid,
+        )),
       );
       yield list;
     }
   }
 
   Future<void> onSwitchCamera() async {
-    await _engine.switchCamera();
+    try {
+      await _engine.switchCamera();
+    } catch (e) {
+      print('Switch Camera Error: $e');
+    }
+  }
+
+  // TODO: fix the speaker issue, check docs for the correct function to use
+  Future<bool> toggleSpeaker(bool isLoud) async {
+    try {
+      await _engine.setDefaultAudioRoutetoSpeakerphone(isLoud);
+      // setEnableSpeakerphone(isLoud);
+      return !isLoud;
+      // await _engine.audio
+      // .isSpeakerphoneEnabled();
+    } catch (e) {
+      print('Toggle Speaker Error: $e');
+      return isLoud;
+    }
   }
 
   void close() {
@@ -156,10 +181,11 @@ class AgoraProvider extends ChangeNotifier {
       // clear users
       _users.clear();
       _infoStrings.clear();
+
       // destroy sdk
       _engine.leaveChannel();
       _engine.destroy();
-    } on Exception catch (e) {
+    } catch (e) {
       print('close error: $e');
     }
   }

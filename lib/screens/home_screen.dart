@@ -8,7 +8,6 @@ import 'package:sms/sms.dart';
 import 'package:switchcalls/enum/user_state.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:switchcalls/provider/local_log_provider.dart';
-import 'package:switchcalls/provider/local_message_provider.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
@@ -166,6 +165,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       color: (_page == 0)
                           ? UniversalVariables.lightBlueColor
                           : UniversalVariables.greyColor),
+                  // ignore: deprecated_member_use
                   title: Text(
                     "Calls",
                     style: TextStyle(
@@ -180,6 +180,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       color: (_page == 1)
                           ? UniversalVariables.lightBlueColor
                           : UniversalVariables.greyColor),
+                  // ignore: deprecated_member_use
                   title: Text(
                     "Messages",
                     style: TextStyle(
@@ -194,6 +195,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       color: (_page == 2)
                           ? UniversalVariables.lightBlueColor
                           : UniversalVariables.greyColor),
+                  // ignore: deprecated_member_use
                   title: Text(
                     "Contacts",
                     style: TextStyle(

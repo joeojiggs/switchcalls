@@ -8,7 +8,6 @@ import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/call_methods.dart';
 import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/screens/callscreens/call_screen.dart';
-import 'package:switchcalls/screens/callscreens/voice_call_screen.dart';
 
 class CallUtils {
   static final CallMethods callMethods = CallMethods();
@@ -85,7 +84,7 @@ class CallUtils {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => VoiceCallScreen(call: call),
+          builder: (context) => CallScreen(call: call, isVideo: false),
         ),
       );
     }
