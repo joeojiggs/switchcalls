@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/android.iml" filepath="$PROJECT_DIR$/.idea/modules/android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1193540355/android.agora_rtc_engine.iml" filepath="$PROJECT_DIR$/.idea/modules/-1193540355/android.agora_rtc_engine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/688260158/android.agora_rtc_engine.iml" filepath="$PROJECT_DIR$/.idea/modules/688260158/android.agora_rtc_engine.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/android.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/android.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/-21340267/android.call_log.iml" filepath="$PROJECT_DIR$/.idea/modules/-21340267/android.call_log.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/381121691/android.cloud_firestore.iml" filepath="$PROJECT_DIR$/.idea/modules/381121691/android.cloud_firestore.iml" />
