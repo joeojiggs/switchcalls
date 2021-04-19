@@ -13,7 +13,6 @@ import 'package:switchcalls/screens/messages/views/text_message_screen.dart';
 import 'package:switchcalls/utils/call_utilities.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
-import 'package:switchcalls/widgets/quiet_box.dart';
 
 class ContactListScreen extends StatefulWidget {
   ContactListScreen({Key key, this.title}) : super(key: key);
@@ -253,9 +252,9 @@ class _ContactListScreenState extends State<ContactListScreen> {
 }
 
 class ContactDetails extends StatelessWidget {
-  AuthMethods _authMethods = AuthMethods();
-  SmsQuery query = new SmsQuery();
-  Sms.ContactQuery contacts = new Sms.ContactQuery();
+  final AuthMethods _authMethods = AuthMethods();
+  final SmsQuery query = new SmsQuery();
+  final Sms.ContactQuery contacts = new Sms.ContactQuery();
 
   ContactDetails({
     Key key,

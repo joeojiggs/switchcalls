@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/widgets/toasts.dart';
@@ -84,7 +83,7 @@ class LoginProvider extends ChangeNotifier with FormValidator {
     this.verificationId = verificationId;
     this.forceResendingToken = forceResendingToken;
     showPhone = false;
-    phoneNumController.clear();
+    // phoneNumController.clear();
     if (isLoginPressed) {
       showLoader();
     }

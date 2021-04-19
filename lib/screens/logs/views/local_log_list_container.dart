@@ -1,13 +1,10 @@
-import 'dart:async';
 
 import 'package:call_log/call_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
-// import 'package:flutter_phone_state/phone_event.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:switchcalls/provider/local_log_provider.dart';
-import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/widgets/quiet_box.dart';
 
 class LocalLogListContainer extends StatefulWidget {
@@ -17,7 +14,7 @@ class LocalLogListContainer extends StatefulWidget {
 
 class _LocalLogListContainerState extends State<LocalLogListContainer> {
   LogsProvider _logsProvider;
-  List<CallLogEntry> _logsList = [];
+  // List<CallLogEntry> _logsList = [];
 
   // StreamController<Iterable<CallLogEntry>> phoneCallCont =
   //     StreamController<Iterable<CallLogEntry>>.broadcast();

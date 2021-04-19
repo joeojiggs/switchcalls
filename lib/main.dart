@@ -1,12 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:switchcalls/provider/image_upload_provider.dart';
 import 'package:switchcalls/provider/user_provider.dart';
-import 'package:switchcalls/resources/auth_methods.dart';
-import 'package:switchcalls/screens/home_screen.dart';
-import 'package:switchcalls/screens/auth/views/login_screen.dart';
 import 'package:switchcalls/screens/search_screen.dart';
 
 import 'provider/agora_provider.dart';
