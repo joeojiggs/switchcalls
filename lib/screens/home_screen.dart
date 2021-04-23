@@ -12,7 +12,7 @@ import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
-import 'package:switchcalls/screens/messages/message_list_screen.dart';
+import 'package:switchcalls/screens/messages/views/message_list_screen.dart';
 import 'package:switchcalls/screens/logs/log_screen.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/universal_variables.dart';

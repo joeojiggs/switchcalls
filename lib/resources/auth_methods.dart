@@ -29,7 +29,9 @@ class AuthMethods {
 
       DocumentSnapshot documentSnapshot =
           await _userCollection.document(currentUser.uid).get();
+      print(documentSnapshot.data);
       return User.fromMap(documentSnapshot.data);
+      // return null;
     } catch (e) {
       print('\n\n GetUserDetails Error: $e\n\n');
       return null;
@@ -86,6 +88,7 @@ class AuthMethods {
     QuerySnapshot result = await firestore
         .collection(USERS_COLLECTION)
         .where('phone_number', isEqualTo: user.phoneNumber)
+        .where('uid', isEqualTo: user.uid)
         .getDocuments();
 
     final List<DocumentSnapshot> docs = result.documents;

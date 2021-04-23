@@ -82,4 +82,14 @@ class Utils {
     var timeformat = DateFormat.jm();
     return formatter.format(dateTime) + '    ' + timeformat.format(dateTime);
   }
+
+  static String convertTimeStampToHumanDate(int timeStamp) {
+    var dateToTimeStamp = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+    return DateFormat('dd/MM/yyyy').format(dateToTimeStamp);
+  }
+
+  static String convertTimeStampToHumanHour(int timeStamp) {
+    var dateToTimeStamp = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+    return DateFormat('HH:mm').format(dateToTimeStamp);
+  }
 }
