@@ -1,7 +1,3 @@
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -9,20 +5,15 @@ import 'package:switchcalls/constants/strings.dart';
 import 'package:switchcalls/enum/view_state.dart';
 import 'package:switchcalls/models/message.dart';
 import 'package:switchcalls/models/user.dart';
-import 'package:switchcalls/provider/image_upload_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
-import 'package:switchcalls/resources/calls/chat_methods.dart';
-import 'package:switchcalls/resources/storage_methods.dart';
+
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
+import 'package:switchcalls/screens/messages/providers/free_message_provider.dart';
+import 'package:switchcalls/screens/messages/widgets/chat_controls.dart';
 import 'package:switchcalls/widgets/cached_image.dart';
-import 'package:switchcalls/utils/call_utilities.dart';
-import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/utilities.dart';
 import 'package:switchcalls/widgets/appbar.dart';
-import 'package:switchcalls/widgets/custom_tile.dart';
-import 'package:intl/intl.dart';
-
 
 class ChatScreen extends StatefulWidget {
   final User receiver;
@@ -34,30 +25,28 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  TextEditingController textFieldController = TextEditingController();
-  FocusNode textFieldFocus = FocusNode();
+  // TextEditingController textFieldController = TextEditingController();
+  // FocusNode textFieldFocus = FocusNode();
 
-  final StorageMethods _storageMethods = StorageMethods();
-  final ChatMethods _chatMethods = ChatMethods();
+  // final StorageMethods _storageMethods = StorageMethods();
   final AuthMethods _authMethods = AuthMethods();
 
+  // FreeMessageProvider _messageProvider = FreeMessageProvider();
   ScrollController _listScrollController = ScrollController();
 
   User sender;
 
-  String _currentUserId;
+  // String _currentUserId;
 
-  bool isWriting = false;
+  // bool showEmojiPicker = false;
 
-  bool showEmojiPicker = false;
-
-  ImageUploadProvider _imageUploadProvider;
+  // ImageUploadProvider _imageUploadProvider;
 
   @override
   void initState() {
     super.initState();
     _authMethods.getCurrentUser().then((user) {
-      _currentUserId = user.uid;
+      // _currentUserId = user.uid;
 
       setState(() {
         sender = User(
@@ -69,113 +58,100 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  showKeyboard() => textFieldFocus.requestFocus();
-
-  hideKeyboard() => textFieldFocus.unfocus();
-
-  hideEmojiContainer() {
-    setState(() {
-      showEmojiPicker = false;
-    });
-  }
-
-  showEmojiContainer() {
-    setState(() {
-      showEmojiPicker = true;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    _imageUploadProvider = Provider.of<ImageUploadProvider>(context);
-
-    return PickupLayout(
-      scaffold: Scaffold(
-        backgroundColor: UniversalVariables.blackColor,
-        appBar: customAppBar(context),
-        body: Column(
-          children: <Widget>[
-            Flexible(
-              child: messageList(),
-            ),
-            _imageUploadProvider.getViewState == ViewState.LOADING
-                ? Container(
-                    alignment: Alignment.centerRight,
-                    margin: EdgeInsets.only(right: 15),
-                    child: CircularProgressIndicator(),
-                  )
-                : Container(),
-            chatControls(),
-            showEmojiPicker ? Container(child: emojiContainer()) : Container(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  emojiContainer() {
-    return EmojiPicker(
-      bgColor: UniversalVariables.separatorColor,
-      indicatorColor: UniversalVariables.blueColor,
-      rows: 3,
-      columns: 7,
-      onEmojiSelected: (emoji, category) {
-        setState(() {
-          isWriting = true;
-        });
-
-        textFieldController.text = textFieldController.text + emoji.emoji;
-      },
-      recommendKeywords: ["face", "happy", "party", "sad"],
-      numRecommended: 50,
-    );
-  }
-
-  Widget messageList() {
-    return StreamBuilder(
-      stream: Firestore.instance
-          .collection(MESSAGES_COLLECTION)
-          .document(_currentUserId)
-          .collection(widget.receiver.uid)
-          .orderBy(TIMESTAMP_FIELD, descending: true)
-          .snapshots(),
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.data == null) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        // SchedulerBinding.instance.addPostFrameCallback((_) {
-        //   _listScrollController.animateTo(
-        //     _listScrollController.position.minScrollExtent,
-        //     duration: Duration(milliseconds: 250),
-        //     curve: Curves.easeInOut,
-        //   );
-        // });
-
-        return ListView.builder(
-          padding: EdgeInsets.all(10),
-          controller: _listScrollController,
-          reverse: true,
-          itemCount: snapshot.data.documents.length,
-          itemBuilder: (context, index) {
-            // mention the arrow syntax if you get the time
-            return chatMessageItem(snapshot.data.documents[index]);
+    // _messageProvider.onInit(context);
+    return ChangeNotifierProvider<FreeMessageProvider>(
+      create: (context) => new FreeMessageProvider(receiver: widget.receiver),
+      builder: (context, provider) {
+        return Consumer<FreeMessageProvider>(
+          builder: (context, model, child) {
+            return PickupLayout(
+              scaffold: Scaffold(
+                backgroundColor: UniversalVariables.blackColor,
+                appBar: customAppBar(context, model),
+                body: Column(
+                  children: <Widget>[
+                    Flexible(
+                      child: messageList(model, sender),
+                    ),
+                    model.imageUploadProvider?.getViewState ==
+                                ViewState.LOADING ??
+                            false
+                        ? Container(
+                            alignment: Alignment.centerRight,
+                            margin: EdgeInsets.only(right: 15),
+                            child: CircularProgressIndicator(),
+                          )
+                        : Container(),
+                    ChatControls(
+                      controller: model.textFieldController,
+                      isWriting: model.isWriting,
+                      onCameraTap: () =>
+                          model.pickImage(source: ImageSource.camera),
+                      onEmojiTap: () => model.setWritingTo(true),
+                      onFieldChanged: (val) {
+                        (val.length > 0 && val.trim() != "")
+                            ? model.setWritingTo(true)
+                            : model.setWritingTo(false);
+                      },
+                      onMediaTap: () =>
+                          model.pickImage(source: ImageSource.gallery),
+                      onSendTap: () =>
+                          model.sendMessage(sender, widget.receiver),
+                    ),
+                  ],
+                ),
+              ),
+            );
           },
         );
       },
     );
   }
 
-  Widget chatMessageItem(DocumentSnapshot snapshot) {
-    Message _message = Message.fromMap(snapshot.data);
+  Widget messageList(FreeMessageProvider model, User sender) {
+    return StreamBuilder<List<Message>>(
+      stream: model.messageStream(sender?.uid),
+      builder: (context, AsyncSnapshot<List<Message>> snapshot) {
+        if (snapshot.data == null) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.data.isEmpty)
+          return Center(
+            child: Text(
+              'You do not have any messages at this moment!',
+              style: TextStyle(
+                color: UniversalVariables.greyColor,
+              ),
+            ),
+          );
+        // print('Data is ${snapshot.data.map((e) => e.message).toList()}');
+        return ListView.builder(
+          padding: EdgeInsets.all(10),
+          controller: _listScrollController,
+          reverse: true,
+          itemCount: snapshot.data.length,
+          itemBuilder: (context, index) {
+            // mention the arrow syntax if you get the time
+            return chatMessageItem(snapshot.data[index], sender);
+          },
+        );
+      },
+    );
+  }
+
+  Widget chatMessageItem(Message _message, User sender) {
+    // Message _message = Message.fromMap(snapshot);
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 15),
       child: Container(
-        alignment: _message.senderId == _currentUserId
+        alignment: _message.senderId == sender.uid
             ? Alignment.centerRight
             : Alignment.centerLeft,
-        child: _message.senderId == _currentUserId
+        child: _message.senderId == sender.uid
             ? senderLayout(_message)
             : receiverLayout(_message),
       ),
@@ -210,9 +186,17 @@ class _ChatScreenState extends State<ChatScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(convertTimeStampToHumanDate(int.parse(message.timestamp.seconds.toString())), style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
+                Text(
+                    Utils.convertTimeStampToHumanDate(
+                        int.parse(message.timestamp.seconds.toString())),
+                    style:
+                        TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
                 Text(" | "),
-                Text(convertTimeStampToHumanHour(int.parse(message.timestamp.seconds.toString())), style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
+                Text(
+                    Utils.convertTimeStampToHumanHour(
+                        int.parse(message.timestamp.seconds.toString())),
+                    style:
+                        TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
                 Text(" "),
                 Icon(
                   Icons.done,
@@ -225,16 +209,6 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
     );
-  }
-
-  String convertTimeStampToHumanDate(int timeStamp) {
-    var dateToTimeStamp = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
-    return DateFormat('dd/MM/yyyy').format(dateToTimeStamp);
-  }
-
-  String convertTimeStampToHumanHour(int timeStamp) {
-    var dateToTimeStamp = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
-    return DateFormat('HH:mm').format(dateToTimeStamp);
   }
 
   Widget getMessage(Message message) {
@@ -281,15 +255,20 @@ class _ChatScreenState extends State<ChatScreen> {
               child: getMessage(message),
             ),
             Row(
-                //mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                //crossAxisAlignment: CrossAxisAlignment.center,
-                //mainAxisSize: MainAxisSize.max,
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(convertTimeStampToHumanDate(int.parse(message.timestamp.seconds.toString())), style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
+                Text(
+                    Utils.convertTimeStampToHumanDate(
+                        int.parse(message.timestamp.seconds.toString())),
+                    style:
+                        TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
                 Text(" | "),
-                Text(convertTimeStampToHumanHour(int.parse(message.timestamp.seconds.toString())), style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
+                Text(
+                    Utils.convertTimeStampToHumanHour(
+                        int.parse(message.timestamp.seconds.toString())),
+                    style:
+                        TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0)),
                 Text(" "),
               ],
             )
@@ -299,225 +278,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget chatControls() {
-    setWritingTo(bool val) {
-      setState(() {
-        isWriting = val;
-      });
-    }
-
-    addMediaModal(context) {
-      showModalBottomSheet(
-          context: context,
-          elevation: 0,
-          backgroundColor: UniversalVariables.blackColor,
-          builder: (context) {
-            return Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                  child: Row(
-                    children: <Widget>[
-                      FlatButton(
-                        child: Icon(
-                          Icons.close,
-                        ),
-                        onPressed: () => Navigator.maybePop(context),
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Content and tools",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Flexible(
-                  child: ListView(
-                    children: <Widget>[
-                      ModalTile(
-                        title: "Media",
-                        subtitle: "Share Photos and Video",
-                        icon: Icons.image,
-                        onTap: () {
-                          Navigator.pop(context);
-                          pickImage(source: ImageSource.gallery);
-                        },
-                      ),
-                      ModalTile(
-                        title: "File",
-                        subtitle: "Share files",
-                        icon: Icons.tab,
-                      ),
-                      ModalTile(
-                        title: "Contact",
-                        subtitle: "Share contacts",
-                        icon: Icons.contacts,
-                      ),
-                      ModalTile(
-                        title: "Location",
-                        subtitle: "Share a location",
-                        icon: Icons.add_location,
-                      ),
-                      // ModalTile(
-                      //   title: "Schedule Call",
-                      //   subtitle: "Arrange a skype call and get reminders",
-                      //   icon: Icons.schedule,
-                      // ),
-                      // ModalTile(
-                      //   title: "Create Poll",
-                      //   subtitle: "Share polls",
-                      //   icon: Icons.poll,
-                      // )
-                    ],
-                  ),
-                ),
-              ],
-            );
-          });
-    }
-
-    sendMessage() {
-      var text = textFieldController.text;
-
-      Message _message = Message(
-        receiverId: widget.receiver.uid,
-        senderId: sender.uid,
-        message: text,
-        timestamp: Timestamp.now(),
-        type: 'text',
-      );
-
-      setState(() {
-        isWriting = false;
-      });
-
-      textFieldController.text = "";
-
-      _chatMethods.addMessageToDb(_message, sender, widget.receiver);
-    }
-
-    return Container(
-      padding: EdgeInsets.all(10),
-      child: Row(
-        children: <Widget>[
-          GestureDetector(
-            onTap: () => addMediaModal(context),
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                gradient: UniversalVariables.fabGradient,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.add),
-            ),
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          Expanded(
-            child: Stack(
-              alignment: Alignment.centerRight,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 40.0),
-                  child: TextField(
-                    controller: textFieldController,
-                    focusNode: textFieldFocus,
-                    onTap: () => hideEmojiContainer(),
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                    onChanged: (val) {
-                      (val.length > 0 && val.trim() != "")
-                          ? setWritingTo(true)
-                          : setWritingTo(false);
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Type a message",
-                      hintStyle: TextStyle(
-                        color: UniversalVariables.greyColor,
-                      ),
-                      border: OutlineInputBorder(
-                          borderRadius: const BorderRadius.all(
-                            const Radius.circular(50.0),
-                          ),
-                          borderSide: BorderSide.none),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                      filled: true,
-                      fillColor: UniversalVariables.separatorColor,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  onPressed: () {
-                    if (!showEmojiPicker) {
-                      // keyboard is visible
-                      hideKeyboard();
-                      showEmojiContainer();
-                    } else {
-                      //keyboard is hidden
-                      showKeyboard();
-                      hideEmojiContainer();
-                    }
-                  },
-                  icon: Icon(Icons.face),
-                ),
-              ],
-            ),
-          ),
-          isWriting
-              ? Container()
-              : Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Icon(Icons.record_voice_over),
-                ),
-          isWriting
-              ? Container()
-              : GestureDetector(
-                  child: Icon(Icons.camera_alt),
-                  onTap: () => pickImage(source: ImageSource.camera),
-                ),
-          isWriting
-              ? Container(
-                  margin: EdgeInsets.only(left: 10),
-                  decoration: BoxDecoration(
-                      gradient: UniversalVariables.fabGradient,
-                      shape: BoxShape.circle),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.send,
-                      size: 15,
-                    ),
-                    onPressed: () => sendMessage(),
-                  ))
-              : Container()
-        ],
-      ),
-    );
-  }
-
-  void pickImage({@required ImageSource source}) async {
-    File selectedImage = await Utils.pickImage(source: source);
-    if (selectedImage != null)
-      _storageMethods.uploadImage(
-          image: selectedImage,
-          receiverId: widget.receiver.uid,
-          senderId: _currentUserId,
-          imageUploadProvider: _imageUploadProvider);
-  }
-
-  CustomAppBar customAppBar(context) {
+  CustomAppBar customAppBar(BuildContext context, FreeMessageProvider model) {
     return CustomAppBar(
       leading: IconButton(
         icon: Icon(
@@ -536,83 +297,15 @@ class _ChatScreenState extends State<ChatScreen> {
           icon: Icon(
             Icons.video_call,
           ),
-          onPressed: () async =>
-              await Permissions.cameraAndMicrophonePermissionsGranted()
-                  ? CallUtils.dial(
-                      from: sender,
-                      to: widget.receiver,
-                      context: context,
-                    )
-                  : {},
+          onPressed: () => model.makeCall(context, true),
         ),
         IconButton(
           icon: Icon(
             Icons.phone,
           ),
-          onPressed: () async {
-            if (await Permissions.cameraAndMicrophonePermissionsGranted())
-              return CallUtils.dialAudio(
-                from: sender,
-                to: widget.receiver,
-                context: context,
-              );
-            return;
-          },
-        )
+          onPressed: () => model.makeCall(context, false),
+        ),
       ],
-    );
-  }
-}
-
-class ModalTile extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Function onTap;
-
-  const ModalTile({
-    @required this.title,
-    @required this.subtitle,
-    @required this.icon,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15),
-      child: CustomTile(
-        mini: false,
-        onTap: onTap,
-        leading: Container(
-          margin: EdgeInsets.only(right: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: UniversalVariables.receiverColor,
-          ),
-          padding: EdgeInsets.all(10),
-          child: Icon(
-            icon,
-            color: UniversalVariables.greyColor,
-            size: 38,
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            color: UniversalVariables.greyColor,
-            fontSize: 14,
-          ),
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 18,
-          ),
-        ),
-      ),
     );
   }
 }

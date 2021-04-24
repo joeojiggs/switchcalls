@@ -138,7 +138,7 @@ class LoginProvider extends ChangeNotifier with FormValidator {
 
     try {
       credential = PhoneAuthProvider.getCredential(
-          verificationId: verificationId, smsCode: otpCode);
+          verificationId: verificationId, smsCode: pinController.text);
       await auth.signInWithCredential(credential);
     } catch (e) {
       if (isLoginPressed) {

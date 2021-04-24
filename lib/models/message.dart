@@ -10,22 +10,22 @@ class Message {
 
   Message(
       {this.senderId,
-        this.receiverId,
-        this.type,
-        this.message,
-        this.timestamp});
+      this.receiverId,
+      this.type,
+      this.message,
+      this.timestamp});
 
   //Will be only called when you wish to send an image
   // named constructor
   Message.imageMessage(
       {this.senderId,
-        this.receiverId,
-        this.message,
-        this.type,
-        this.timestamp,
-        this.photoUrl});
+      this.receiverId,
+      this.message,
+      this.type,
+      this.timestamp,
+      this.photoUrl});
 
-  Map toMap() {
+  Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
     map['senderId'] = this.senderId;
     map['receiverId'] = this.receiverId;
@@ -35,7 +35,7 @@ class Message {
     return map;
   }
 
-  Map toImageMap() {
+  Map<String, dynamic> toImageMap() {
     var map = Map<String, dynamic>();
     map['message'] = this.message;
     map['senderId'] = this.senderId;
