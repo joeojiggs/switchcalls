@@ -12,7 +12,7 @@ abstract class IMessages {
   Future sendMessage({Message message});
 }
 
-class Messages extends IMessages {
+class ChatMethods extends IMessages {
   static final Firestore _firestore = Firestore.instance;
 
   final CollectionReference _messageCollection =
@@ -29,7 +29,7 @@ class Messages extends IMessages {
 
   @override
   Stream<List<Message>> chatList(String userId, String recipientId) {
-    print('Info is $userId, $recipientId');
+    // print('Info is $userId, $recipientId');
     return _messageCollection
         .document(userId)
         .collection('chats')
@@ -124,6 +124,21 @@ class Messages extends IMessages {
     }
   }
 
+  void setImageMsg(String url, String receiverId, String senderId) async {
+    Message message;
+
+    message = Message.imageMessage(
+        message: "IMAGE",
+        receiverId: receiverId,
+        senderId: senderId,
+        photoUrl: url,
+        timestamp: Timestamp.now(),
+        type: 'image');
+
+    await sendMessage(message: message);
+  }
+
+  // UTILITIES
   StreamTransformer<QuerySnapshot, List<Message>> transformer(
       String recipientId) {
     return StreamTransformer<QuerySnapshot, List<Message>>.fromHandlers(
@@ -149,3 +164,113 @@ class Messages extends IMessages {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+// class ChatMethods {
+//   static final Firestore _firestore = Firestore.instance;
+
+//   final CollectionReference _messageCollection =
+//   _firestore.collection(MESSAGES_COLLECTION);
+
+//   final CollectionReference _userCollection =
+//   _firestore.collection(USERS_COLLECTION);
+
+//   Future<void> addMessageToDb(
+//       Message message, User sender, User receiver) async {
+//     var map = message.toMap();
+
+//     await _messageCollection
+//         .document(message.senderId)
+//         .collection(message.receiverId)
+//         .add(map);
+
+//     addToContacts(senderId: message.senderId, receiverId: message.receiverId);
+
+//     return await _messageCollection
+//         .document(message.receiverId)
+//         .collection(message.senderId)
+//         .add(map);
+//   }
+
+//   DocumentReference getContactsDocument({String of, String forContact}) =>
+//       _userCollection
+//           .document(of)
+//           .collection(CONTACTS_COLLECTION)
+//           .document(forContact);
+
+//   addToContacts({String senderId, String receiverId}) async {
+//     Timestamp currentTime = Timestamp.now();
+
+//     await addToSenderContacts(senderId, receiverId, currentTime);
+//     await addToReceiverContacts(senderId, receiverId, currentTime);
+//   }
+
+//   Future<void> addToSenderContacts(
+//       String senderId,
+//       String receiverId,
+//       currentTime,
+//       ) async {
+//     DocumentSnapshot senderSnapshot =
+//     await getContactsDocument(of: senderId, forContact: receiverId).get();
+
+//     if (!senderSnapshot.exists) {
+//       //does not exists
+//       Contact receiverContact = Contact(
+//         uid: receiverId,
+//         addedOn: currentTime,
+//       );
+
+//       var receiverMap = receiverContact.toMap(receiverContact);
+
+//       await getContactsDocument(of: senderId, forContact: receiverId)
+//           .setData(receiverMap);
+//     }
+//   }
+
+//   Future<void> addToReceiverContacts(
+//       String senderId,
+//       String receiverId,
+//       currentTime,
+//       ) async {
+//     DocumentSnapshot receiverSnapshot =
+//     await getContactsDocument(of: receiverId, forContact: senderId).get();
+
+//     if (!receiverSnapshot.exists) {
+//       //does not exists
+//       Contact senderContact = Contact(
+//         uid: senderId,
+//         addedOn: currentTime,
+//       );
+
+//       var senderMap = senderContact.toMap(senderContact);
+
+//       await getContactsDocument(of: receiverId, forContact: senderId)
+//           .setData(senderMap);
+//     }
+//   }
+
+//   Stream<QuerySnapshot> fetchContacts({String userId}) => _userCollection
+//       .document(userId)
+//       .collection(CONTACTS_COLLECTION)
+//       // .orderBy(_userCollection.document(userId).collection(CONTACTS_COLLECTION).document("timestamp"))
+//       .snapshots();
+
+//   Stream<QuerySnapshot> fetchLastMessageBetween({
+//     @required String senderId,
+//     @required String receiverId,
+//   }) =>
+//       _messageCollection
+//           .document(senderId)
+//           .collection(receiverId)
+//           .orderBy("timestamp")
+//           .snapshots();
+// }

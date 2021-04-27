@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:switchcalls/resources/messages.dart';
+import 'package:switchcalls/resources/chats/chat_methods.dart';
 import 'package:switchcalls/models/chat.dart';
 
 class MessageListProvider extends ChangeNotifier {
   // final String userId;
-  Messages _messages = Messages();
+  ChatMethods _messages = ChatMethods();
   StreamSubscription<QuerySnapshot> _chatsub;
   StreamController<List<Chat>> _chatCont =
       StreamController<List<Chat>>.broadcast();

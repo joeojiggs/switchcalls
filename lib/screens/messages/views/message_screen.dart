@@ -25,22 +25,10 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  // TextEditingController textFieldController = TextEditingController();
-  // FocusNode textFieldFocus = FocusNode();
-
-  // final StorageMethods _storageMethods = StorageMethods();
   final AuthMethods _authMethods = AuthMethods();
-
-  // FreeMessageProvider _messageProvider = FreeMessageProvider();
   ScrollController _listScrollController = ScrollController();
 
   User sender;
-
-  // String _currentUserId;
-
-  // bool showEmojiPicker = false;
-
-  // ImageUploadProvider _imageUploadProvider;
 
   @override
   void initState() {
@@ -60,7 +48,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // _messageProvider.onInit(context);
     return ChangeNotifierProvider<FreeMessageProvider>(
       create: (context) => new FreeMessageProvider(receiver: widget.receiver),
       builder: (context, provider) {
@@ -297,13 +284,13 @@ class _ChatScreenState extends State<ChatScreen> {
           icon: Icon(
             Icons.video_call,
           ),
-          onPressed: () => model.makeCall(context, true),
+          onPressed: () => model.makeCall(context, true, sender),
         ),
         IconButton(
           icon: Icon(
             Icons.phone,
           ),
-          onPressed: () => model.makeCall(context, false),
+          onPressed: () => model.makeCall(context, false, sender),
         ),
       ],
     );
