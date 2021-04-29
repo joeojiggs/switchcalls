@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:switchcalls/models/message.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/image_upload_provider.dart';
-import 'package:switchcalls/resources/messages.dart';
+import 'package:switchcalls/resources/chats/chat_methods.dart';
 import 'package:switchcalls/resources/storage_methods.dart';
 import 'package:switchcalls/utils/call_utilities.dart';
 import 'package:switchcalls/utils/permissions.dart';
@@ -14,7 +14,7 @@ import 'package:switchcalls/utils/utilities.dart';
 
 class FreeMessageProvider extends ChangeNotifier {
   final StorageMethods _storageMethods = StorageMethods();
-  final Messages _messages = Messages();
+  final ChatMethods _messages = ChatMethods();
   TextEditingController textFieldController = TextEditingController();
 
   final User receiver;
@@ -25,24 +25,7 @@ class FreeMessageProvider extends ChangeNotifier {
   ImageUploadProvider imageUploadProvider;
   bool isWriting = false;
 
-  FreeMessageProvider({this.receiver});
-
-  // void onInit(BuildContext context) {
-  //   imageUploadProvider = Provider.of<ImageUploadProvider>(context);
-
-  //   _authMethods.getCurrentUser().then((user) {
-  //     currentUserId = user.uid;
-
-  //     // setState(() {
-  //     sender = User(
-  //       uid: user.uid,
-  //       name: user.displayName,
-  //       profilePhoto: user.photoUrl,
-  //     );
-  //   });
-  //   notifyListeners();
-  //   // });
-  // }
+  FreeMessageProvider({this.receiver}) : assert(receiver != null);
 
   set sender(User value) {
     _sender = value;
@@ -71,12 +54,12 @@ class FreeMessageProvider extends ChangeNotifier {
     _messages.sendMessage(message: _message);
   }
 
-  Future<void> makeCall(BuildContext context, bool isVideo) async {
+  Future<void> makeCall(BuildContext context, bool isVideo, User sender) async {
     if (await Permissions.cameraAndMicrophonePermissionsGranted()) {
       if (isVideo) {
         return CallUtils.dial(
           from: sender,
-          to: receiver, //TODO: work the receivers
+          to: receiver,
           context: context,
         );
       } else {
@@ -101,9 +84,7 @@ class FreeMessageProvider extends ChangeNotifier {
   }
 
   void setWritingTo(bool val) {
-    // setState(() {
     isWriting = val;
-    // });
     notifyListeners();
   }
 
