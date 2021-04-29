@@ -189,7 +189,7 @@ class VideoCall extends StatelessWidget {
             return Stack(
               children: <Widget>[
                 _viewRows(snapshot.data ?? []),
-                _panel(),
+                //_panel(),
                 _toolbar(),
               ],
             );
