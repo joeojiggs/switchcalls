@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:switchcalls/constants/strings.dart';
 import 'package:switchcalls/models/chat.dart';
+import 'package:switchcalls/models/contact.dart';
 import 'package:switchcalls/models/message.dart';
+import 'package:switchcalls/models/user.dart';
 
 abstract class IMessages {
   Stream chatList(String userId, String recipientId);
@@ -90,7 +92,10 @@ class ChatMethods extends IMessages {
         .document('${message.receiverId} ${_time.microsecondsSinceEpoch}')
         .setData(map);
 
-    // addToChats(senderId: message.senderId, receiverId: message.receiverId);
+    // add receiver to sender's contacts list
+    addToContacts(message.senderId, message.receiverId, _time);
+    // add sender to receiver's contacts list
+    addToContacts(message.receiverId, message.senderId, _time);
 
     map['isRead'] = false;
     map['isSender'] = false;
@@ -138,6 +143,32 @@ class ChatMethods extends IMessages {
     await sendMessage(message: message);
   }
 
+  Stream<List<User>> fetchContacts({String userId}) {
+    return _userCollection.snapshots().transform(contactTrans());
+  }
+
+  Future<void> addToContacts(
+      String userId, String idToAdd, Timestamp currentTime) async {
+    DocumentSnapshot senderSnapshot =
+        await getContactsDocument(of: userId, forContact: idToAdd).get();
+    if (!senderSnapshot.exists) {
+      //does not exists
+      Contact receiverContact = Contact(uid: idToAdd, addedOn: currentTime);
+
+      var receiverMap = receiverContact.toMap(receiverContact);
+
+      await getContactsDocument(of: userId, forContact: idToAdd)
+          .setData(receiverMap);
+    }
+  }
+
+  DocumentReference getContactsDocument({String of, String forContact}) {
+    return _userCollection
+        .document(of)
+        .collection(CONTACTS_COLLECTION)
+        .document(forContact);
+  }
+
   // UTILITIES
   StreamTransformer<QuerySnapshot, List<Message>> transformer(
       String recipientId) {
@@ -153,6 +184,15 @@ class ChatMethods extends IMessages {
     );
   }
 
+  StreamTransformer<QuerySnapshot, List<User>> contactTrans() {
+    return StreamTransformer<QuerySnapshot, List<User>>.fromHandlers(
+      handleData: (data, sink) {
+        List<User> list = data.documents.map((e) => User.fromMap(e.data)).toList();
+        sink.add(list);
+      },
+    );
+  }
+
   Message convertToMessage(DocumentSnapshot chat, String recipientId) {
     // _storedb.readMessage(chat, recipientId);
     return Message(
@@ -164,16 +204,6 @@ class ChatMethods extends IMessages {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
 
 // class ChatMethods {
 //   static final Firestore _firestore = Firestore.instance;
