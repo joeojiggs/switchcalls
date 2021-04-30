@@ -7,7 +7,7 @@ import 'modal_tile.dart';
 class ChatControls extends StatefulWidget {
   final TextEditingController controller;
   final Function(String) onFieldChanged;
-  final Function onCameraTap, onSendTap, onMediaTap, onEmojiTap;
+  final Function onCameraTap, onSendTap, onMediaTap, onFileTap, onEmojiTap;
   final bool isWriting;
 
   const ChatControls({
@@ -18,6 +18,7 @@ class ChatControls extends StatefulWidget {
     @required this.onSendTap,
     @required this.isWriting,
     @required this.onMediaTap,
+    @required this.onFileTap,
     @required this.onEmojiTap,
   }) : super(key: key);
 
@@ -46,7 +47,7 @@ class _ChatControlsState extends State<ChatControls> {
           child: Row(
             children: <Widget>[
               GestureDetector(
-                onTap: () => addMediaModal(context, widget.onMediaTap),
+                onTap: () => addMediaModal(context, widget.onMediaTap, widget.onFileTap),
                 child: Container(
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
@@ -162,7 +163,7 @@ class _ChatControlsState extends State<ChatControls> {
   }
 }
 
-void addMediaModal(BuildContext context, Function onMediaTap) {
+void addMediaModal(BuildContext context, Function onMediaTap, Function onFileTap) {
   showModalBottomSheet(
       context: context,
       elevation: 0,
@@ -211,6 +212,10 @@ void addMediaModal(BuildContext context, Function onMediaTap) {
                     title: "File",
                     subtitle: "Share files",
                     icon: Icons.tab,
+                    onTap: (){
+                      Navigator.pop(context);
+                      onFileTap();
+                    },
                   ),
                   ModalTile(
                     title: "Contact",

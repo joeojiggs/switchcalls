@@ -38,6 +38,9 @@ dependencies:
   # image_picker
   image_picker: ^0.6.3+1
 
+  #file_picker
+  file_picker:
+
   # path provider
   path_provider: ^1.6.0
 

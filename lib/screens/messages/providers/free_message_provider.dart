@@ -100,6 +100,18 @@ class FreeMessageProvider extends ChangeNotifier {
           imageUploadProvider: imageUploadProvider);
   }
 
+  void pickFile({@required source}) async{
+    if(source != null) {
+      File file = File(source.files.single.path);
+      _storageMethods.uploadFile(
+        file: file,
+        receiverId: receiver.uid,
+        senderId: currentUserId,
+        imageUploadProvider: imageUploadProvider,
+      );
+    }
+  }
+
   void setWritingTo(bool val) {
     // setState(() {
     isWriting = val;
