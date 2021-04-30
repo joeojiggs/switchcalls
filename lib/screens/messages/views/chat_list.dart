@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:switchcalls/resources/messages.dart';
+import 'package:switchcalls/resources/chats/chat_methods.dart';
 import 'package:switchcalls/widgets/quiet_box.dart';
 import 'package:switchcalls/models/chat.dart';
 
@@ -19,7 +19,7 @@ class ChatList extends StatefulWidget {
 }
 
 class _ChatListState extends State<ChatList> {
-  Messages _messages = Messages();
+  ChatMethods _messages = ChatMethods();
   AuthMethods _authMethods = AuthMethods();
   MessageListProvider _messageListProvider = new MessageListProvider();
 
@@ -49,8 +49,8 @@ class _ChatListState extends State<ChatList> {
       // ),
       builder: (context, snapshot) {
         List<Chat> users = snapshot.data ?? [];
-        print(users);
-        print(snapshot.hasError);
+        // print(users);
+        // print(snapshot.hasError);
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }

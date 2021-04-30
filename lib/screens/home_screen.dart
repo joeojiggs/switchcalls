@@ -17,7 +17,7 @@ import 'package:switchcalls/screens/logs/log_screen.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 
-import 'contact/contact_screen.dart';
+import 'contact/views/contact_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -48,6 +48,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<void> loadApp() async {
     userProvider = Provider.of<UserProvider>(context, listen: false);
+    contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
+    logsProvider = Provider.of<LogsProvider>(context, listen: false);
     await userProvider.refreshUser();
 
     LogRepository.init(
@@ -63,8 +65,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
-      logsProvider = Provider.of<LogsProvider>(context, listen: false);
       contactsProvider.init(true);
       receivedSub = receiver.onSmsReceived.listen((SmsMessage msg) {
         print('NOTIFICATION\n${msg.address} sent you a message.');
@@ -148,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           children: <Widget>[
             LogScreen(),
             ChatListScreen(),
-            ContactListScreen(title: 'Contacts'),
+            ContactListScreen(),
           ],
           controller: pageController,
           onPageChanged: onPageChanged,
