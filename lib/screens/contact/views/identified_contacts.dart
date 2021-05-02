@@ -67,7 +67,7 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
             List<User> filtered = _provider.filterIdentifiedCL(identified,
                 _contactsProvider.contactList, searchController.text);
             // List<User> searched = searchedContacts(filtered);
-            print(filtered);
+            // print(filtered);
             return Container(
               padding: EdgeInsets.all(20),
               child: Column(

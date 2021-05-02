@@ -16,13 +16,13 @@ class FreeMessageProvider extends ChangeNotifier {
   final StorageMethods _storageMethods = StorageMethods();
   final ChatMethods _messages = ChatMethods();
   TextEditingController textFieldController = TextEditingController();
+  ImageUploadProvider imageUploadProvider = ImageUploadProvider();
 
   final User receiver;
   User _sender;
 
   String currentUserId;
 
-  ImageUploadProvider imageUploadProvider;
   bool isWriting = false;
 
   FreeMessageProvider({this.receiver}) : assert(receiver != null);
@@ -50,7 +50,6 @@ class FreeMessageProvider extends ChangeNotifier {
 
     textFieldController.text = "";
 
-    // _chatMethods.addMessageToDb(_message, sender, receiver);
     _messages.sendMessage(message: _message);
   }
 
@@ -73,13 +72,21 @@ class FreeMessageProvider extends ChangeNotifier {
     return;
   }
 
-  void pickImage({@required ImageSource source}) async {
+  void pickImage(
+      {@required ImageSource source, User sender, User receiver}) async {
     File selectedImage = await Utils.pickImage(source: source);
+
+    Message _message = Message.imageMessage(
+        message: "IMAGE",
+        receiverId: receiver.uid,
+        senderId: sender.uid,
+        timestamp: Timestamp.now(),
+        type: 'image');
+
     if (selectedImage != null)
       _storageMethods.uploadImage(
           image: selectedImage,
-          receiverId: receiver.uid,
-          senderId: currentUserId,
+          message: _message,
           imageUploadProvider: imageUploadProvider);
   }
 
@@ -90,10 +97,4 @@ class FreeMessageProvider extends ChangeNotifier {
 
   Stream<List<Message>> messageStream(String userId) =>
       _messages.chatList(userId, receiver.uid);
-  // Firestore.instance
-  //     .collection(MESSAGES_COLLECTION)
-  //     .document(currentUserId)
-  //     .collection(receiver.uid)
-  //     .orderBy(TIMESTAMP_FIELD, descending: true)
-  //     .snapshots();
 }

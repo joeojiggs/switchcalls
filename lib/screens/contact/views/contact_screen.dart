@@ -41,7 +41,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
 
   void getPermissions() async {
     if (await Permissions.contactPermissionsGranted()) {
-      contacts = _provider.getAllContacts(_contactsProvider.contactList);
+      contacts = _provider.getAllContacts(_contactsProvider.contactList, contactsColorMap);
       searchController.addListener(() {
         filterContacts();
       });
@@ -160,6 +160,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
                               searchController: searchController,
                               isSearching: isSearching,
                               contactsFiltered: contactsFiltered,
+                              contactsColorMap: contactsColorMap,
                             ),
                             // Container()
                             IdentifiedContacts(

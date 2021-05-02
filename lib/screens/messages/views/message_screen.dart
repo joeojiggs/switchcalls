@@ -74,16 +74,20 @@ class _ChatScreenState extends State<ChatScreen> {
                     ChatControls(
                       controller: model.textFieldController,
                       isWriting: model.isWriting,
-                      onCameraTap: () =>
-                          model.pickImage(source: ImageSource.camera),
+                      onCameraTap: () => model.pickImage(
+                          source: ImageSource.camera,
+                          sender: sender,
+                          receiver: widget.receiver),
                       onEmojiTap: () => model.setWritingTo(true),
                       onFieldChanged: (val) {
                         (val.length > 0 && val.trim() != "")
                             ? model.setWritingTo(true)
                             : model.setWritingTo(false);
                       },
-                      onMediaTap: () =>
-                          model.pickImage(source: ImageSource.gallery),
+                      onMediaTap: () => model.pickImage(
+                          source: ImageSource.gallery,
+                          sender: sender,
+                          receiver: widget.receiver),
                       onSendTap: () =>
                           model.sendMessage(sender, widget.receiver),
                     ),
@@ -199,6 +203,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget getMessage(Message message) {
+    // print(message.photoUrl);
     return message.type != MESSAGE_TYPE_IMAGE
         ? Text(
             message.message,

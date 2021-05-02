@@ -5,6 +5,7 @@ import 'package:switchcalls/constants/strings.dart';
 import 'package:switchcalls/models/call.dart';
 import 'package:switchcalls/models/log.dart';
 import 'package:switchcalls/models/user.dart';
+import 'package:switchcalls/widgets/toasts.dart';
 import 'package:switchcalls/resources/call_methods.dart';
 import 'package:switchcalls/resources/local_db/repository/log_repository.dart';
 import 'package:switchcalls/screens/callscreens/call_screen.dart';
@@ -33,6 +34,11 @@ class CallUtils {
       timestamp: DateTime.now().toString(),
       isVideo: 0,
     );
+
+    if (call.receiverId == call.callerId) {
+      Toasts.error("Sorry, you can't call yourself");
+      return;
+    }
 
     bool callMade = await callMethods.makeCall(call: call);
 
@@ -72,6 +78,11 @@ class CallUtils {
       timestamp: DateTime.now().toString(),
       isVideo: 1,
     );
+
+    if (call.receiverId == call.callerId) {
+      Toasts.error("Sorry, you can't call yourself");
+      return;
+    }
 
     bool callMade = await callMethods.makeCall(call: call);
 

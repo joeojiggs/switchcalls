@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
+import 'package:switchcalls/models/message.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/image_upload_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +10,7 @@ import 'package:switchcalls/resources/chats/chat_methods.dart';
 
 class StorageMethods {
   static final Firestore firestore = Firestore.instance;
+  final ChatMethods chatMethods = ChatMethods();
 
   StorageReference _storageReference;
 
@@ -34,21 +36,21 @@ class StorageMethods {
 
   void uploadImage({
     @required File image,
-    @required String receiverId,
-    @required String senderId,
+    @required Message message,
     @required ImageUploadProvider imageUploadProvider,
   }) async {
-    final ChatMethods chatMethods = ChatMethods();
-
     // Set some loading value to db and show it to user
     imageUploadProvider.setToLoading();
 
     // Get url from the image bucket
     String url = await uploadImageToStorage(image);
 
+    message.photoUrl = url;
+    print(message.photoUrl);
+
     // Hide loading
     imageUploadProvider.setToIdle();
 
-    chatMethods.setImageMsg(url, receiverId, senderId);
+    chatMethods.sendMessage(message: message);
   }
 }

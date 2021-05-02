@@ -89,7 +89,8 @@ class ChatMethods extends IMessages {
     await _messageCollection
         .document(message.senderId)
         .collection('chats')
-        .document('${message.receiverId} ${_time.microsecondsSinceEpoch}')
+        .document(
+            '${message.receiverId} ${message.timestamp.microsecondsSinceEpoch}')
         .setData(map);
 
     // add receiver to sender's contacts list
@@ -102,7 +103,8 @@ class ChatMethods extends IMessages {
     return await _messageCollection
         .document(message.receiverId)
         .collection('chats')
-        .document('${message.senderId} ${_time.microsecondsSinceEpoch}')
+        .document(
+            '${message.senderId} ${message.timestamp.microsecondsSinceEpoch}')
         .setData(map);
   }
 
@@ -129,19 +131,19 @@ class ChatMethods extends IMessages {
     }
   }
 
-  void setImageMsg(String url, String receiverId, String senderId) async {
-    Message message;
+  // void setImageMsg({Message message}) async {
+  //   // Message message;
 
-    message = Message.imageMessage(
-        message: "IMAGE",
-        receiverId: receiverId,
-        senderId: senderId,
-        photoUrl: url,
-        timestamp: Timestamp.now(),
-        type: 'image');
+  //   // message = Message.imageMessage(
+  //   //     message: "IMAGE",
+  //   //     receiverId: receiverId,
+  //   //     senderId: senderId,
+  //   //     photoUrl: url,
+  //   //     timestamp: Timestamp.now(),
+  //   //     type: 'image');
 
-    await sendMessage(message: message);
-  }
+  //   await sendMessage(message: message);
+  // }
 
   Stream<List<User>> fetchContacts({String userId}) {
     return _userCollection.snapshots().transform(contactTrans());
@@ -187,7 +189,8 @@ class ChatMethods extends IMessages {
   StreamTransformer<QuerySnapshot, List<User>> contactTrans() {
     return StreamTransformer<QuerySnapshot, List<User>>.fromHandlers(
       handleData: (data, sink) {
-        List<User> list = data.documents.map((e) => User.fromMap(e.data)).toList();
+        List<User> list =
+            data.documents.map((e) => User.fromMap(e.data)).toList();
         sink.add(list);
       },
     );
@@ -195,13 +198,8 @@ class ChatMethods extends IMessages {
 
   Message convertToMessage(DocumentSnapshot chat, String recipientId) {
     // _storedb.readMessage(chat, recipientId);
-    return Message(
-      receiverId: chat.data['receiverId'],
-      senderId: chat.data['senderId'],
-      message: chat.data['message'],
-      type: chat.data['type'],
-      timestamp: chat.data['timestamp'],
-    );
+    // print(chat.data['photoUrl']);
+    return Message.fromMap(chat.data);
   }
 }
 
