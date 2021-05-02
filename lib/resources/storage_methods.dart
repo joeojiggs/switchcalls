@@ -53,4 +53,23 @@ class StorageMethods {
 
     chatMethods.sendMessage(message: message);
   }
+
+  void uploadFile({
+    @required File file,
+    @required String receiverId,
+    @required String senderId,
+    @required ImageUploadProvider imageUploadProvider,
+})async{
+    final ChatMethods chatMethods = ChatMethods();
+
+    // Set some loading value to db and show it to user
+    imageUploadProvider.setToLoading();
+
+    String url = await uploadImageToStorage(file);
+
+    // Hide loading
+    imageUploadProvider.setToIdle();
+
+    chatMethods.setImageMsg(url, receiverId, senderId);
+  }
 }

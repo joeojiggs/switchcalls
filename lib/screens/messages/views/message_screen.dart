@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:switchcalls/constants/strings.dart';
 import 'package:switchcalls/enum/view_state.dart';
 import 'package:switchcalls/models/message.dart';
@@ -90,6 +91,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           receiver: widget.receiver),
                       onSendTap: () =>
                           model.sendMessage(sender, widget.receiver),
+                      onFileTap: () =>
+                          model.pickFile(source: FilePicker.platform.pickFiles()),
                     ),
                   ],
                 ),
