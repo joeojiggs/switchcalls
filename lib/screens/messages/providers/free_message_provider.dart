@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:switchcalls/models/message.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/image_upload_provider.dart';
 import 'package:switchcalls/resources/chats/chat_methods.dart';
@@ -16,13 +17,13 @@ class FreeMessageProvider extends ChangeNotifier {
   final StorageMethods _storageMethods = StorageMethods();
   final ChatMethods _messages = ChatMethods();
   TextEditingController textFieldController = TextEditingController();
+  ImageUploadProvider imageUploadProvider = ImageUploadProvider();
 
   final User receiver;
   User _sender;
 
   String currentUserId;
 
-  ImageUploadProvider imageUploadProvider;
   bool isWriting = false;
 
   FreeMessageProvider({this.receiver}) : assert(receiver != null);
@@ -50,7 +51,6 @@ class FreeMessageProvider extends ChangeNotifier {
 
     textFieldController.text = "";
 
-    // _chatMethods.addMessageToDb(_message, sender, receiver);
     _messages.sendMessage(message: _message);
   }
 
@@ -73,23 +73,39 @@ class FreeMessageProvider extends ChangeNotifier {
     return;
   }
 
-  void pickImage({@required ImageSource source}) async {
+  void pickImage(
+      {@required ImageSource source, User sender, User receiver}) async {
     File selectedImage = await Utils.pickImage(source: source);
+
+    Message _message = Message.imageMessage(
+        message: "IMAGE",
+        receiverId: receiver.uid,
+        senderId: sender.uid,
+        timestamp: Timestamp.now(),
+        type: 'image');
+
     if (selectedImage != null)
       _storageMethods.uploadImage(
           image: selectedImage,
-          receiverId: receiver.uid,
-          senderId: currentUserId,
+          message: _message,
           imageUploadProvider: imageUploadProvider);
   }
 
-  void pickFile({@required source}) async{
-    if(source != null) {
+  void pickFile(User sender, User receiver) async {
+    FilePickerResult source = await FilePicker.platform.pickFiles();
+    if (source != null) {
+      Message _message = Message.imageMessage(
+        message: "IMAGE", //TODO: Change to "FILE"
+        receiverId: receiver.uid,
+        senderId: sender.uid,
+        timestamp: Timestamp.now(),
+        type: 'image', //TODO: Change to "file"
+      );
+
       File file = File(source.files.single.path);
       _storageMethods.uploadFile(
         file: file,
-        receiverId: receiver.uid,
-        senderId: currentUserId,
+        message: _message,
         imageUploadProvider: imageUploadProvider,
       );
     }
@@ -102,10 +118,4 @@ class FreeMessageProvider extends ChangeNotifier {
 
   Stream<List<Message>> messageStream(String userId) =>
       _messages.chatList(userId, receiver.uid);
-  // Firestore.instance
-  //     .collection(MESSAGES_COLLECTION)
-  //     .document(currentUserId)
-  //     .collection(receiver.uid)
-  //     .orderBy(TIMESTAMP_FIELD, descending: true)
-  //     .snapshots();
 }

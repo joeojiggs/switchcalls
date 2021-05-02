@@ -11,7 +11,7 @@ class Toasts {
     }
   }
 
-  static error(String message) async {
+  static Future<bool> error(String message) async {
     return await Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
@@ -19,9 +19,9 @@ class Toasts {
         timeInSecForIosWeb: 3,
         backgroundColor: Colors.red,
         textColor: Colors.white,
-        fontSize: 16.0
-    );
+        fontSize: 16.0);
   }
+
   success() {}
   regular() {}
 }
