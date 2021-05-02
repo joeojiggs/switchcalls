@@ -46,7 +46,7 @@ class StorageMethods {
     String url = await uploadImageToStorage(image);
 
     message.photoUrl = url;
-    print(message.photoUrl);
+    // print(message.photoUrl);
 
     // Hide loading
     imageUploadProvider.setToIdle();
@@ -56,20 +56,18 @@ class StorageMethods {
 
   void uploadFile({
     @required File file,
-    @required String receiverId,
-    @required String senderId,
+    @required Message message,
     @required ImageUploadProvider imageUploadProvider,
-})async{
-    final ChatMethods chatMethods = ChatMethods();
-
+  }) async {
     // Set some loading value to db and show it to user
     imageUploadProvider.setToLoading();
 
     String url = await uploadImageToStorage(file);
+    message.photoUrl = url;
 
     // Hide loading
     imageUploadProvider.setToIdle();
 
-    chatMethods.setImageMsg(url, receiverId, senderId);
+    chatMethods.sendMessage(message: message);
   }
 }
