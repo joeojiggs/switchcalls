@@ -217,16 +217,16 @@ void addMediaModal(BuildContext context, Function onMediaTap, Function onFileTap
                       onFileTap();
                     },
                   ),
-                  ModalTile(
-                    title: "Contact",
-                    subtitle: "Share contacts",
-                    icon: Icons.contacts,
-                  ),
-                  ModalTile(
-                    title: "Location",
-                    subtitle: "Share a location",
-                    icon: Icons.add_location,
-                  ),
+                 // ModalTile(
+                  //  title: "Contact",
+                  //  subtitle: "Share contacts",
+                  //  icon: Icons.contacts,
+                  //),
+                 // ModalTile(
+                  //  title: "Location",
+                  //  subtitle: "Share a location",
+                  //  icon: Icons.add_location,
+                 // ),
                   // ModalTile(
                   //   title: "Schedule Call",
                   //   subtitle: "Arrange a skype call and get reminders",
