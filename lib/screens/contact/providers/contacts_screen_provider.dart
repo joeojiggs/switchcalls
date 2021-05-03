@@ -4,7 +4,7 @@ import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
 
 class ContactsScreenProvider extends ChangeNotifier {
-  Map<String, Color> contactsColorMap = new Map();
+  // Map<String, Color> contactsColorMap = {};
 
   List<User> filterIdentifiedCL(
       List<User> identified, List<Contact> contacts, String query) {
@@ -19,7 +19,8 @@ class ContactsScreenProvider extends ChangeNotifier {
     return identified;
   }
 
-  List<Contact> getAllContacts(List<Contact> contactList) {
+  List<Contact> getAllContacts(
+      List<Contact> contactList, Map<String, Color> contactsColorMap) {
     List colors = [Colors.green, Colors.indigo, Colors.yellow, Colors.orange];
     int colorIndex = 0;
     List<Contact> _contacts = contactList;

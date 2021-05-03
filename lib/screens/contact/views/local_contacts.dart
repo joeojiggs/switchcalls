@@ -14,6 +14,7 @@ class LocalContacts extends StatelessWidget {
     @required this.searchController,
     @required this.isSearching,
     @required this.contactsFiltered,
+    @required this.contactsColorMap,
   })  : _contactsProvider = contactsProvider,
         super(key: key);
 
@@ -22,7 +23,8 @@ class LocalContacts extends StatelessWidget {
   final bool isSearching;
   final List<Contact> contactsFiltered;
   List<Contact> contacts;
-  ContactsScreenProvider _provider = ContactsScreenProvider();
+  final Map<String, Color> contactsColorMap;
+  final ContactsScreenProvider _provider = ContactsScreenProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,9 @@ class LocalContacts extends StatelessWidget {
           // print(snapshot.hasData);
           // print(_contactsProvider.contactList);
           if (contacts != _contactsProvider.contactList) {
-            contacts = _provider.getAllContacts(_contactsProvider.contactList);
+            print('Contacts is refreshing');
+            contacts = _provider.getAllContacts(
+                _contactsProvider.contactList, contactsColorMap);
           }
           if (snapshot.connectionState == ConnectionState.waiting &&
               contacts.isEmpty)
@@ -66,10 +70,10 @@ class LocalContacts extends StatelessWidget {
                             ? contactsFiltered[index]
                             : contacts[index];
 
-                        var baseColor = _provider
-                                .contactsColorMap[contact.displayName ?? '']
-                            as dynamic;
-                            
+                        var baseColor =
+                            contactsColorMap[contact.displayName] as dynamic;
+                        // print(contactsColorMap);
+
                         Color color1 = baseColor[800];
                         Color color2 = baseColor[400];
                         return ListTile(
