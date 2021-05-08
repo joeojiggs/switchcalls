@@ -10,8 +10,8 @@ import 'package:switchcalls/screens/search_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/skype_appbar.dart';
 
-// import '../providers/message_list_provider.dart';
 import '../widgets/new_chat_button.dart';
+import '../widgets/select_contact.dart';
 import '../../../widgets/user_details_container.dart';
 import 'chat_list.dart';
 import 'sms_list.dart';
@@ -24,18 +24,16 @@ class ChatListScreen extends StatefulWidget {
 class _ChatListScreenState extends State<ChatListScreen>
     with SingleTickerProviderStateMixin {
   AuthMethods _authMethods = AuthMethods();
-  // MessageListProvider _messageListProvider = new MessageListProvider();
   List<User> userList;
-  // FirebaseUser thisUser;
   TabController _tabCont;
   MessageProvider _messageProvider;
 
   bool isLoading = true;
-  List<SmsThread> messages = [];
+  List<SmsThread> threads = [];
 
   Future<void> getThreads() async {
     try {
-      messages = await _messageProvider.getthreads();
+      threads = await _messageProvider.getthreads();
       isLoading = false;
       if (mounted) setState(() {});
     } catch (e) {
@@ -48,27 +46,11 @@ class _ChatListScreenState extends State<ChatListScreen>
   @override
   void initState() {
     _messageProvider = Provider.of<MessageProvider>(context, listen: false);
-    getThreads();
+    // getThreads();
+    _messageProvider.init();
     _tabCont = TabController(vsync: this, length: 2, initialIndex: 0);
 
     _authMethods.getCurrentUser().then((FirebaseUser user) {
-      // thisUser = user;
-      // _messageListProvider = new MessageListProvider();
-      // _tabCont.addListener(() {
-      //   if (_tabCont.index == 1 && !_messageListProvider.sub.isPaused) {
-      //     _messageListProvider.onClose();
-      //     print('Controller is paused');
-      //   } else if (_tabCont.index == 0 && _messageListProvider.sub.isPaused) {
-      //     if (_messageListProvider.sub != null) {
-      //       _messageListProvider.onInit(user.uid);
-      //       print('Controller is resumed');
-      //     }
-      //     print('here');
-      //   }
-      // });
-      // _messageListProvider.onInit(user.uid);
-      // print('Controller is Started');
-
       _authMethods.fetchAllUsers(user).then((List<User> list) {
         if (mounted) {
           setState(() {
@@ -83,15 +65,14 @@ class _ChatListScreenState extends State<ChatListScreen>
   @override
   void dispose() {
     _tabCont.dispose();
-    // _messageListProvider.onClose();
     super.dispose();
   }
 
-  @override
-  void didUpdateWidget(covariant ChatListScreen oldWidget) {
-    getThreads();
-    super.didUpdateWidget(oldWidget);
-  }
+  // @override
+  // void didUpdateWidget(covariant ChatListScreen oldWidget) {
+  //   getThreads();
+  //   super.didUpdateWidget(oldWidget);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -140,53 +121,16 @@ class _ChatListScreenState extends State<ChatListScreen>
                   MaterialPageRoute(
                       builder: (context) => SearchScreen(show: true)),
                 );
+              } else {
+                //TODO: New Message for text messages
+                // () =>
+                await showModalBottomSheet(
+                  isScrollControlled: true,
+                  context: context,
+                  backgroundColor: UniversalVariables.blackColor,
+                  builder: (context) => SelectContact(),
+                );
               }
-              //  else {
-              //   //TODO: New Message for text messages
-              //   // () =>
-              //   await showModalBottomSheet(
-              //     isScrollControlled: true,
-              //     context: context,
-              //     backgroundColor: UniversalVariables.blackColor,
-              //     builder: (context) => Container(
-              //       constraints: BoxConstraints(
-              //         maxHeight: MediaQuery.of(context).size.height * 0.8,
-              //         minHeight: MediaQuery.of(context).size.height * 0.4,
-              //       ),
-              //       child: Column(
-              //         children: [
-              //           SkypeAppBar(
-              //             title: 'Select Contact',
-              //             actions: [
-              //               IconButton(
-              //                 icon: Icon(
-              //                   Icons.search,
-              //                   color: Colors.white,
-              //                 ),
-              //                 onPressed: () {
-              //                   Navigator.pushNamed(context, "/search_screen");
-              //                 },
-              //               ),
-              //             ],
-              //           ),
-              //           Flexible(
-              //             child: LocalChatLisContainer(
-              //               isLoading: isLoading,
-              //               threads: messages,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //   );
-              // }
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) =>
-              //         _tabCont.index == 0 ? ChatScreen() : TextScreen(),
-              //   ),
-              // );
             },
           ),
           body: Column(
@@ -223,10 +167,11 @@ class _ChatListScreenState extends State<ChatListScreen>
                 child: TabBarView(
                   controller: _tabCont,
                   children: [
-                    ChatList(),//controller: _messageListProvider?.controller),
+                    ChatList(), //controller: _messageListProvider?.controller),
                     SMSList(
                       isLoading: isLoading,
-                      threads: messages,
+                      threads: threads,
+                      messageProvider: _messageProvider,
                     ),
                   ],
                 ),

@@ -12,6 +12,7 @@ abstract class IMessages {
   Stream unReadMessages(String userId);
   void messageList(QuerySnapshot data, StreamController cont);
   Future sendMessage({Message message});
+  void readMessage(DocumentSnapshot element, String recipientId);
 }
 
 class ChatMethods extends IMessages {
@@ -109,7 +110,7 @@ class ChatMethods extends IMessages {
   }
 
   @override
-  Stream unReadMessages(String userId) {
+  Stream<int> unReadMessages(String userId) {
     try {
       Stream<int> number = _messageCollection
           .document(userId)
@@ -131,19 +132,22 @@ class ChatMethods extends IMessages {
     }
   }
 
-  // void setImageMsg({Message message}) async {
-  //   // Message message;
-
-  //   // message = Message.imageMessage(
-  //   //     message: "IMAGE",
-  //   //     receiverId: receiverId,
-  //   //     senderId: senderId,
-  //   //     photoUrl: url,
-  //   //     timestamp: Timestamp.now(),
-  //   //     type: 'image');
-
-  //   await sendMessage(message: message);
-  // }
+  @override
+  void readMessage(DocumentSnapshot element, String recipientId) {
+    try {
+      if (element.documentID.startsWith(recipientId) &&
+          element.data['isRead'] == false) {
+       _messageCollection
+            .document(element.data['senderId'])
+            .collection('chats')
+            .document(element.documentID)
+            .updateData({'isRead': true});
+        // print('updated');
+      }
+    } catch (e) {
+      print('\n\n---READ MESSAGE ERROR---\n $e\n\n');
+    }
+  }
 
   Stream<List<User>> fetchContacts({String userId}) {
     return _userCollection.snapshots().transform(contactTrans());
@@ -197,7 +201,7 @@ class ChatMethods extends IMessages {
   }
 
   Message convertToMessage(DocumentSnapshot chat, String recipientId) {
-    // _storedb.readMessage(chat, recipientId);
+    readMessage(chat, recipientId);
     // print(chat.data['photoUrl']);
     return Message.fromMap(chat.data);
   }
