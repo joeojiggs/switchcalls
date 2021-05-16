@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:provider/provider.dart';
 import 'package:switchcalls/models/user.dart';
+import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
+import 'package:switchcalls/screens/contact/providers/contacts_screen_provider.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 
@@ -11,13 +14,14 @@ import 'messages/views/message_screen.dart';
 class SearchScreen extends StatefulWidget {
   final bool show;
 
-  const SearchScreen({Key key, this.show = false}) : super(key: key);
+  const SearchScreen({Key key, this.show = true}) : super(key: key);
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
   AuthMethods _authMethods = AuthMethods();
+  ContactsProvider _contactsProvider;
 
   List<User> userList = [];
   String query = "";
@@ -27,6 +31,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
+    _contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
 
     _authMethods.getCurrentUser().then((FirebaseUser user) {
       _authMethods.fetchAllUsers(user).then((List<User> list) {
@@ -165,13 +170,25 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: UniversalVariables.blackColor,
-      appBar: searchAppBar(context),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: buildSuggestions(query),
-      ),
+    return ChangeNotifierProvider<ContactsScreenProvider>(
+      create: (context) => ContactsScreenProvider(),
+      builder: (context, snapshot) {
+        return Consumer<ContactsScreenProvider>(
+          builder: (context, model, child) {
+            userList = model.filterIdentifiedCL(
+                userList, _contactsProvider.contactList, searchController.text);
+            print(userList.length);
+            return Scaffold(
+              backgroundColor: UniversalVariables.blackColor,
+              appBar: searchAppBar(context),
+              body: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: buildSuggestions(query),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
