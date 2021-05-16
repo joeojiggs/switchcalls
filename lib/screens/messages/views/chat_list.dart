@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:switchcalls/resources/chats/chat_methods.dart';
@@ -11,8 +12,12 @@ import '../widgets/chat_tile.dart';
 
 class ChatList extends StatefulWidget {
   final StreamController<List<Chat>> controller;
+  final User user;
 
-  ChatList({Key key, this.controller}) : super(key: key);
+  ChatList({
+    Key key,
+    this.controller, this.user,
+  }) : super(key: key);
 
   @override
   _ChatListState createState() => _ChatListState();
@@ -39,18 +44,10 @@ class _ChatListState extends State<ChatList> {
 
   @override
   Widget build(BuildContext context) {
-    // final UserProvider userProvider = Provider.of<UserProvider>(context);
-
     return StreamBuilder<List<Chat>>(
-      //<QuerySnapshot>(
       stream: _messageListProvider.controller?.stream,
-      // _chatMethods.fetchContacts(
-      //   userId: userProvider.getUser.uid,
-      // ),
       builder: (context, snapshot) {
         List<Chat> users = snapshot.data ?? [];
-        // print(users);
-        // print(snapshot.hasError);
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
@@ -65,7 +62,7 @@ class _ChatListState extends State<ChatList> {
               chat: user,
               uid: user.uid,
               date: user.toDateString(),
-              unreads: _messages.unReadMessages(user.uid),
+              unreads: _messages.unReadMessages(widget.user.uid, user.uid),
             );
           },
         );
@@ -73,4 +70,3 @@ class _ChatListState extends State<ChatList> {
     );
   }
 }
-
