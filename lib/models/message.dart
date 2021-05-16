@@ -7,24 +7,29 @@ class Message {
   String message;
   Timestamp timestamp;
   String photoUrl;
+  bool isRead;
 
-  Message(
-      {this.senderId,
-      this.receiverId,
-      this.type,
-      this.message,
-      this.timestamp,
-      this.photoUrl});
+  Message({
+    this.senderId,
+    this.receiverId,
+    this.type,
+    this.message,
+    this.timestamp,
+    this.photoUrl,
+    this.isRead,
+  });
 
   //Will be only called when you wish to send an image
   // named constructor
-  Message.imageMessage(
-      {this.senderId,
-      this.receiverId,
-      this.message,
-      this.type,
-      this.timestamp,
-      this.photoUrl});
+  Message.imageMessage({
+    this.senderId,
+    this.receiverId,
+    this.message,
+    this.type,
+    this.timestamp,
+    this.photoUrl,
+    this.isRead,
+  });
 
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
@@ -34,6 +39,7 @@ class Message {
     map['message'] = this.message;
     map['timestamp'] = this.timestamp;
     map['photoUrl'] = this.photoUrl;
+    map['isRead'] = this.isRead;
     return map;
   }
 
@@ -56,5 +62,6 @@ class Message {
     this.message = map['message'];
     this.timestamp = map['timestamp'];
     this.photoUrl = map['photoUrl'];
+    this.isRead = map['isRead'];
   }
 }

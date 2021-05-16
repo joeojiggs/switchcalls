@@ -101,11 +101,20 @@ class ChatTile extends StatelessWidget {
             stream: unreads,
             builder: (context, snapshot) {
               int value = snapshot.data;
+              // print(value);
               if (value != null && value > 0) {
-                return CircleAvatar(
-                  backgroundColor: Colors.black,
-                  radius: 12,
-                  child: Text('$value'),
+                return Padding(
+                padding: EdgeInsets.only(right: 10.0),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.red,
+                    radius: 12,
+                    child: Text(
+                      '$value',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 );
               } else {
                 return Container();
