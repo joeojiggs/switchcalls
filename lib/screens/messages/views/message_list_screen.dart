@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:sms/sms.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/local_message_provider.dart';
+import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/screens/search_screen.dart';
@@ -27,6 +28,7 @@ class _ChatListScreenState extends State<ChatListScreen>
   List<User> userList;
   TabController _tabCont;
   MessageProvider _messageProvider;
+  UserProvider _userProvider;
 
   bool isLoading = true;
   List<SmsThread> threads = [];
@@ -46,6 +48,7 @@ class _ChatListScreenState extends State<ChatListScreen>
   @override
   void initState() {
     _messageProvider = Provider.of<MessageProvider>(context, listen: false);
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
     // getThreads();
     _messageProvider.init();
     _tabCont = TabController(vsync: this, length: 2, initialIndex: 0);
@@ -167,7 +170,9 @@ class _ChatListScreenState extends State<ChatListScreen>
                 child: TabBarView(
                   controller: _tabCont,
                   children: [
-                    ChatList(), //controller: _messageListProvider?.controller),
+                    ChatList(
+                      user: _userProvider.getUser,
+                    ), //controller: _messageListProvider?.controller),
                     SMSList(
                       isLoading: isLoading,
                       threads: threads,

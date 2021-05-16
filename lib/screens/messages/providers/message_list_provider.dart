@@ -25,9 +25,9 @@ class MessageListProvider extends ChangeNotifier {
     _chatsub.cancel();
   }
 
-  Stream<int> getUnreads(String userId) {
-    return _messages.unReadMessages(userId);
-  }
+  // Stream<int> getUnreads(String userId) {
+  //   return _messages.unReadMessages(userId);
+  // }
 
   StreamController<List<Chat>> get controller => _chatCont;
   StreamSubscription<QuerySnapshot> get sub => _chatsub;

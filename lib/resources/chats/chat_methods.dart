@@ -9,7 +9,7 @@ import 'package:switchcalls/models/user.dart';
 
 abstract class IMessages {
   Stream chatList(String userId, String recipientId);
-  Stream unReadMessages(String userId);
+  Stream unReadMessages(String userId, String recipientId);
   void messageList(QuerySnapshot data, StreamController cont);
   Future sendMessage({Message message});
   void readMessage(DocumentSnapshot element, String recipientId);
@@ -38,7 +38,7 @@ class ChatMethods extends IMessages {
         .collection('chats')
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .transform(transformer(recipientId));
+        .transform(transformer(recipientId, userId));
   }
 
   @override
@@ -110,18 +110,18 @@ class ChatMethods extends IMessages {
   }
 
   @override
-  Stream<int> unReadMessages(String userId) {
+  Stream<int> unReadMessages(String userId, String recipientId) {
     try {
       Stream<int> number = _messageCollection
           .document(userId)
           .collection('chats')
+          .where('senderId', isEqualTo: recipientId)
           .where('isSender', isEqualTo: false)
-          .where('senderId', isEqualTo: userId)
           .where('isRead', isEqualTo: false)
           .snapshots()
           .transform(new StreamTransformer<QuerySnapshot, int>.fromHandlers(
         handleData: (QuerySnapshot data, EventSink<int> sink) {
-          // print(data.docs.length);
+          // print(data.documents);
           sink.add(data.documents.length);
         },
       ));
@@ -135,10 +135,11 @@ class ChatMethods extends IMessages {
   @override
   void readMessage(DocumentSnapshot element, String recipientId) {
     try {
+      print(recipientId);
       if (element.documentID.startsWith(recipientId) &&
           element.data['isRead'] == false) {
-       _messageCollection
-            .document(element.data['senderId'])
+        _messageCollection
+            .document(element.data['receiverId'])
             .collection('chats')
             .document(element.documentID)
             .updateData({'isRead': true});
@@ -177,7 +178,7 @@ class ChatMethods extends IMessages {
 
   // UTILITIES
   StreamTransformer<QuerySnapshot, List<Message>> transformer(
-      String recipientId) {
+      String recipientId, String appUserId) {
     return StreamTransformer<QuerySnapshot, List<Message>>.fromHandlers(
       handleData: (QuerySnapshot data, EventSink<List<Message>> sink) {
         final chats = data.documents

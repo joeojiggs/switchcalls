@@ -94,14 +94,14 @@ class _SelectContactState extends State<SelectContact> {
                     ? contactsFiltered[index]
                     : _contactsProvider.contactList[index];
                 return ListTile(
-                  title: Text(_contact.displayName),
+                  title: Text('${_contact.displayName}'),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: _contact.phones
                         .map((e) => InkWell(
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(e.value),
+                                child: Text('${e.value}'),
                               ),
                               onTap: () async {
                                 if (_contact.phones.length > 1) {
