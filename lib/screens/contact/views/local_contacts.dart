@@ -21,7 +21,7 @@ class LocalContacts extends StatelessWidget {
   final ContactsProvider _contactsProvider;
   final TextEditingController searchController;
   final bool isSearching;
-  final List<Contact> contactsFiltered;
+  List<Contact> contactsFiltered;
   List<Contact> contacts;
   final Map<String, Color> contactsColorMap;
   final ContactsScreenProvider _provider = ContactsScreenProvider();
@@ -39,10 +39,14 @@ class LocalContacts extends StatelessWidget {
             contacts = _provider.getAllContacts(
                 _contactsProvider.contactList, contactsColorMap);
           }
+          // print(snapshot.data?.length);
           if (snapshot.connectionState == ConnectionState.waiting &&
               contacts.isEmpty)
             return Center(child: CircularProgressIndicator());
           if (contacts.isNotEmpty) {
+            if (isSearching)
+              contactsFiltered = _provider.filterLocalContacts(
+                  searchController.text, contacts);
             return Container(
               padding: EdgeInsets.all(20),
               child: Column(

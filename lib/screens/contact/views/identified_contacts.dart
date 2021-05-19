@@ -46,9 +46,9 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
     userProvider = Provider.of<UserProvider>(context, listen: false);
     _contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
 
-    // searchController.addListener(() {
-    //   setState(() {});
-    // });
+    searchController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override

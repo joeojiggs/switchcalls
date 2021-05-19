@@ -19,6 +19,35 @@ class ContactsScreenProvider extends ChangeNotifier {
     return identified;
   }
 
+  List<Contact> filterLocalContacts(String query, List<Contact> contacts) {
+    List<Contact> _contacts = [];
+    _contacts.addAll(contacts);
+    if (query.isNotEmpty) {
+      _contacts.retainWhere((contact) {
+        String searchTerm = query.toLowerCase();
+        String searchTermFlatten = flattenPhoneNumber(searchTerm);
+        String contactName = contact.displayName.toLowerCase();
+        bool nameMatches = contactName.contains(searchTerm);
+        if (nameMatches == true) {
+          return true;
+        }
+
+        if (searchTermFlatten.isEmpty) {
+          return false;
+        }
+
+        var phone = contact.phones.firstWhere((phn) {
+          String phnFlattened = flattenPhoneNumber(phn.value);
+          return phnFlattened.contains(searchTermFlatten);
+        }, orElse: () => null);
+
+        return phone != null;
+      });
+    }
+
+    return _contacts;
+  }
+
   List<Contact> getAllContacts(
       List<Contact> contactList, Map<String, Color> contactsColorMap) {
     List colors = [Colors.green, Colors.indigo, Colors.yellow, Colors.orange];
