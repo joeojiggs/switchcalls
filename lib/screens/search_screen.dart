@@ -175,8 +175,8 @@ class _SearchScreenState extends State<SearchScreen> {
       builder: (context, snapshot) {
         return Consumer<ContactsScreenProvider>(
           builder: (context, model, child) {
-            userList = model.filterIdentifiedCL(
-                userList, _contactsProvider.contactList, searchController.text);
+            // userList = model.filterIdentifiedCL(
+            //     userList, _contactsProvider.contactList, searchController.text);
             print(userList.length);
             return Scaffold(
               backgroundColor: UniversalVariables.blackColor,

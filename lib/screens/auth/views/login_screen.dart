@@ -133,7 +133,7 @@ class LoginScreenState extends State<LoginScreen> {
                               textFieldController: model.phoneNumController,
                               focusNode: model.phoneNumberFocus,
                               initialValue:
-                                  PhoneNumber(dialCode: '=234', isoCode: 'NG'),
+                                  PhoneNumber(dialCode: '+234', isoCode: 'NG'),
                               validator: (val) => model
                                   .validatePhone(model.phoneNumController.text),
                               formatInput: true,

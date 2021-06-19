@@ -32,23 +32,24 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
   ContactsProvider _contactsProvider;
   UserProvider userProvider;
 
-  List<User> searchedContacts(List<User> filtered) {
-    String query = searchController.text.toLowerCase();
+  // List<User> searchedContacts(List<User> filtered) {
+  //   String query = searchController.text.toLowerCase();
 
-    Iterable<User> res = filtered
-        .where((element) => element.username.toLowerCase().contains(query));
+  //   Iterable<User> res = filtered
+  //       .where((element) => element.username.toLowerCase().contains(query));
 
-    return res.toList();
-  }
+  //   return res.toList();
+  // }
 
   @override
   void initState() {
     userProvider = Provider.of<UserProvider>(context, listen: false);
     _contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
 
-    searchController.addListener(() {
-      setState(() {});
-    });
+    // searchController.addListener(() {
+    //   setState(() {});
+    // });
+    super.initState();
   }
 
   @override
@@ -59,32 +60,17 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
         stream: _chatMethods.fetchContacts(),
         builder: (BuildContext context, snapshot) {
           List<User> identified = snapshot.data;
-          // print(snapshot.data);
+          print(snapshot.data.map((e) => e.phoneNumber).toList());
           // print(_contactsProvider.contactList);
           if (snapshot.connectionState == ConnectionState.waiting)
             return Center(child: CircularProgressIndicator());
           if (identified != null || identified.isNotEmpty) {
             List<User> filtered = _provider.filterIdentifiedCL(identified,
                 _contactsProvider.contactList, searchController.text);
-            // List<User> searched = searchedContacts(filtered);
-            // print(filtered);
             return Container(
               padding: EdgeInsets.all(20),
               child: Column(
                 children: <Widget>[
-                  // Container(
-                  //   child: TextField(
-                  //     controller: searchController,
-                  //     decoration: InputDecoration(
-                  //       labelText: 'Search',
-                  //       border: new OutlineInputBorder(
-                  //           borderSide: new BorderSide(
-                  //               color: Theme.of(context).primaryColor)),
-                  //       prefixIcon: Icon(Icons.search,
-                  //           color: Theme.of(context).primaryColor),
-                  //     ),
-                  //   ),
-                  // ),
                   Expanded(
                     child: ListView.builder(
                       shrinkWrap: true,
@@ -187,7 +173,7 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
           ),
           Divider(height: 5),
           ListTile(
-            title: Text(contact.phoneNumber),
+            title: Text('${contact.phoneNumber}'),
             trailing: ButtonBar(
               alignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,

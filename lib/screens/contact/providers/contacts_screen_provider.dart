@@ -2,21 +2,34 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart' as INPH;
 
 class ContactsScreenProvider extends ChangeNotifier {
   // Map<String, Color> contactsColorMap = {};
+  // INPH.PhoneNumber _number = INPH.PhoneNumber;
+  // _nub
+  // _number.parseNumber();
 
   List<User> filterIdentifiedCL(
       List<User> identified, List<Contact> contacts, String query) {
-    Iterable<String> nwe =
-        contacts.map((e) => e.phones.first.value.substring(1));
+    List<String> contNumbers = contacts
+        ?.map((e) => (e?.phones?.length ?? 0) > 0
+            ? e?.phones?.first?.value?.substring(1)
+            : '').map((e) => e.replaceAll(' ', ''))
+        ?.toList();
+    // INPH.PhoneNumber.getParsableNumber(INPH.PhoneNumber())
+
+    print(contNumbers);
+
+    // identified = identified.map((e) => e.phoneNumber.substring(1)).toList();
 
     identified.retainWhere(
-        (element) => nwe.contains(element.phoneNumber.substring(4)));
+        (element) => contNumbers?.contains(element?.phoneNumber?.substring(4)));
 
-    identified
-        .where((element) => element.username.toLowerCase().contains(query));
-    return identified;
+    Iterable<User> res = identified
+        .where((element) => element.username.toLowerCase().contains(query))
+        .toList();
+    return res;
   }
 
   List<Contact> filterLocalContacts(String query, List<Contact> contacts) {
@@ -26,8 +39,8 @@ class ContactsScreenProvider extends ChangeNotifier {
       _contacts.retainWhere((contact) {
         String searchTerm = query.toLowerCase();
         String searchTermFlatten = flattenPhoneNumber(searchTerm);
-        String contactName = contact.displayName.toLowerCase();
-        bool nameMatches = contactName.contains(searchTerm);
+        String contactName = contact?.displayName?.toLowerCase();
+        bool nameMatches = contactName?.contains(searchTerm);
         if (nameMatches == true) {
           return true;
         }
@@ -36,9 +49,9 @@ class ContactsScreenProvider extends ChangeNotifier {
           return false;
         }
 
-        var phone = contact.phones.firstWhere((phn) {
+        var phone = contact?.phones?.firstWhere((phn) {
           String phnFlattened = flattenPhoneNumber(phn.value);
-          return phnFlattened.contains(searchTermFlatten);
+          return phnFlattened?.contains(searchTermFlatten);
         }, orElse: () => null);
 
         return phone != null;
@@ -59,9 +72,9 @@ class ContactsScreenProvider extends ChangeNotifier {
       // print(colorIndex);
       Color baseColor = colors[colorIndex];
       // print(baseColor);
-      contactsColorMap[contact.displayName] = baseColor;
+      contactsColorMap[contact?.displayName] = baseColor;
       colorIndex++;
-      if (colorIndex == colors.length) {
+      if (colorIndex == colors?.length) {
         colorIndex = 0;
       }
     });
