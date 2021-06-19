@@ -81,9 +81,9 @@ class LocalContacts extends StatelessWidget {
                         Color color1 = baseColor[800];
                         Color color2 = baseColor[400];
                         return ListTile(
-                          title: Text(contact.displayName),
+                          title: Text('${contact.displayName}'),
                           subtitle: Text(contact.phones.length > 0
-                              ? contact.phones.elementAt(0).value
+                              ? '${contact.phones.elementAt(0)?.value}'
                               : ''),
                           leading: (contact.avatar != null &&
                                   contact.avatar.length > 0)
@@ -101,7 +101,7 @@ class LocalContacts extends StatelessWidget {
                                           begin: Alignment.bottomLeft,
                                           end: Alignment.topRight)),
                                   child: CircleAvatar(
-                                    child: Text(contact.initials(),
+                                    child: Text('${contact?.initials()}',
                                         style: TextStyle(color: Colors.white)),
                                     backgroundColor: Colors.transparent,
                                   ),
