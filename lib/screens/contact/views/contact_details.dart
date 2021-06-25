@@ -11,6 +11,7 @@ import 'package:switchcalls/screens/messages/views/message_screen.dart';
 import 'package:switchcalls/screens/messages/views/text_message_screen.dart';
 import 'package:switchcalls/utils/call_utilities.dart';
 import 'package:switchcalls/utils/permissions.dart';
+import 'package:switchcalls/models/contact.dart';
 
 class ContactDetails extends StatelessWidget {
   final AuthMethods _authMethods = AuthMethods();
@@ -26,7 +27,7 @@ class ContactDetails extends StatelessWidget {
 
   final Color color1;
   final Color color2;
-  final Contact contact;
+  final MyContact contact;
 
   String formatNumber(String number) {
     if (number.length == 11 && number.startsWith('0')) {
@@ -60,7 +61,7 @@ class ContactDetails extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                contact.initials(),
+                contact?.initials,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 90,
@@ -76,7 +77,7 @@ class ContactDetails extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
-                  contact.displayName,
+                  contact?.name ?? '',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 30,
@@ -91,15 +92,15 @@ class ContactDetails extends StatelessWidget {
           FutureBuilder<User>(
             initialData: null,
             future: _authMethods.getUserByPhone(
-                formatNumber(contact.phones.elementAt(0).value)),
+                formatNumber(contact?.trimNums?.elementAt(0))),
             builder: (context, snapshot) {
               UserProvider userProvider;
               userProvider = Provider.of<UserProvider>(context, listen: false);
               return ListView.builder(
                 shrinkWrap: true,
-                itemCount: contact.phones.length,
+                itemCount: contact.trimNums?.length ?? 0,
                 itemBuilder: (__, index) {
-                  String number = contact.phones.elementAt(index).value;
+                  String number = contact?.trimNums?.elementAt(index);
                   return ListTile(
                     title: Text(number),
                     trailing: ButtonBar(

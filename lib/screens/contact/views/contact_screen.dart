@@ -6,6 +6,7 @@ import 'package:switchcalls/widgets/skype_appbar.dart';
 import 'package:switchcalls/widgets/user_details_container.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
+import 'package:switchcalls/models/contact.dart';
 
 import '../providers/contacts_screen_provider.dart';
 import './local_contacts.dart';
@@ -17,8 +18,8 @@ class ContactListScreen extends StatefulWidget {
 }
 
 class _ContactListScreenState extends State<ContactListScreen> {
-  List<Contact> contacts = [];
-  List<Contact> contactsFiltered = [];
+  List<MyContact> contacts = [];
+  List<MyContact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = new Map();
   TextEditingController searchController = new TextEditingController();
   ContactsProvider _contactsProvider;
@@ -49,13 +50,13 @@ class _ContactListScreenState extends State<ContactListScreen> {
   }
 
   void filterContacts() {
-    List<Contact> _contacts = [];
+    List<MyContact> _contacts = [];
     _contacts.addAll(contacts);
     if (searchController.text.isNotEmpty) {
       _contacts.retainWhere((contact) {
         String searchTerm = searchController.text.toLowerCase();
         String searchTermFlatten = _provider.flattenPhoneNumber(searchTerm);
-        String contactName = contact.displayName.toLowerCase();
+        String contactName = contact.name.toLowerCase();
         bool nameMatches = contactName.contains(searchTerm);
         if (nameMatches == true) {
           return true;
@@ -65,8 +66,8 @@ class _ContactListScreenState extends State<ContactListScreen> {
           return false;
         }
 
-        var phone = contact.phones.firstWhere((phn) {
-          String phnFlattened = _provider.flattenPhoneNumber(phn.value);
+        var phone = contact.numbers.firstWhere((phn) {
+          String phnFlattened = _provider.flattenPhoneNumber(phn);
           return phnFlattened.contains(searchTermFlatten);
         }, orElse: () => null);
 

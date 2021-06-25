@@ -7,6 +7,7 @@ import '../views/text_message_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/provider/local_message_provider.dart';
 import 'package:sms/sms.dart';
+import 'package:switchcalls/models/contact.dart';
 // import 'package:sms/contact.dart' as;
 
 class SelectContact extends StatefulWidget {
@@ -17,7 +18,7 @@ class SelectContact extends StatefulWidget {
 class _SelectContactState extends State<SelectContact> {
   ContactsProvider _contactsProvider;
   final TextEditingController searchController = TextEditingController();
-  List<Contact> contactsFiltered = [];
+  List<MyContact> contactsFiltered = [];
   MessageProvider _messageProvider;
 // List<Contact> contacts = [];
 
@@ -90,23 +91,23 @@ class _SelectContactState extends State<SelectContact> {
                   ? contactsFiltered.length
                   : _contactsProvider.contactList.length,
               itemBuilder: (__, index) {
-                Contact _contact = isSearching == true
+                MyContact _contact = isSearching == true
                     ? contactsFiltered[index]
                     : _contactsProvider.contactList[index];
                 return ListTile(
-                  title: Text('${_contact.displayName}'),
+                  title: Text('${_contact.name}'),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _contact.phones
+                    children: _contact.trimNums
                         .map((e) => InkWell(
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text('${e.value}'),
+                                child: Text('$e'),
                               ),
                               onTap: () async {
-                                if (_contact.phones.length > 1) {
+                                if (_contact.trimNums.length > 1) {
                                   Cts.Contact contact = await Cts.ContactQuery()
-                                      .queryContact(e.value);
+                                      .queryContact(e);
 
                                   var test = _messageProvider.messages
                                       .firstWhere((element) {
@@ -152,9 +153,9 @@ class _SelectContactState extends State<SelectContact> {
                         .toList(),
                   ),
                   onTap: () async {
-                    if (_contact.phones.length < 2) {
+                    if (_contact.trimNums.length < 2) {
                       Cts.Contact contact = await Cts.ContactQuery()
-                          .queryContact(_contact.phones.first.value);
+                          .queryContact(_contact.trimNums.first);
 
                       var test =
                           _messageProvider.messages.firstWhere((element) {
@@ -205,13 +206,13 @@ class _SelectContactState extends State<SelectContact> {
   }
 
   void filterContacts() {
-    List<Contact> _contacts = [];
+    List<MyContact> _contacts = [];
     _contacts.addAll(_contactsProvider.contactList);
     if (searchController.text.isNotEmpty) {
       _contacts.retainWhere((contact) {
         String searchTerm = searchController.text.toLowerCase();
         String searchTermFlatten = flattenPhoneNumber(searchTerm);
-        String contactName = contact.displayName.toLowerCase();
+        String contactName = contact.name.toLowerCase();
         bool nameMatches = contactName.contains(searchTerm);
         if (nameMatches == true) {
           return true;
@@ -221,8 +222,8 @@ class _SelectContactState extends State<SelectContact> {
           return false;
         }
 
-        var phone = contact.phones.firstWhere((phn) {
-          String phnFlattened = flattenPhoneNumber(phn.value);
+        var phone = contact.numbers.firstWhere((phn) {
+          String phnFlattened = flattenPhoneNumber(phn);
           return phnFlattened.contains(searchTermFlatten);
         }, orElse: () => null);
 

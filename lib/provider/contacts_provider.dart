@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:switchcalls/utils/permissions.dart';
+import 'package:switchcalls/models/contact.dart';
 
 class ContactsProvider extends ChangeNotifier {
   static ContactsProvider provider;
-  StreamController<Iterable<Contact>> _contactsCont;
-  StreamSubscription<Iterable<Contact>> _contactSub;
-  List<Contact> _contacts = [];
+  StreamController<Iterable<MyContact>> _contactsCont;
+  StreamSubscription<Iterable<MyContact>> _contactSub;
+  List<MyContact> _contacts = [];
 
   static Future<ContactsProvider> getInstance() async {
     if (provider == null) {
@@ -21,7 +22,7 @@ class ContactsProvider extends ChangeNotifier {
 
   Future<void> init([bool topause = false]) async {
     try {
-      _contactsCont = StreamController<Iterable<Contact>>.broadcast();
+      _contactsCont = StreamController<Iterable<MyContact>>.broadcast();
       if (await Permissions.contactPermissionsGranted()) {
         _contactSub = contacts().listen((event) {
           _contacts = event.toList();
@@ -60,16 +61,23 @@ class ContactsProvider extends ChangeNotifier {
     print('CONTACTS CLOSED');
   }
 
-  Stream<Iterable<Contact>> contacts() async* {
+  Stream<Iterable<MyContact>> contacts() async* {
     while (true) {
       await Future.delayed(Duration(seconds: 2));
-      yield await ContactsService.getContacts();
+      yield (await ContactsService.getContacts()).map(
+        (e) => MyContact(
+          name: e.displayName,
+          localPic: e.avatar,
+          numbers: e.phones.map((e) => e.value),
+        ),
+      );
     }
   }
 
-  StreamController<Iterable<Contact>> get controller => _contactsCont;
-  List<Contact> get contactList {
-    _contacts.sort((a, b) => (a?.displayName ?? '').compareTo(b?.displayName ?? ''));
+  StreamController<Iterable<MyContact>> get controller => _contactsCont;
+  List<MyContact> get contactList {
+    _contacts
+        .sort((a, b) => (a?.name ?? '').compareTo(b?.name ?? ''));
     return _contacts;
   }
 }

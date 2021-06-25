@@ -1,23 +1,59 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:typed_data';
 
-class Contact  {
-  String uid;
-  Timestamp addedOn;
+class MyContact {
+  final String name;
+  final String uid;
+  List<String> numbers;
+  final String profilePic;
+  final Uint8List localPic;
+  final Timestamp addedOn;
 
-  Contact({
-    this.uid,
+  MyContact({
+    this.name = '',
+    this.uid = '',
+    this.numbers,
+    this.profilePic = '',
+    this.localPic,
     this.addedOn,
-  });
+  })  : assert(name != null),
+        assert(uid != null),
+        assert(profilePic != null);
 
-  Map toMap(Contact contact) {
-    var data = Map<String, dynamic>();
-    data['contact_id'] = contact.uid;
-    data['added_on'] = contact.addedOn;
-    return data;
+  String get initials =>
+      this.name?.split(' ')?.map((e) => e[0])?.join()?.toUpperCase();
+
+  List<String> get trimNums =>
+      this.numbers?.map((e) => e.replaceAll(' ', ''))?.toList() ?? [];
+
+  Map<String, dynamic> toMap() => {
+        'name': this.name,
+        'profilePic': this.profilePic,
+        'contact_id': this.uid,
+        'numbers': this.numbers,
+        'added_on': this.addedOn,
+      };
+
+  factory MyContact.fromMap(Map<String, dynamic> mapData) {
+    return MyContact(
+      uid: mapData['contact_id'],
+      addedOn: mapData["added_on"],
+      name: mapData['name'],
+      profilePic: mapData['profilePic'],
+      numbers: parseNumbers(mapData['numbers']),
+    );
   }
 
-  Contact.fromMap(Map<String, dynamic> mapData) {
-    this.uid = mapData['contact_id'];
-    this.addedOn = mapData["added_on"];
+  static List<String> parseNumbers(dynamic data) {
+    List<String> list = new List();
+    if (data is String) {
+      list.add(data);
+      return list;
+    } else if (data is List) {
+      return data;
+    } else {
+      list.add(data);
+      return list;
+    }
   }
 }

@@ -11,6 +11,7 @@ import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/call_utilities.dart';
 import 'package:switchcalls/screens/messages/views/message_screen.dart';
+import 'package:switchcalls/models/contact.dart';
 
 class IdentifiedContacts extends StatefulWidget {
   IdentifiedContacts({
@@ -18,7 +19,7 @@ class IdentifiedContacts extends StatefulWidget {
     @required this.contacts,
   }) : super(key: key);
 
-  final List<Contact> contacts;
+  final List<MyContact> contacts;
 
   @override
   _IdentifiedContactsState createState() => _IdentifiedContactsState();
@@ -60,7 +61,7 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
         stream: _chatMethods.fetchContacts(),
         builder: (BuildContext context, snapshot) {
           List<User> identified = snapshot.data;
-          print(snapshot.data.map((e) => e.phoneNumber).toList());
+          // print(snapshot.data.map((e) => e.phoneNumber).toList());
           // print(_contactsProvider.contactList);
           if (snapshot.connectionState == ConnectionState.waiting)
             return Center(child: CircularProgressIndicator());

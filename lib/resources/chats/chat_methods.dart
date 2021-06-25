@@ -160,9 +160,10 @@ class ChatMethods extends IMessages {
         await getContactsDocument(of: userId, forContact: idToAdd).get();
     if (!senderSnapshot.exists) {
       //does not exists
-      Contact receiverContact = Contact(uid: idToAdd, addedOn: currentTime);
+      // Contact receiverContact = Contact(uid: idToAdd, addedOn: currentTime);
 
-      var receiverMap = receiverContact.toMap(receiverContact);
+      var receiverMap = {'contact_id': idToAdd, 'added_on': currentTime};
+      //receiverContact.toMap(receiverContact);
 
       await getContactsDocument(of: userId, forContact: idToAdd)
           .setData(receiverMap);
