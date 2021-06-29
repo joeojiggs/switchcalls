@@ -14,7 +14,7 @@ import 'messages/views/chat_screen.dart';
 class SearchScreen extends StatefulWidget {
   final bool showAll;
 
-  const SearchScreen({Key key, this.showAll = true}) : super(key: key);
+  const SearchScreen({Key key, this.showAll = false}) : super(key: key);
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }

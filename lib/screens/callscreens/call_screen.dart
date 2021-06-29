@@ -41,13 +41,13 @@ class _CallScreenState extends State<CallScreen> {
   }
 
   void myAgoraInit() async {
-    agoraProvider.isVideo = widget.isVideo;
     await agoraProvider.initializeAgora(widget.call);
   }
 
   void addPostFrameCallback() {
     userProvider = Provider.of<UserProvider>(context, listen: false);
     agoraProvider = Provider.of<AgoraProvider>(context, listen: false);
+    agoraProvider.isVideo = widget.isVideo;
     SchedulerBinding.instance.addPostFrameCallback((_) {
       myAgoraInit();
       callStreamSubscription = callMethods

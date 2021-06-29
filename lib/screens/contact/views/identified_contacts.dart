@@ -195,6 +195,21 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
                   },
                 ),
                 IconButton(
+                  icon: Icon(Icons.video_call),
+                  color: Colors.white,
+                  onPressed: () async {
+                    User receiver = contact;
+                    if (await Permissions
+                        .cameraAndMicrophonePermissionsGranted())
+                      return CallUtils.dial(
+                        from: userProvider.getUser,
+                        to: receiver,
+                        context: context,
+                      );
+                    return;
+                  },
+                ),
+                IconButton(
                   icon: Icon(Icons.message),
                   color: Colors.white,
                   onPressed: () {

@@ -7,11 +7,13 @@ import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/image_upload_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:switchcalls/resources/chats/chat_methods.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class StorageMethods {
   static final Firestore firestore = Firestore.instance;
   final ChatMethods chatMethods = ChatMethods();
-
+  http.Client _httpClient = http.Client();
   StorageReference _storageReference;
 
   //user class
@@ -70,5 +72,12 @@ class StorageMethods {
     chatMethods.sendMessage(message: message);
   }
 
-  void downloadFile(){}
+  Future<void> downloadFile(String url, String filename) async {
+    var request = await _httpClient.get(Uri.parse(url));
+    var bytes = request.bodyBytes;
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    File file = new File('$dir/$filename');
+    await file.writeAsBytes(bytes);
+    return file;
+  }
 }
