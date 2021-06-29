@@ -15,6 +15,8 @@ import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/utilities.dart';
 import 'package:switchcalls/widgets/appbar.dart';
 
+import 'view_image.dart';
+
 class ChatScreen extends StatefulWidget {
   final User receiver;
 
@@ -220,11 +222,24 @@ class _ChatScreenState extends State<ChatScreen> {
 
       case 'image':
         return message.url != null
-            ? CachedImage(
-                message.url,
-                height: 250,
-                width: 250,
-                radius: 10,
+            ? InkWell(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViewImage(
+                      imageUrl: message.url,
+                    ),
+                  ),
+                ),
+                child: Hero(
+                  tag: 'Picture',
+                  child: CachedImage(
+                    message.url,
+                    height: 250,
+                    width: 250,
+                    radius: 10,
+                  ),
+                ),
               )
             : Text("Url was null");
       case 'file':

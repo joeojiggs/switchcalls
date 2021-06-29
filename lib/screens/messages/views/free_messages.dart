@@ -51,9 +51,9 @@ class _FreeMessagesState extends State<FreeMessages> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
-        // if (users.isEmpty) {
+        if (users.isEmpty) {
           return QuietBox();
-        // }
+        }
         return ListView.builder(
           itemCount: users.length,
           itemBuilder: (context, index) {
