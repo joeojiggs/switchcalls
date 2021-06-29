@@ -19,7 +19,6 @@ class StorageMethods {
 
   Future<String> uploadImageToStorage(File imageFile) async {
     // mention try catch later on
-
     try {
       _storageReference = FirebaseStorage.instance
           .ref()
@@ -45,7 +44,7 @@ class StorageMethods {
     // Get url from the image bucket
     String url = await uploadImageToStorage(image);
 
-    message.photoUrl = url;
+    message.url = url;
     // print(message.photoUrl);
 
     // Hide loading
@@ -63,11 +62,13 @@ class StorageMethods {
     imageUploadProvider.setToLoading();
 
     String url = await uploadImageToStorage(file);
-    message.photoUrl = url;
+    message.url = url;
 
     // Hide loading
     imageUploadProvider.setToIdle();
 
     chatMethods.sendMessage(message: message);
   }
+
+  void downloadFile(){}
 }

@@ -3,15 +3,20 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:switchcalls/models/contact.dart';
 import 'package:switchcalls/models/message.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/image_upload_provider.dart';
 import 'package:switchcalls/resources/chats/chat_methods.dart';
 import 'package:switchcalls/resources/storage_methods.dart';
+import 'package:switchcalls/screens/messages/widgets/select_contact.dart';
 import 'package:switchcalls/utils/call_utilities.dart';
+import 'package:switchcalls/utils/location_utils.dart';
 import 'package:switchcalls/utils/permissions.dart';
+import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/utilities.dart';
+import 'package:switchcalls/enum/file_type.dart' as MyFiles;
 
 class FreeMessageProvider extends ChangeNotifier {
   final StorageMethods _storageMethods = StorageMethods();
@@ -77,29 +82,32 @@ class FreeMessageProvider extends ChangeNotifier {
       {@required ImageSource source, User sender, User receiver}) async {
     File selectedImage = await Utils.pickImage(source: source);
 
-    Message _message = Message.imageMessage(
-        message: "IMAGE",
-        receiverId: receiver.uid,
-        senderId: sender.uid,
-        timestamp: Timestamp.now(),
-        type: 'image');
+    Message _message = Message(
+      message: "IMAGE",
+      receiverId: receiver.uid,
+      senderId: sender.uid,
+      timestamp: Timestamp.now(),
+      type: MyFiles.FileUtils.fileTypeToString(MyFiles.FileType.image),
+    );
 
     if (selectedImage != null)
       _storageMethods.uploadImage(
-          image: selectedImage,
-          message: _message,
-          imageUploadProvider: imageUploadProvider);
+        image: selectedImage,
+        message: _message,
+        imageUploadProvider: imageUploadProvider,
+      );
   }
 
   void pickFile(User sender, User receiver) async {
     FilePickerResult source = await FilePicker.platform.pickFiles();
-    if (source != null) {
-      Message _message = Message.imageMessage(
-        message: "IMAGE", //TODO: Change to "FILE"
+    if (source != null && source.files.isNotEmpty) {
+      Message _message = Message(
+        message: "FILE",
         receiverId: receiver.uid,
         senderId: sender.uid,
         timestamp: Timestamp.now(),
-        type: 'image', //TODO: Change to "file"
+        file: MyFile(name: source.files.first?.name),
+        type: MyFiles.FileUtils.fileTypeToString(MyFiles.FileType.file),
       );
 
       File file = File(source.files.single.path);
@@ -112,10 +120,48 @@ class FreeMessageProvider extends ChangeNotifier {
   }
 
   void setWritingTo(bool val) {
+    bool isSame = isWriting;
     isWriting = val;
-    notifyListeners();
+    if (isSame != isWriting) notifyListeners();
   }
 
   Stream<List<Message>> messageStream(String userId) =>
       _messages.chatList(userId, receiver.uid);
+
+  Future<void> pickContact(BuildContext ctx, User sender, User receiver) async {
+    MyContact _contact = await showModalBottomSheet(
+      isScrollControlled: true,
+      context: ctx,
+      backgroundColor: UniversalVariables.blackColor,
+      builder: (context) => SelectContact(shouldReturn: true),
+    );
+    if (_contact != null) {
+      print(_contact.toMap());
+      Message _message = Message(
+        receiverId: receiver.uid,
+        senderId: sender.uid,
+        timestamp: Timestamp.now(),
+        type: MyFiles.FileUtils.fileTypeToString(MyFiles.FileType.contacts),
+        contact: _contact,
+      );
+
+      _messages.sendMessage(message: _message);
+    }
+  }
+
+  Future<void> getLocation(User sender, User receiver) async {
+    MyLocation loc = await LocationUtils.getCurrentLocation();
+    if (loc == null) {
+      return;
+    }
+    Message _message = Message(
+      receiverId: receiver.uid,
+      senderId: sender.uid,
+      timestamp: Timestamp.now(),
+      type: MyFiles.FileUtils.fileTypeToString(MyFiles.FileType.location),
+      location: loc,
+    );
+
+    _messages.sendMessage(message: _message);
+  }
 }

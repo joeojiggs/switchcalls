@@ -9,12 +9,12 @@ import 'package:switchcalls/screens/contact/providers/contacts_screen_provider.d
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 
-import 'messages/views/message_screen.dart';
+import 'messages/views/chat_screen.dart';
 
 class SearchScreen extends StatefulWidget {
-  final bool show;
+  final bool showAll;
 
-  const SearchScreen({Key key, this.show = true}) : super(key: key);
+  const SearchScreen({Key key, this.showAll = true}) : super(key: key);
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
@@ -97,7 +97,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   buildSuggestions(String query) {
-    if (widget.show) {
+    if (widget.showAll) {
       suggestionList = query.isEmpty
           ? userList
           : userList.where((User user) {

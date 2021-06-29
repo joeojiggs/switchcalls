@@ -6,14 +6,14 @@ import 'package:switchcalls/provider/local_message_provider.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 import 'package:switchcalls/widgets/quiet_box.dart';
 
-import 'text_message_screen.dart';
+import 'text_screen.dart';
 
-class SMSList extends StatelessWidget {
+class LocalMessages extends StatelessWidget {
   final bool isLoading;
   List<SmsThread> threads;
   final MessageProvider messageProvider;
 
-  SMSList({Key key, this.isLoading, this.threads, this.messageProvider})
+  LocalMessages({Key key, this.isLoading, this.threads, this.messageProvider})
       : super(key: key);
   final SmsQuery query = new SmsQuery();
   // SmsSender sender = new SmsSender();

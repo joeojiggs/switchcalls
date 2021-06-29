@@ -6,7 +6,6 @@ import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
-import 'package:contacts_service/contacts_service.dart';
 import 'package:switchcalls/models/contact.dart';
 
 class DialScreen extends StatefulWidget {

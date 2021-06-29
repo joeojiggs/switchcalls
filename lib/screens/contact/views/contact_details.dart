@@ -1,4 +1,3 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:provider/provider.dart';
@@ -7,8 +6,8 @@ import 'package:sms/sms.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
-import 'package:switchcalls/screens/messages/views/message_screen.dart';
-import 'package:switchcalls/screens/messages/views/text_message_screen.dart';
+import 'package:switchcalls/screens/messages/views/chat_screen.dart';
+import 'package:switchcalls/screens/messages/views/text_screen.dart';
 import 'package:switchcalls/utils/call_utilities.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/models/contact.dart';
@@ -91,8 +90,8 @@ class ContactDetails extends StatelessWidget {
           Divider(height: 5),
           FutureBuilder<User>(
             initialData: null,
-            future: _authMethods.getUserByPhone(
-                formatNumber(contact?.trimNums?.elementAt(0))),
+            future: _authMethods
+                .getUserByPhone(formatNumber(contact?.trimNums?.elementAt(0))),
             builder: (context, snapshot) {
               UserProvider userProvider;
               userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -159,11 +158,12 @@ class ContactDetails extends StatelessWidget {
                                 color: color1,
                                 onPressed: () {
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ChatScreen(receiver: snapshot.data),
-                                      ));
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ChatScreen(receiver: snapshot.data),
+                                    ),
+                                  );
                                 },
                               )
                             : Container(),

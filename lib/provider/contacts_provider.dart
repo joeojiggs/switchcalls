@@ -68,7 +68,7 @@ class ContactsProvider extends ChangeNotifier {
         (e) => MyContact(
           name: e.displayName,
           localPic: e.avatar,
-          numbers: e.phones.map((e) => e.value),
+          numbers: e.phones.map((e) => e.value).toList(),
         ),
       );
     }

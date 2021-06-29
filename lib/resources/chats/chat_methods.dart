@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:switchcalls/constants/strings.dart';
 import 'package:switchcalls/models/chat.dart';
-import 'package:switchcalls/models/contact.dart';
 import 'package:switchcalls/models/message.dart';
 import 'package:switchcalls/models/user.dart';
 
@@ -182,12 +181,11 @@ class ChatMethods extends IMessages {
       String recipientId, String appUserId) {
     return StreamTransformer<QuerySnapshot, List<Message>>.fromHandlers(
       handleData: (QuerySnapshot data, EventSink<List<Message>> sink) {
-        final chats = data.documents
+        List<Message> chats = data.documents
             .where((element) => element.documentID.startsWith(recipientId))
+            .map((chat) => convertToMessage(chat, recipientId))
             .toList();
-        List<Message> formattedChats =
-            chats.map((chat) => convertToMessage(chat, recipientId)).toList();
-        sink.add(formattedChats);
+        sink.add(chats);
       },
     );
   }
@@ -203,6 +201,7 @@ class ChatMethods extends IMessages {
   }
 
   Message convertToMessage(DocumentSnapshot chat, String recipientId) {
+    assert(recipientId != null);
     readMessage(chat, recipientId);
     // print(chat.data['photoUrl']);
     return Message.fromMap(chat.data);

@@ -10,20 +10,20 @@ import 'package:switchcalls/models/chat.dart';
 import '../providers/message_list_provider.dart';
 import '../widgets/chat_tile.dart';
 
-class ChatList extends StatefulWidget {
+class FreeMessages extends StatefulWidget {
   final StreamController<List<Chat>> controller;
   final User user;
 
-  ChatList({
+  FreeMessages({
     Key key,
     this.controller, this.user,
   }) : super(key: key);
 
   @override
-  _ChatListState createState() => _ChatListState();
+  _FreeMessagesState createState() => _FreeMessagesState();
 }
 
-class _ChatListState extends State<ChatList> {
+class _FreeMessagesState extends State<FreeMessages> {
   ChatMethods _messages = ChatMethods();
   AuthMethods _authMethods = AuthMethods();
   MessageListProvider _messageListProvider = new MessageListProvider();

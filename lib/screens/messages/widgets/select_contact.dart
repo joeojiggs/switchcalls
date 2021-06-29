@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:sms/contact.dart' as Cts;
-import 'package:contacts_service/contacts_service.dart';
 import 'package:provider/provider.dart';
-import '../views/text_message_screen.dart';
+import 'package:switchcalls/screens/messages/views/text_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/provider/local_message_provider.dart';
 import 'package:sms/sms.dart';
@@ -11,6 +10,9 @@ import 'package:switchcalls/models/contact.dart';
 // import 'package:sms/contact.dart' as;
 
 class SelectContact extends StatefulWidget {
+  final bool shouldReturn;
+
+  const SelectContact({Key key, this.shouldReturn = false}) : super(key: key);
   @override
   _SelectContactState createState() => _SelectContactState();
 }
@@ -106,14 +108,16 @@ class _SelectContactState extends State<SelectContact> {
                               ),
                               onTap: () async {
                                 if (_contact.trimNums.length > 1) {
-                                  Cts.Contact contact = await Cts.ContactQuery()
-                                      .queryContact(e);
+                                  Cts.Contact contact =
+                                      await Cts.ContactQuery().queryContact(e);
 
                                   var test = _messageProvider.messages
                                       .firstWhere((element) {
                                     print(element.contact.address);
-                                    print(contact.address.replaceAll(RegExp(r'\s'), ''));
-                                    return element.contact.address.replaceAll(RegExp(r'\s'), '') ==
+                                    print(contact.address
+                                        .replaceAll(RegExp(r'\s'), ''));
+                                    return element.contact.address
+                                            .replaceAll(RegExp(r'\s'), '') ==
                                         contact.address
                                             .replaceAll(RegExp(r'\s'), '');
                                   }, orElse: () {
@@ -153,45 +157,48 @@ class _SelectContactState extends State<SelectContact> {
                         .toList(),
                   ),
                   onTap: () async {
-                    if (_contact.trimNums.length < 2) {
-                      Cts.Contact contact = await Cts.ContactQuery()
-                          .queryContact(_contact.trimNums.first);
+                    if (widget.shouldReturn) {
+                      return Navigator.pop(context, _contact);
+                    } else {
+                      if (_contact.trimNums.length < 2) {
+                        Cts.Contact contact = await Cts.ContactQuery()
+                            .queryContact(_contact.trimNums.first);
 
-                      var test =
-                          _messageProvider.messages.firstWhere((element) {
-                        print(element.contact.address);
-                        print(contact.address.replaceAll(RegExp(r'\s'), ''));
-                        return element.contact.address ==
-                            contact.address.replaceAll(RegExp(r'\s'), '');
-                      }, orElse: () {
-                        print('None found');
-                        return;
-                      });
-                      List<SmsMessage> _messages = test?.messages;
-                      // await SmsQuery()
-                      //     .querySms(address: contact.address, kinds: [
-                      //   SmsQueryKind.Inbox,
-                      //   SmsQueryKind.Sent,
-                      //   SmsQueryKind.Draft,
-                      // ]);
-                      print(_messages?.map((e) => e.body)?.toList());
-                      // (await _messageProvider.getthreads())
-                      //     .where((element) =>
-                      //         element.contact.address == contact.address)
-                      //     .first
-                      //     .messages;
-                       if (_messages == null) {
-                                    return;
-                                  }
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TextScreen(
-                            contact: contact,
-                            messages: _messages,
-                          ),
-                        ),
-                      );
+                        var test =
+                            _messageProvider.messages.firstWhere((element) {
+                          print(element.contact.address);
+                          print(contact.address.replaceAll(RegExp(r'\s'), ''));
+                          return element.contact.address ==
+                              contact.address.replaceAll(RegExp(r'\s'), '');
+                        }, orElse: () {
+                          print('None found');
+                          return;
+                        });
+                        List<SmsMessage> _messages = test?.messages;
+                        // await SmsQuery()
+                        //     .querySms(address: contact.address, kinds: [
+                        //   SmsQueryKind.Inbox,
+                        //   SmsQueryKind.Sent,
+                        //   SmsQueryKind.Draft,
+                        // ]);
+                        print(_messages?.map((e) => e.body)?.toList());
+                        // (await _messageProvider.getthreads())
+                        //     .where((element) =>
+                        //         element.contact.address == contact.address)
+                        //     .first
+                        //     .messages;
+                        if (_messages != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TextScreen(
+                                contact: contact,
+                                messages: _messages,
+                              ),
+                            ),
+                          );
+                        }
+                      }
                     }
                   },
                 );

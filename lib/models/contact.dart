@@ -34,12 +34,13 @@ class MyContact {
         'added_on': this.addedOn,
       };
 
-  factory MyContact.fromMap(Map<String, dynamic> mapData) {
+  factory MyContact.fromMap(Map<dynamic, dynamic> mapData) {
+    print(mapData);
     return MyContact(
-      uid: mapData['contact_id'],
+      uid: mapData['contact_id'] ?? '',
       addedOn: mapData["added_on"],
-      name: mapData['name'],
-      profilePic: mapData['profilePic'],
+      name: mapData['name'] ?? '',
+      profilePic: mapData['profilePic'] ?? '',
       numbers: parseNumbers(mapData['numbers']),
     );
   }
@@ -50,7 +51,10 @@ class MyContact {
       list.add(data);
       return list;
     } else if (data is List) {
-      return data;
+      data.forEach((element) {
+        list.add(element);
+      });
+      return list;
     } else {
       list.add(data);
       return list;

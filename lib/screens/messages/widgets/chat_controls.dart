@@ -7,7 +7,13 @@ import 'modal_tile.dart';
 class ChatControls extends StatefulWidget {
   final TextEditingController controller;
   final Function(String) onFieldChanged;
-  final Function onCameraTap, onSendTap, onMediaTap, onFileTap, onEmojiTap;
+  final Function onCameraTap,
+      onSendTap,
+      onMediaTap,
+      onFileTap,
+      onEmojiTap,
+      onContactTap,
+      onLocationTap;
   final bool isWriting;
 
   const ChatControls({
@@ -20,6 +26,8 @@ class ChatControls extends StatefulWidget {
     @required this.onMediaTap,
     @required this.onFileTap,
     @required this.onEmojiTap,
+    @required this.onContactTap,
+    @required this.onLocationTap,
   }) : super(key: key);
 
   @override
@@ -47,7 +55,12 @@ class _ChatControlsState extends State<ChatControls> {
           child: Row(
             children: <Widget>[
               GestureDetector(
-                onTap: () => addMediaModal(context, widget.onMediaTap, widget.onFileTap),
+                onTap: () => addMediaModal(
+                    context,
+                    widget.onMediaTap,
+                    widget.onFileTap,
+                    widget.onContactTap,
+                    widget.onLocationTap),
                 child: Container(
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
@@ -163,7 +176,8 @@ class _ChatControlsState extends State<ChatControls> {
   }
 }
 
-void addMediaModal(BuildContext context, Function onMediaTap, Function onFileTap) {
+void addMediaModal(BuildContext context, Function onMediaTap,
+    Function onFileTap, Function onContactTap, Function onLocationTap) {
   showModalBottomSheet(
       context: context,
       elevation: 0,
@@ -212,31 +226,47 @@ void addMediaModal(BuildContext context, Function onMediaTap, Function onFileTap
                     title: "File",
                     subtitle: "Share files",
                     icon: Icons.tab,
-                    onTap: (){
+                    onTap: () {
                       Navigator.pop(context);
                       onFileTap();
                     },
                   ),
-                 // ModalTile(
-                  //  title: "Contact",
-                  //  subtitle: "Share contacts",
-                  //  icon: Icons.contacts,
-                  //),
-                 // ModalTile(
-                  //  title: "Location",
-                  //  subtitle: "Share a location",
-                  //  icon: Icons.add_location,
-                 // ),
+                  ModalTile(
+                    title: "Contact",
+                    subtitle: "Share contacts",
+                    icon: Icons.contacts,
+                    onTap: () {
+                      Navigator.pop(context);
+                      onContactTap();
+                    },
+                  ),
+                  ModalTile(
+                    title: "Location",
+                    subtitle: "Share a location",
+                    icon: Icons.add_location,
+                    onTap: () {
+                      Navigator.pop(context);
+                      onLocationTap();
+                    },
+                  ),
                   // ModalTile(
                   //   title: "Schedule Call",
                   //   subtitle: "Arrange a skype call and get reminders",
                   //   icon: Icons.schedule,
+                  //   onTap: () {
+                  //     Navigator.pop(context);
+                  //     onFileTap();
+                  //   },
                   // ),
                   // ModalTile(
                   //   title: "Create Poll",
                   //   subtitle: "Share polls",
                   //   icon: Icons.poll,
-                  // )
+                  //   onTap: () {
+                  //     Navigator.pop(context);
+                  //     onFileTap();
+                  //   },
+                  // ),
                 ],
               ),
             ),

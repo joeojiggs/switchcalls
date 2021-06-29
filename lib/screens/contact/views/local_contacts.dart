@@ -1,4 +1,3 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:switchcalls/screens/contact/providers/contacts_screen_provider.dart';
@@ -105,6 +104,8 @@ class LocalContacts extends StatelessWidget {
                                   child: CircleAvatar(
                                     child: Text(
                                       '${contact?.initials}',
+                                      maxLines: 1,
+                                      textAlign: TextAlign.center,
                                       style: TextStyle(color: Colors.white),
                                     ),
                                     backgroundColor: Colors.transparent,

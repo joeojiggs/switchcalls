@@ -1,7 +1,7 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
+import 'package:switchcalls/screens/search_screen.dart';
 import 'package:switchcalls/widgets/skype_appbar.dart';
 import 'package:switchcalls/widgets/user_details_container.dart';
 import 'package:switchcalls/utils/permissions.dart';
@@ -42,7 +42,8 @@ class _ContactListScreenState extends State<ContactListScreen> {
 
   void getPermissions() async {
     if (await Permissions.contactPermissionsGranted()) {
-      contacts = _provider.getAllContacts(_contactsProvider.contactList, contactsColorMap);
+      contacts = _provider.getAllContacts(
+          _contactsProvider.contactList, contactsColorMap);
       searchController.addListener(() {
         filterContacts();
       });
@@ -97,8 +98,11 @@ class _ContactListScreenState extends State<ContactListScreen> {
                         Icons.search,
                         color: Colors.white,
                       ),
-                      onPressed: () =>
-                          Navigator.pushNamed(context, "/search_screen"),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SearchScreen(showAll: true)),
+                      ),
                     ),
                     PopupMenuButton(
                       itemBuilder: (__) {

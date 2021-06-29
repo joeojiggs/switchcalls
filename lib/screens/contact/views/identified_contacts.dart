@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/chats/chat_methods.dart';
 import 'package:switchcalls/screens/contact/providers/contacts_screen_provider.dart';
+import 'package:switchcalls/screens/messages/views/chat_screen.dart';
 import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +11,6 @@ import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/call_utilities.dart';
-import 'package:switchcalls/screens/messages/views/message_screen.dart';
 import 'package:switchcalls/models/contact.dart';
 
 class IdentifiedContacts extends StatefulWidget {

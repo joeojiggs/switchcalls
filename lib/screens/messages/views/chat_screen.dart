@@ -62,15 +62,15 @@ class _ChatScreenState extends State<ChatScreen> {
                     Flexible(
                       child: messageList(model, sender),
                     ),
-                    model.imageUploadProvider?.getViewState ==
-                                ViewState.LOADING ??
-                            false
-                        ? Container(
-                            alignment: Alignment.centerRight,
-                            margin: EdgeInsets.only(right: 15),
-                            child: CircularProgressIndicator(),
-                          )
-                        : Container(),
+                    // model.imageUploadProvider?.getViewState ==
+                    //             ViewState.LOADING ??
+                    //         false
+                    //     ? Container(
+                    //         alignment: Alignment.centerRight,
+                    //         margin: EdgeInsets.only(right: 15),
+                    //         child: CircularProgressIndicator(),
+                    //       )
+                    //     : Container(),
                     ChatControls(
                       controller: model.textFieldController,
                       isWriting: model.isWriting,
@@ -91,6 +91,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       onSendTap: () =>
                           model.sendMessage(sender, widget.receiver),
                       onFileTap: () => model.pickFile(sender, widget.receiver),
+                      onContactTap: () =>
+                          model.pickContact(context, sender, widget.receiver),
+                      onLocationTap: () =>
+                          model.getLocation(sender, widget.receiver),
                     ),
                   ],
                 ),
@@ -106,11 +110,11 @@ class _ChatScreenState extends State<ChatScreen> {
     return StreamBuilder<List<Message>>(
       stream: model.messageStream(sender?.uid),
       builder: (context, AsyncSnapshot<List<Message>> snapshot) {
-        if (snapshot.data == null) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
 
-        if (snapshot.data.isEmpty)
+        if (snapshot.data == null || snapshot.data.isEmpty)
           return Center(
             child: Text(
               'You do not have any messages at this moment!',
@@ -119,7 +123,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
           );
-        // print('Data is ${snapshot.data.map((e) => e.message).toList()}');
+        print('Data is ${snapshot.data.map((e) => e.message).toList()}');
         return ListView.builder(
           padding: EdgeInsets.all(10),
           controller: _listScrollController,
@@ -204,6 +208,91 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget getMessage(Message message) {
+    switch (message.type) {
+      case 'text':
+        return Text(
+          message.message,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+          ),
+        );
+
+      case 'image':
+        return message.url != null
+            ? CachedImage(
+                message.url,
+                height: 250,
+                width: 250,
+                radius: 10,
+              )
+            : Text("Url was null");
+      case 'file':
+        return Container(
+          height: 50,
+          width: 250,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.grey[800],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Switchcalls-${message.file?.name}',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.file_download),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        );
+      case 'contacts':
+        return InkWell(
+          onTap: () {},
+          child: Container(
+            height: 100,
+            width: 250,
+            child: Center(
+              child: Text(
+                '${message.contact.name}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        );
+      case 'location':
+        return Container(
+          height: 100,
+          width: 200,
+          child: Center(
+            child: Text(
+              'My Location\nLat: ${message.location.lat}\nLong: ${message.location.long}',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        );
+      default:
+        return Text(
+          message.message,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+          ),
+        );
+    }
     // print(message.photoUrl);
     return message.type != MESSAGE_TYPE_IMAGE
         ? Text(
@@ -213,9 +302,9 @@ class _ChatScreenState extends State<ChatScreen> {
               fontSize: 16.0,
             ),
           )
-        : message.photoUrl != null
+        : message.url != null
             ? CachedImage(
-                message.photoUrl,
+                message.url,
                 height: 250,
                 width: 250,
                 radius: 10,

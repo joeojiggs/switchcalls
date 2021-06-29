@@ -1,9 +1,6 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/models/contact.dart';
-import 'package:switchcalls/provider/contacts_provider.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart' as INPH;
 
 class ContactsScreenProvider extends ChangeNotifier {
   // Map<String, Color> contactsColorMap = {};
