@@ -20,7 +20,8 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  AuthMethods _authMethods = AuthMethods();
+  final AuthMethods _authMethods = AuthMethods();
+  final ContactsScreenProvider _provider = ContactsScreenProvider();
   ContactsProvider _contactsProvider;
 
   List<User> userList = [];
@@ -113,9 +114,12 @@ class _SearchScreenState extends State<SearchScreen> {
               //     (user.name.toLowerCase().contains(query.toLowerCase()))),
             }).toList();
     } else {
+      List<User> filtered = _provider.filterIdentifiedCL(
+          userList, _contactsProvider.contactList, searchController.text);
+
       suggestionList = query.isEmpty
-          ? []
-          : userList.where((User user) {
+          ? filtered
+          : filtered.where((User user) {
               String _getUsername = user.username.toLowerCase();
               String _query = query.toLowerCase();
               String _getName = user.name.toLowerCase();

@@ -43,7 +43,7 @@ class QuietBox extends StatelessWidget {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SearchScreen(),
+                    builder: (context) => SearchScreen(showAll: false),
                   ),
                 ),
               ),

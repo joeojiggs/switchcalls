@@ -35,7 +35,6 @@ class MyContact {
       };
 
   factory MyContact.fromMap(Map<dynamic, dynamic> mapData) {
-    print(mapData);
     return MyContact(
       uid: mapData['contact_id'] ?? '',
       addedOn: mapData["added_on"],

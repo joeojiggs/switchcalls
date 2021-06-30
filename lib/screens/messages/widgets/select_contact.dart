@@ -7,6 +7,9 @@ import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/provider/local_message_provider.dart';
 import 'package:sms/sms.dart';
 import 'package:switchcalls/models/contact.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:switchcalls/constants/strings.dart';
+import 'dart:convert';
 // import 'package:sms/contact.dart' as;
 
 class SelectContact extends StatefulWidget {
@@ -21,12 +24,15 @@ class _SelectContactState extends State<SelectContact> {
   ContactsProvider _contactsProvider;
   final TextEditingController searchController = TextEditingController();
   List<MyContact> contactsFiltered = [];
+  List<MyContact> contacts = [];
   MessageProvider _messageProvider;
+  SharedPreferences _prefs;
 // List<Contact> contacts = [];
 
   @override
   void initState() {
     _contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
+    initPrefs();
     _messageProvider = Provider.of<MessageProvider>(context, listen: false);
     super.initState();
     searchController.addListener(() {
@@ -34,6 +40,14 @@ class _SelectContactState extends State<SelectContact> {
         filterContacts();
       });
     });
+  }
+
+  Future<void> initPrefs() async {
+    _prefs = await SharedPreferences.getInstance();
+    contacts = _prefs
+        .getStringList(LOCAL_CONTACTS)
+        .map((e) => MyContact.fromMap(jsonDecode(e)))
+        .toList();
   }
 
   @override
@@ -91,11 +105,11 @@ class _SelectContactState extends State<SelectContact> {
             child: ListView.builder(
               itemCount: isSearching == true
                   ? contactsFiltered.length
-                  : _contactsProvider.contactList.length,
+                  : contacts ?? _contactsProvider.contactList.length,
               itemBuilder: (__, index) {
                 MyContact _contact = isSearching == true
                     ? contactsFiltered[index]
-                    : _contactsProvider.contactList[index];
+                    : contacts ?? _contactsProvider.contactList[index];
                 return ListTile(
                   title: Text('${_contact.name}'),
                   subtitle: Column(

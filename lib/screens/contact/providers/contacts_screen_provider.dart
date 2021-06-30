@@ -1,8 +1,22 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/models/contact.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:switchcalls/constants/strings.dart';
 
 class ContactsScreenProvider extends ChangeNotifier {
+  SharedPreferences prefs;
+  List<MyContact> cts;
+  Future<List<MyContact>> init() async {
+    prefs = await SharedPreferences.getInstance();
+    cts = prefs
+        .getStringList(LOCAL_CONTACTS)
+        .map((e) => MyContact.fromMap(jsonDecode(e)))
+        .toList();
+    cts.sort((a, b) => a.name.compareTo(b.name));
+    return cts;
+  }
   // Map<String, Color> contactsColorMap = {};
   // INPH.PhoneNumber _number = INPH.PhoneNumber;
   // _nub

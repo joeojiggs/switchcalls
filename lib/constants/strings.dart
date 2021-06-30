@@ -12,5 +12,7 @@ const String CALL_STATUS_DIALLED = "dialled";
 const String CALL_STATUS_RECEIVED = "received";
 const String CALL_STATUS_MISSED = "missed";
 
+const String LOCAL_CONTACTS = 'local_contacts';
+
 const String noImageAvailable =
-"https://www.esm.rochester.edu/uploads/NoPhotoAvailable.jpg";
+    "https://www.esm.rochester.edu/uploads/NoPhotoAvailable.jpg";

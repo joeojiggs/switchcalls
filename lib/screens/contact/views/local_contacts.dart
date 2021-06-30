@@ -3,6 +3,7 @@ import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:switchcalls/screens/contact/providers/contacts_screen_provider.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/models/contact.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import './contact_details.dart';
 
@@ -15,16 +16,19 @@ class LocalContacts extends StatelessWidget {
     @required this.isSearching,
     @required this.contactsFiltered,
     @required this.contactsColorMap,
+    @required this.prefs,
+    this.provider,
   })  : _contactsProvider = contactsProvider,
         super(key: key);
 
   final ContactsProvider _contactsProvider;
   final TextEditingController searchController;
   final bool isSearching;
+  final SharedPreferences prefs;
   List<MyContact> contactsFiltered;
   List<MyContact> contacts;
   final Map<String, Color> contactsColorMap;
-  final ContactsScreenProvider _provider = ContactsScreenProvider();
+  final ContactsScreenProvider provider;
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +38,11 @@ class LocalContacts extends StatelessWidget {
         builder: (BuildContext context, snapshot) {
           // print(snapshot.hasData);
           // print(_contactsProvider.contactList);
-          if (contacts != _contactsProvider.contactList) {
+          if (contacts != provider.cts ?? _contactsProvider.contactList) {
             print('Contacts is refreshing');
-            contacts = _provider.getAllContacts(
-                _contactsProvider.contactList, contactsColorMap);
+            contacts = provider.getAllContacts(
+                provider.cts ?? _contactsProvider.contactList,
+                contactsColorMap);
           }
           // print(snapshot.data?.length);
           if (snapshot.connectionState == ConnectionState.waiting &&
@@ -45,8 +50,8 @@ class LocalContacts extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           if (contacts.isNotEmpty) {
             if (isSearching)
-              contactsFiltered = _provider.filterLocalContacts(
-                  searchController.text, contacts);
+              contactsFiltered =
+                  provider.filterLocalContacts(searchController.text, contacts);
             return Container(
               padding: EdgeInsets.all(20),
               child: Column(
