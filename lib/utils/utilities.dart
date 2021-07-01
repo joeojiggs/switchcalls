@@ -92,4 +92,20 @@ class Utils {
     var dateToTimeStamp = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
     return DateFormat('HH:mm').format(dateToTimeStamp);
   }
+
+  static bool compareNumbers(String number1, String number2) {
+    String num1 = formatNum(number1);
+    String num2 = formatNum(number2);
+    return num1 == num2 ? true : false;
+  }
+
+  static String formatNum(String numb, [bool to234 = false]) {
+    String number = numb.replaceAll(new RegExp(r' '), '');
+    if (number.startsWith('+234')) {
+      return number.replaceRange(0, 3, '0');
+    } else if (number.startsWith('234')) {
+      return number.replaceRange(0, 2, '0');
+    } else
+      return number;
+  }
 }

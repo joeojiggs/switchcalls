@@ -68,6 +68,8 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
           if (identified != null || identified.isNotEmpty) {
             List<User> filtered = _provider.filterIdentifiedCL(identified,
                 _contactsProvider.contactList, searchController.text);
+            filtered.removeWhere((element) =>
+                element.phoneNumber == userProvider.getUser.phoneNumber);
             return Container(
               padding: EdgeInsets.all(20),
               child: Column(

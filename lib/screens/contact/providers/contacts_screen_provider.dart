@@ -4,6 +4,7 @@ import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/models/contact.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:switchcalls/constants/strings.dart';
+import 'package:switchcalls/utils/utilities.dart';
 
 class ContactsScreenProvider extends ChangeNotifier {
   SharedPreferences prefs;
@@ -17,26 +18,21 @@ class ContactsScreenProvider extends ChangeNotifier {
     cts.sort((a, b) => a.name.compareTo(b.name));
     return cts;
   }
-  // Map<String, Color> contactsColorMap = {};
-  // INPH.PhoneNumber _number = INPH.PhoneNumber;
-  // _nub
-  // _number.parseNumber();
 
   List<User> filterIdentifiedCL(
       List<User> identified, List<MyContact> contacts, String query) {
     List<String> contNumbers = contacts
-        ?.map((e) =>
-            (e.trimNums.length) > 0 ? e.trimNums.first?.substring(1) : '')
+        ?.map((e) => (e.trimNums.length) > 0 ? e.trimNums.first : '')
         ?.toList();
-    // INPH.PhoneNumber.getParsableNumber(INPH.PhoneNumber())
 
-    print(contNumbers);
+    // print(contNumbers);
 
-    // identified = identified.map((e) => e.phoneNumber.substring(1)).toList();
+    // keep numbers that the user has in his contact list.
+    identified.retainWhere((element) =>
+        contNumbers.any((e) => Utils.compareNumbers(element.phoneNumber, e)));
 
-    identified.retainWhere(
-        (element) => contNumbers?.contains(element?.phoneNumber?.substring(4)));
 
+    //return the contact the user searched for
     Iterable<User> res = identified
         .where((element) => element.username.toLowerCase().contains(query))
         .toList();
