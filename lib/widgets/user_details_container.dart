@@ -245,31 +245,33 @@ class _UserDetailsBodyState extends State<UserDetailsBody> {
                 ),
               ),
               SizedBox(width: 30),
-              isEditing
-                  ? Flexible(
-                      child: TextFormField(
-                        controller: usernameCont,
-                        // initialValue: '$info',
-                        keyboardType: TextInputType.text,
-                        textCapitalization: TextCapitalization.words,
-                        validator: (val) =>
-                            val.length <= 3 ? 'Enter a valid username' : null,
-                        decoration: InputDecoration(
-                          hintText: 'User name',
-                          filled: true,
-                          border: OutlineInputBorder(),
-                          enabledBorder: OutlineInputBorder(),
-                        ),
-                      ),
-                    )
-                  : Text(
-                      info,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: Colors.white.withOpacity(0.7),
-                      ),
+              Visibility(
+                visible: isEditing,
+                child: Flexible(
+                  child: TextFormField(
+                    controller: usernameCont,
+                    // initialValue: '$info',
+                    keyboardType: TextInputType.text,
+                    textCapitalization: TextCapitalization.words,
+                    validator: (val) =>
+                        val.length <= 3 ? 'Enter a valid username' : null,
+                    decoration: InputDecoration(
+                      hintText: 'User name',
+                      filled: true,
+                      border: OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(),
                     ),
+                  ),
+                ),
+                replacement: Text(
+                  info,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.white.withOpacity(0.7),
+                  ),
+                ),
+              ),
             ],
           ),
         );
