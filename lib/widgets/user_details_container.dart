@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:switchcalls/enum/user_state.dart';
@@ -8,8 +9,11 @@ import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/screens/auth/views/login_screen.dart';
 import 'package:switchcalls/widgets/appbar.dart';
-
+import 'package:switchcalls/utils/utilities.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:switchcalls/resources/storage_methods.dart';
 import '../screens/messages/widgets/shimmering_logo.dart';
+import 'package:switchcalls/provider/image_upload_provider.dart';
 
 class UserDetailsContainer extends StatelessWidget {
   final AuthMethods authMethods = AuthMethods();
@@ -62,7 +66,7 @@ class UserDetailsContainer extends StatelessWidget {
               )
             ],
           ),
-          UserDetailsBody(),
+          Expanded(child: UserDetailsBody()),
         ],
       ),
     );
@@ -77,28 +81,62 @@ class UserDetailsBody extends StatefulWidget {
 class _UserDetailsBodyState extends State<UserDetailsBody> {
   final AuthMethods authMethods = AuthMethods();
   TextEditingController usernameCont = TextEditingController();
+  ImageUploadProvider imageUploadProvider = ImageUploadProvider();
   bool isEditing = false;
   bool isLoading = false;
+  File image;
 
   @override
   Widget build(BuildContext context) {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
     final User user = userProvider.getUser;
+    usernameCont.text = user.username;
 
     return Stack(
       children: [
         Container(
+          height: double.infinity,
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Center(
-                child: CachedImage(
-                  user.profilePhoto,
-                  isRound: true,
-                  radius: 200,
+                child: InkWell(
+                  onTap: () => isEditing ? getImage() : null,
+                  child: Container(
+                    height: 200,
+                    width: 200,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: image != null && isEditing
+                        ? Image.file(
+                            image,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.network(
+                            user.profilePhoto,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            },
+                            errorBuilder:
+                                (context, Object e, StackTrace stackTrace) {
+                              print(e.toString());
+                              return Container(color: Colors.red);
+                            },
+                          ),
+                  ),
                 ),
+                // CachedImage(
+                //       user.profilePhoto,
+                //       isRound: true,
+                //       radius: 200,
+                //     ),
               ),
               SizedBox(height: 30),
               Center(
@@ -128,38 +166,50 @@ class _UserDetailsBodyState extends State<UserDetailsBody> {
               Center(
                 child: FlatButton(
                   color: UniversalVariables.lightBlueColor,
-                  child: Text(isEditing ? "Save Username" : "Edit Username"),
+                  child: Text(isEditing ? "Save Profile" : "Edit Profile"),
                   onPressed: () async {
+                    String s;
                     print(isEditing);
                     if (isEditing) {
+                      setState(() => isLoading = true);
                       if (usernameCont.text.length <= 3) {
                         return _showSnackBar(message: 'Enter a valid username');
                       }
+                      if (image != null) {
+                        s = await StorageMethods().uploadImageToStorage(image);
+                      }
                       showLoader();
-                      User newUserDetails = user;
-                      newUserDetails.username = usernameCont.text;
+                      User newDetails = user;
+                      newDetails.username = usernameCont.text;
+                      if (s != null) newDetails.profilePhoto = s;
                       // await Future.delayed(Duration(seconds: 5));
                       await authMethods.addDataToDb(user);
                       showLoader();
                     }
                     isEditing = !isEditing;
-                    setState(() {});
+                    setState(() => isLoading = false);
                   },
                 ),
               ),
             ],
           ),
         ),
-        isLoading
-            ? Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                color: Colors.black26,
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            : Container(),
+        Positioned(
+          top: 0,
+          bottom: 0,
+          child: Visibility(
+            visible: isLoading,
+            child: Container(
+              // height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              color: Colors.black26,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            replacement: Container(),
+          ),
+        ),
       ],
     );
   }
@@ -199,6 +249,7 @@ class _UserDetailsBodyState extends State<UserDetailsBody> {
                   ? Flexible(
                       child: TextFormField(
                         controller: usernameCont,
+                        // initialValue: '$info',
                         keyboardType: TextInputType.text,
                         textCapitalization: TextCapitalization.words,
                         validator: (val) =>
@@ -224,5 +275,15 @@ class _UserDetailsBodyState extends State<UserDetailsBody> {
         );
       },
     );
+  }
+
+  Future getImage() async {
+    try {
+      image = await Utils.pickImage(source: ImageSource.gallery);
+      print("Image Path ${image.path}");
+      setState(() {});
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }

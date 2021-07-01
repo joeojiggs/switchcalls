@@ -100,15 +100,6 @@ class AuthMethods {
   }
 
   Future<void> addDataToDb(User currentUser) async {
-    // String username = Utils.getUsername(currentUser.email);
-
-    // User user = User(
-    //     uid: currentUser.uid,
-    //     email: currentUser.email,
-    //     name: currentUser.displayName,
-    //     profilePhoto: currentUser.photoUrl,
-    //     username: username);
-
     firestore
         .collection(USERS_COLLECTION)
         .document(currentUser.uid)
@@ -120,6 +111,21 @@ class AuthMethods {
       User user = await getUserDetails();
       user.phoneNumber = '+234' + phone.substring(1);
       print(user.phoneNumber);
+
+      await firestore
+          .collection(USERS_COLLECTION)
+          .document(user.uid)
+          .updateData(user.toMap(user));
+    } catch (e) {
+      print(e.toString);
+    }
+  }
+
+  Future<void> updateProfilePic(String imageUrl) async {
+    try {
+      User user = await getUserDetails();
+      user.profilePhoto = imageUrl;
+      print(user.profilePhoto);
 
       await firestore
           .collection(USERS_COLLECTION)
