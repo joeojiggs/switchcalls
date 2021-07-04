@@ -72,12 +72,13 @@ class StorageMethods {
     chatMethods.sendMessage(message: message);
   }
 
-  Future<void> downloadFile(String url, String filename) async {
-    var request = await _httpClient.get(Uri.parse(url));
+  Future<Message> downloadFile(Message message) async {
+    var request = await _httpClient.get(Uri.parse(message.url));
     var bytes = request.bodyBytes;
     String dir = (await getApplicationDocumentsDirectory()).path;
-    File file = new File('$dir/$filename');
+    File file = new File('$dir/${message.file.name}');
     await file.writeAsBytes(bytes);
-    return file;
+    message.file = MyFile(name: message.file.name, path: dir);
+    return message;
   }
 }

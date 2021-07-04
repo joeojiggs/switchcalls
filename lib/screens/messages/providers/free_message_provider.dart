@@ -106,7 +106,10 @@ class FreeMessageProvider extends ChangeNotifier {
         receiverId: receiver.uid,
         senderId: sender.uid,
         timestamp: Timestamp.now(),
-        file: MyFile(name: source.files.first?.name),
+        file: MyFile(
+          name: source.files.first?.name,
+          path: source.files.first?.path,
+        ),
         type: MyFiles.FileUtils.fileTypeToString(MyFiles.FileType.file),
       );
 
@@ -163,5 +166,11 @@ class FreeMessageProvider extends ChangeNotifier {
     );
 
     _messages.sendMessage(message: _message);
+  }
+
+  bool doesFileExist(String path) => File(path).existsSync() ? true : false;
+
+  void updateFile(Message message){
+    _messages.updateMessage(message);
   }
 }

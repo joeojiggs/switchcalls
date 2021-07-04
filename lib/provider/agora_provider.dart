@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:switchcalls/configs/agora_configs.dart';
 import 'package:switchcalls/models/call.dart';
 import 'package:switchcalls/resources/call_methods.dart';
+import 'package:switchcalls/utils/call_utilities.dart';
 
 class AgoraProvider extends ChangeNotifier {
   RtcEngine _engine;
@@ -27,6 +28,7 @@ class AgoraProvider extends ChangeNotifier {
   };
 
   Future<void> initializeAgora(Call call) async {
+    CallUtils.toggleRingSound(true);
     if (APP_ID.isEmpty) {
       _infoStrings.add(
         'APP_ID missing, please provide your APP_ID in settings.dart',
@@ -67,6 +69,7 @@ class AgoraProvider extends ChangeNotifier {
         _infoStrings.add(info);
       },
       userJoined: (int uid, int elapsed) {
+        CallUtils.toggleRingSound(false);
         final info = 'onUserJoined: $uid';
         _infoStrings.add(info);
         _users.add(uid);
@@ -91,6 +94,14 @@ class AgoraProvider extends ChangeNotifier {
       connectionLost: () {
         final info = 'onConnectionLost';
         _infoStrings.add(info);
+      },
+      connectionStateChanged:
+          (ConnectionStateType type, ConnectionChangedReason reason) {
+        if (type == ConnectionStateType.Connecting) {
+          CallUtils.toggleRingSound(true);
+        } else if (type == ConnectionStateType.Connected) {
+          CallUtils.toggleRingSound(false);
+        }
       },
       firstRemoteVideoFrame: (int uid, int width, int height, int elapsed) {
         final info = 'firstRemoteVideo: $uid ${width}x $height';
@@ -178,6 +189,8 @@ class AgoraProvider extends ChangeNotifier {
 
   void close() {
     try {
+      //
+      CallUtils.toggleRingSound(false);
       // clear users
       _users.clear();
       _infoStrings.clear();

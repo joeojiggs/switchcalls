@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as Im;
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:switchcalls/enum/user_state.dart';
+import 'package:open_file/open_file.dart';
 //import 'package:switchcalls/resources/auth_methods.dart';
 
 class Utils {
@@ -107,5 +109,9 @@ class Utils {
       return number.replaceRange(0, 2, '0');
     } else
       return number;
+  }
+
+  static void openFile(String path) {
+    OpenFile.open(path);
   }
 }

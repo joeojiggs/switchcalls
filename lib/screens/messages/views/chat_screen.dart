@@ -6,6 +6,7 @@ import 'package:switchcalls/enum/view_state.dart';
 import 'package:switchcalls/models/message.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
+import 'package:switchcalls/resources/storage_methods.dart';
 
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/screens/messages/providers/free_message_provider.dart';
@@ -14,6 +15,7 @@ import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/utilities.dart';
 import 'package:switchcalls/widgets/appbar.dart';
+import 'package:switchcalls/widgets/toasts.dart';
 
 import 'view_image.dart';
 
@@ -133,14 +135,15 @@ class _ChatScreenState extends State<ChatScreen> {
           itemCount: snapshot.data.length,
           itemBuilder: (context, index) {
             // mention the arrow syntax if you get the time
-            return chatMessageItem(snapshot.data[index], sender);
+            return chatMessageItem(model, snapshot.data[index], sender);
           },
         );
       },
     );
   }
 
-  Widget chatMessageItem(Message _message, User sender) {
+  Widget chatMessageItem(
+      FreeMessageProvider model, Message _message, User sender) {
     // Message _message = Message.fromMap(snapshot);
 
     return Container(
@@ -150,13 +153,13 @@ class _ChatScreenState extends State<ChatScreen> {
             ? Alignment.centerRight
             : Alignment.centerLeft,
         child: _message.senderId == sender.uid
-            ? senderLayout(_message)
-            : receiverLayout(_message),
+            ? senderLayout(model, _message)
+            : receiverLayout(model, _message),
       ),
     );
   }
 
-  Widget senderLayout(Message message) {
+  Widget senderLayout(FreeMessageProvider model, Message message) {
     Radius messageRadius = Radius.circular(10);
 
     return Container(
@@ -178,7 +181,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: getMessage(message),
+              child: getMessage(model, message),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -209,7 +212,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget getMessage(Message message) {
+  Widget getMessage(FreeMessageProvider model, Message message) {
     switch (message.type) {
       case 'text':
         return Text(
@@ -243,31 +246,58 @@ class _ChatScreenState extends State<ChatScreen> {
               )
             : Text("Url was null");
       case 'file':
-        return Container(
-          height: 50,
-          width: 250,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.grey[800],
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Switchcalls-${message.file?.name}',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+        FileMessage _message = FileMessage(message: message);
+        print(message.file?.name);
+        return InkWell(
+          onTap: () {
+            if (model.doesFileExist(message.file.path)) {
+              Utils.openFile(message.file.path);
+              // open file
+            }
+          },
+          child: Container(
+            height: 50,
+            width: 250,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.grey[800],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Switchcalls-${message.file?.name}',
+                      // overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
                   ),
                 ),
-              ),
-              IconButton(
-                icon: Icon(Icons.file_download),
-                onPressed: () {},
-              ),
-            ],
+                Visibility(
+                  visible: message.senderId != sender.uid ||
+                      (message.senderId != sender.uid &&
+                          !model.doesFileExist(message.file.path)),
+                  child: Visibility(
+                    visible: _message.isDownloading,
+                    child: IconButton(
+                      icon: Icon(Icons.data_usage),
+                      onPressed: () {},
+                    ),
+                    replacement: IconButton(
+                      icon: Icon(Icons.file_download),
+                      onPressed: () async {
+                        setState(() => _message.isDownloading = true);
+                        message = await StorageMethods().downloadFile(message);
+                        setState(() => _message.isDownloading = false);
+                      },
+                    ),
+                  ),
+                  replacement: Container(),
+                ),
+              ],
+            ),
           ),
         );
       case 'contacts':
@@ -308,26 +338,9 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         );
     }
-    // print(message.photoUrl);
-    return message.type != MESSAGE_TYPE_IMAGE
-        ? Text(
-            message.message,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16.0,
-            ),
-          )
-        : message.url != null
-            ? CachedImage(
-                message.url,
-                height: 250,
-                width: 250,
-                radius: 10,
-              )
-            : Text("Url was null");
   }
 
-  Widget receiverLayout(Message message) {
+  Widget receiverLayout(FreeMessageProvider model, Message message) {
     Radius messageRadius = Radius.circular(10);
 
     return Container(
@@ -349,7 +362,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: getMessage(message),
+              child: getMessage(model, message),
             ),
             Row(
               mainAxisSize: MainAxisSize.min,

@@ -4,38 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:switchcalls/models/contact.dart';
 
-// abstract class IMessage {
-//   final String senderId;
-//   final String receiverId;
-//   final String type;
-//   final Timestamp timestamp;
-//   final bool isRead;
-
-//   // text messages
-//   final String message;
-//   // photos
-//   final String url;
-//   // files
-//   final MyFile file;
-//   // contacts
-//   final MyContact contact;
-//   //location
-//   final MyLocation location;
-
-//   IMessage({
-//     this.senderId,
-//     this.receiverId,
-//     this.type,
-//     this.timestamp,
-//     this.isRead,
-//     this.message,
-//     this.url,
-//     this.file,
-//     this.contact,
-//     this.location,
-//   });
-// }
-
 class Message {
   String senderId;
   String receiverId;
@@ -73,15 +41,6 @@ class Message {
     this.url,
     this.isRead,
   });
-
-  // Message.fileMessage({
-  //   this.senderId,
-  //   this.receiverId,
-  //   this.timestamp,
-  //   this.type = 'file',
-  //   this.fileName,
-  //   this.isRead,
-  // });
 
   Map<String, dynamic> toMap() => {
         'senderId': this.senderId,
@@ -129,15 +88,12 @@ class Message {
   }
 }
 
-// class FileMessage extends IMessage {
-//   Map<String, dynamic> toMap() => {
-//         'senderId': this.senderId,
-//         'receiverId': this.receiverId,
-//         'type': this.type,
-//         'file': this.file.toMap(),
-//         'url': this.url,
-//       };
-// }
+class FileMessage {
+  bool isDownloading;
+  Message message;
+
+  FileMessage({this.message, this.isDownloading = false});
+}
 
 class MyFile {
   final String path;
@@ -149,10 +105,11 @@ class MyFile {
 
   Map<String, dynamic> toMap() => {
         'name': this.name,
+        'path': this.path,
       };
 
   factory MyFile.fromMap(Map map) {
-    return MyFile(name: map['name']);
+    return MyFile(name: map['name'], path: map['path']);
   }
 }
 

@@ -12,6 +12,7 @@ abstract class IMessages {
   void messageList(QuerySnapshot data, StreamController cont);
   Future sendMessage({Message message});
   void readMessage(DocumentSnapshot element, String recipientId);
+  void updateMessage(Message message);
 }
 
 class ChatMethods extends IMessages {
@@ -146,6 +147,24 @@ class ChatMethods extends IMessages {
       }
     } catch (e) {
       print('\n\n---READ MESSAGE ERROR---\n $e\n\n');
+    }
+  }
+
+  @override
+  void updateMessage(Message message) async {
+    try {
+      QuerySnapshot doc = await _messageCollection
+          .document(message.receiverId)
+          .collection('chats')
+          .where('message', isEqualTo: message.message)
+          .where('timestamp', isEqualTo: message.timestamp)
+          .limit(1)
+          .getDocuments();
+      await _messageCollection
+          .document(doc.documents.first.documentID)
+          .updateData(message.toMap());
+    } catch (e) {
+      print(e.toString());
     }
   }
 

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:switchcalls/constants/strings.dart';
 import 'package:switchcalls/models/call.dart';
@@ -12,6 +13,7 @@ import 'package:switchcalls/screens/callscreens/call_screen.dart';
 
 class CallUtils {
   static final CallMethods callMethods = CallMethods();
+  static final assetsAudioPlayer = AssetsAudioPlayer();
 
   static dial({User from, User to, context}) async {
     Call call = Call(
@@ -98,6 +100,18 @@ class CallUtils {
           builder: (context) => CallScreen(call: call, isVideo: false),
         ),
       );
+    }
+  }
+
+  static Future<void> toggleRingSound(value) async {
+    if (value) {
+      await assetsAudioPlayer.open(
+        Audio('assets/audio/AUD-20190211-WA0039.mp3'),
+        loopMode: LoopMode.single,
+      );
+      assetsAudioPlayer.play();
+    } else {
+      assetsAudioPlayer.stop();
     }
   }
 }

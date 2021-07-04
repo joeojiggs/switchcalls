@@ -42,6 +42,7 @@ dependencies:
 
   #file_picker
   file_picker:
+  open_file:
 
   # path provider
   path_provider: ^1.6.0
@@ -101,6 +102,7 @@ dependencies:
   #ringtone_player: ^0.0.4 #latest version
   flutter_ringtone_player:
   fluttertoast: # ^8.0.3
+  assets_audio_player:
 
 
   flutter_launcher_icons: ^0.8.0
@@ -134,6 +136,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - icon.png
+    - assets/audio/
   #  - images/a_dot_ham.jpeg
 
 
