@@ -245,9 +245,9 @@ class _UserDetailsBodyState extends State<UserDetailsBody> {
                 ),
               ),
               SizedBox(width: 30),
-              Visibility(
-                visible: isEditing,
-                child: Flexible(
+              Flexible(
+                child: Visibility(
+                  visible: isEditing,
                   child: TextFormField(
                     controller: usernameCont,
                     // initialValue: '$info',
@@ -262,13 +262,14 @@ class _UserDetailsBodyState extends State<UserDetailsBody> {
                       enabledBorder: OutlineInputBorder(),
                     ),
                   ),
-                ),
-                replacement: Text(
-                  info,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.white.withOpacity(0.7),
+                  replacement: Text(
+                    info,
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.white.withOpacity(0.7),
+                    ),
                   ),
                 ),
               ),

@@ -23,12 +23,11 @@ class FreeMessageProvider extends ChangeNotifier {
   final ChatMethods _messages = ChatMethods();
   TextEditingController textFieldController = TextEditingController();
   ImageUploadProvider imageUploadProvider = ImageUploadProvider();
+  String chatDir = '';
 
   final User receiver;
   User _sender;
-
   String currentUserId;
-
   bool isWriting = false;
 
   FreeMessageProvider({this.receiver}) : assert(receiver != null);
@@ -168,9 +167,17 @@ class FreeMessageProvider extends ChangeNotifier {
     _messages.sendMessage(message: _message);
   }
 
-  bool doesFileExist(String path) => File(path).existsSync() ? true : false;
+  bool doesFileExist(Message message) {
+    print("CHA DIR IS \n $chatDir");
+    String dir = chatDir + message.senderId + message.file.name;
+    return File(dir).existsSync() ? true : false;
+  }
 
-  void updateFile(Message message){
+  void updateFile(Message message) {
     _messages.updateMessage(message);
+  }
+
+  Future<void> getDir() async {
+    chatDir = await Utils.getDir();
   }
 }

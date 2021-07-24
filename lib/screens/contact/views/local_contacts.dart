@@ -37,14 +37,14 @@ class LocalContacts extends StatelessWidget {
         stream: _contactsProvider.controller.stream,
         builder: (BuildContext context, snapshot) {
           // print(snapshot.hasData);
-          // print(_contactsProvider.contactList);
+          // print(_contactsProvider.contactList.sublist(0, 5));
           if (contacts != provider.cts ?? _contactsProvider.contactList) {
             print('Contacts is refreshing');
             contacts = provider.getAllContacts(
                 provider.cts ?? _contactsProvider.contactList,
                 contactsColorMap);
           }
-          // print(snapshot.data?.length);
+          // print(contacts.sublist(0, 5));
           if (snapshot.connectionState == ConnectionState.waiting &&
               contacts.isEmpty)
             return Center(child: CircularProgressIndicator());

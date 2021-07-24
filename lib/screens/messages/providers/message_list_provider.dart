@@ -6,13 +6,16 @@ import 'package:switchcalls/resources/chats/chat_methods.dart';
 import 'package:switchcalls/models/chat.dart';
 
 class MessageListProvider extends ChangeNotifier {
+
+  MessageListProvider(){
+    
+  }
   // final String userId;
   ChatMethods _messages = ChatMethods();
   StreamSubscription<QuerySnapshot> _chatsub;
   StreamController<List<Chat>> _chatCont =
       StreamController<List<Chat>>.broadcast();
 
-  // MessageListProvider(this.userId);
 
   void onInit(String userId) {
     _chatsub = _messages

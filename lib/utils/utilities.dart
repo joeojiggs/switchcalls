@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as Im;
 import 'package:image_picker/image_picker.dart';
@@ -9,6 +8,7 @@ import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:switchcalls/enum/user_state.dart';
 import 'package:open_file/open_file.dart';
+import 'package:switchcalls/models/contact.dart';
 //import 'package:switchcalls/resources/auth_methods.dart';
 
 class Utils {
@@ -33,7 +33,9 @@ class Utils {
   // this is new
 
   static Future<File> pickImage({@required ImageSource source}) async {
-    PickedFile selectedImage = await ImagePicker().getImage(source: source);
+    PickedFile selectedImage = await ImagePicker().getImage(
+      source: source,
+    );
     if (selectedImage != null)
       return await compressImage(File(selectedImage.path));
     else
@@ -111,7 +113,15 @@ class Utils {
       return number;
   }
 
+  static List<MyContact> cleanList(List<MyContact> cts) {
+    cts.removeWhere((e) => e.name.isEmpty && e.numbers.isEmpty);
+    return cts;
+  }
+
   static void openFile(String path) {
     OpenFile.open(path);
   }
+
+  static Future<String> getDir() async =>
+      (await getExternalStorageDirectory()).path;
 }

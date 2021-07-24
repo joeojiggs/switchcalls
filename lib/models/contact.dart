@@ -20,8 +20,12 @@ class MyContact {
         assert(uid != null),
         assert(profilePic != null);
 
-  String get initials =>
-      this.name?.split(' ')?.map((e) => e[0])?.join()?.toUpperCase();
+  String get initials => this
+      .name
+      ?.split(' ')
+      ?.map((e) => e.length > 0 ? e[0] : '')
+      ?.join()
+      ?.toUpperCase();
 
   List<String> get trimNums =>
       this.numbers?.map((e) => e.replaceAll(' ', ''))?.toList() ?? [];
@@ -58,5 +62,10 @@ class MyContact {
       list.add(data);
       return list;
     }
+  }
+
+  @override
+  String toString() {
+    return this.toMap().toString();
   }
 }

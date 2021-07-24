@@ -11,8 +11,7 @@ class ContactsScreenProvider extends ChangeNotifier {
   List<MyContact> cts;
   Future<List<MyContact>> init() async {
     prefs = await SharedPreferences.getInstance();
-    cts = prefs
-        .getStringList(LOCAL_CONTACTS)
+    cts = (prefs.getStringList(LOCAL_CONTACTS) ?? [])
         .map((e) => MyContact.fromMap(jsonDecode(e)))
         .toList();
     cts.sort((a, b) => a.name.compareTo(b.name));
@@ -30,7 +29,6 @@ class ContactsScreenProvider extends ChangeNotifier {
     // keep numbers that the user has in his contact list.
     identified.retainWhere((element) =>
         contNumbers.any((e) => Utils.compareNumbers(element.phoneNumber, e)));
-
 
     //return the contact the user searched for
     Iterable<User> res = identified
@@ -85,6 +83,7 @@ class ContactsScreenProvider extends ChangeNotifier {
         colorIndex = 0;
       }
     });
+    _contacts = Utils.cleanList(_contacts);
     return _contacts;
   }
 

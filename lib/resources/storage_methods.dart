@@ -75,10 +75,12 @@ class StorageMethods {
   Future<Message> downloadFile(Message message) async {
     var request = await _httpClient.get(Uri.parse(message.url));
     var bytes = request.bodyBytes;
-    String dir = (await getApplicationDocumentsDirectory()).path;
+    String dir =
+        '${(await getExternalStorageDirectory()).path}/${message.senderId}';
+    Directory(dir).createSync();
     File file = new File('$dir/${message.file.name}');
     await file.writeAsBytes(bytes);
-    message.file = MyFile(name: message.file.name, path: dir);
+    message.file = MyFile(name: message.file.name, path: file.path);
     return message;
   }
 }

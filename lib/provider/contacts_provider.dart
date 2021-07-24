@@ -7,6 +7,7 @@ import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/models/contact.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:switchcalls/constants/strings.dart';
+import 'package:switchcalls/utils/utilities.dart';
 
 class ContactsProvider extends ChangeNotifier {
   static ContactsProvider provider;
@@ -71,25 +72,31 @@ class ContactsProvider extends ChangeNotifier {
       await Future.delayed(Duration(milliseconds: 500));
       Iterable<MyContact> cts = (await ContactsService.getContacts()).map(
         (e) => MyContact(
-          name: e.displayName,
+          name: e?.displayName ?? '',
+          uid: '',
+          profilePic: '',
           localPic: e.avatar,
           numbers: e.phones.map((e) => e.value).toList(),
         ),
       );
+      // cts.skipWhile((e) => e.name.isEmpty && e.numbers.isEmpty);
+      // await _prefs.remove(LOCAL_CONTACTS);
       await _prefs.setStringList(
           LOCAL_CONTACTS, cts.map((e) => jsonEncode(e.toMap())).toList());
+      print("STORED CONTACTS");
       yield cts;
     }
   }
 
   StreamController<Iterable<MyContact>> get controller => _contactsCont;
   List<MyContact> get contactList {
-    _contacts = _prefs != null?_prefs
-        .getStringList(LOCAL_CONTACTS)
-        .map((e) => MyContact.fromMap(jsonDecode(e)))
-        .toList(): _contacts;
+    _contacts = _prefs != null
+        ? (_prefs.getStringList(LOCAL_CONTACTS) ?? [])
+            ?.map((e) => MyContact.fromMap(jsonDecode(e)))
+            ?.toList()
+        : _contacts;
     _contacts.sort((a, b) => (a?.name ?? '').compareTo(b?.name ?? ''));
-    _contacts.removeWhere((e) => e.name.isEmpty && e.trimNums.isEmpty);
+    _contacts = Utils.cleanList(_contacts);
     return _contacts;
   }
 }
