@@ -10,6 +10,8 @@ import 'package:switchcalls/enum/user_state.dart';
 import 'package:open_file/open_file.dart';
 import 'package:switchcalls/models/contact.dart';
 //import 'package:switchcalls/resources/auth_methods.dart';
+import 'package:switchcalls/utils/universal_variables.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class Utils {
   static String getUsername(String email) {
@@ -33,9 +35,8 @@ class Utils {
   // this is new
 
   static Future<File> pickImage({@required ImageSource source}) async {
-    PickedFile selectedImage = await ImagePicker().getImage(
-      source: source,
-    );
+    PickedFile selectedImage =
+        await ImagePicker().getImage(source: source, imageQuality: 60);
     if (selectedImage != null)
       return await compressImage(File(selectedImage.path));
     else
@@ -52,6 +53,19 @@ class Utils {
 
     return new File('$path/img_$rand.jpg')
       ..writeAsBytesSync(Im.encodeJpg(image, quality: 85));
+  }
+
+  static Future<File> cropImage(File image) async {
+    return await ImageCropper.cropImage(
+      sourcePath: image.path,
+      androidUiSettings: AndroidUiSettings(
+        toolbarColor: UniversalVariables.blueColor,
+        cropFrameColor: UniversalVariables.blueColor,
+        activeControlsWidgetColor: UniversalVariables.blueColor,
+      ),
+      cropStyle: CropStyle.rectangle,
+      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+    );
   }
 
   static int stateToNum(UserState userState) {
