@@ -365,7 +365,7 @@ class InfoTile extends StatelessWidget {
       decoration: InputDecoration(
         prefixIcon: Icon(icon),
         labelText: label,
-        enabled: true,
+        enabled: enabled,
         border: OutlineInputBorder(
           borderSide: BorderSide.none,
         ),
