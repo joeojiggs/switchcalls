@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
       await userProvider.refreshUser();
       LogRepository.init(
         isHive: false,
-        dbName: userProvider.getUser.uid,
+        dbName: userProvider.getUser?.uid,
       );
       await Future.delayed(Duration(seconds: 1));
       Navigator.pushReplacement(

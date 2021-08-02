@@ -1,45 +1,50 @@
-import 'package:contacts_service/contacts_service.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:switchcalls/models/user.dart';
-import 'package:switchcalls/provider/contacts_provider.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart' as INPH;
+import 'package:switchcalls/models/contact.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:switchcalls/constants/strings.dart';
+import 'package:switchcalls/utils/utilities.dart';
 
 class ContactsScreenProvider extends ChangeNotifier {
-  // Map<String, Color> contactsColorMap = {};
-  // INPH.PhoneNumber _number = INPH.PhoneNumber;
-  // _nub
-  // _number.parseNumber();
+  SharedPreferences prefs;
+  List<MyContact> cts;
+  Future<List<MyContact>> init() async {
+    prefs = await SharedPreferences.getInstance();
+    cts = (prefs.getStringList(LOCAL_CONTACTS) ?? [])
+        .map((e) => MyContact.fromMap(jsonDecode(e)))
+        .toList();
+    cts.sort((a, b) => a.name.compareTo(b.name));
+    return cts;
+  }
 
   List<User> filterIdentifiedCL(
-      List<User> identified, List<Contact> contacts, String query) {
+      List<User> identified, List<MyContact> contacts, String query) {
     List<String> contNumbers = contacts
-        ?.map((e) => (e?.phones?.length ?? 0) > 0
-            ? e?.phones?.first?.value?.substring(1)
-            : '').map((e) => e.replaceAll(' ', ''))
+        ?.map((e) => (e.trimNums.length) > 0 ? e.trimNums.first : '')
         ?.toList();
-    // INPH.PhoneNumber.getParsableNumber(INPH.PhoneNumber())
 
-    print(contNumbers);
+    // print(contNumbers);
 
-    // identified = identified.map((e) => e.phoneNumber.substring(1)).toList();
+    // keep numbers that the user has in his contact list.
+    identified.retainWhere((element) =>
+        contNumbers.any((e) => Utils.compareNumbers(element.phoneNumber, e)));
 
-    identified.retainWhere(
-        (element) => contNumbers?.contains(element?.phoneNumber?.substring(4)));
-
+    //return the contact the user searched for
     Iterable<User> res = identified
         .where((element) => element.username.toLowerCase().contains(query))
         .toList();
     return res;
   }
 
-  List<Contact> filterLocalContacts(String query, List<Contact> contacts) {
-    List<Contact> _contacts = [];
+  List<MyContact> filterLocalContacts(String query, List<MyContact> contacts) {
+    List<MyContact> _contacts = [];
     _contacts.addAll(contacts);
     if (query.isNotEmpty) {
       _contacts.retainWhere((contact) {
         String searchTerm = query.toLowerCase();
         String searchTermFlatten = flattenPhoneNumber(searchTerm);
-        String contactName = contact?.displayName?.toLowerCase();
+        String contactName = contact?.name?.toLowerCase();
         bool nameMatches = contactName?.contains(searchTerm);
         if (nameMatches == true) {
           return true;
@@ -49,8 +54,8 @@ class ContactsScreenProvider extends ChangeNotifier {
           return false;
         }
 
-        var phone = contact?.phones?.firstWhere((phn) {
-          String phnFlattened = flattenPhoneNumber(phn.value);
+        var phone = contact?.numbers?.firstWhere((phn) {
+          String phnFlattened = flattenPhoneNumber(phn);
           return phnFlattened?.contains(searchTermFlatten);
         }, orElse: () => null);
 
@@ -61,23 +66,24 @@ class ContactsScreenProvider extends ChangeNotifier {
     return _contacts;
   }
 
-  List<Contact> getAllContacts(
-      List<Contact> contactList, Map<String, Color> contactsColorMap) {
+  List<MyContact> getAllContacts(
+      List<MyContact> contactList, Map<String, Color> contactsColorMap) {
     List colors = [Colors.green, Colors.indigo, Colors.yellow, Colors.orange];
     int colorIndex = 0;
-    List<Contact> _contacts = contactList;
+    List<MyContact> _contacts = contactList;
     //(await ContactsService.getContacts()).toList();
     print('\n\n\n HERE \n\n');
     _contacts.forEach((contact) {
       // print(colorIndex);
       Color baseColor = colors[colorIndex];
       // print(baseColor);
-      contactsColorMap[contact?.displayName] = baseColor;
+      contactsColorMap[contact?.name] = baseColor;
       colorIndex++;
       if (colorIndex == colors?.length) {
         colorIndex = 0;
       }
     });
+    _contacts = Utils.cleanList(_contacts);
     return _contacts;
   }
 

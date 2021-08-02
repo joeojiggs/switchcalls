@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:switchcalls/constants/strings.dart';
 import 'package:switchcalls/models/chat.dart';
-import 'package:switchcalls/models/contact.dart';
 import 'package:switchcalls/models/message.dart';
 import 'package:switchcalls/models/user.dart';
 
@@ -13,6 +12,7 @@ abstract class IMessages {
   void messageList(QuerySnapshot data, StreamController cont);
   Future sendMessage({Message message});
   void readMessage(DocumentSnapshot element, String recipientId);
+  void updateMessage(Message message);
 }
 
 class ChatMethods extends IMessages {
@@ -150,6 +150,24 @@ class ChatMethods extends IMessages {
     }
   }
 
+  @override
+  void updateMessage(Message message) async {
+    try {
+      QuerySnapshot doc = await _messageCollection
+          .document(message.receiverId)
+          .collection('chats')
+          .where('message', isEqualTo: message.message)
+          .where('timestamp', isEqualTo: message.timestamp)
+          .limit(1)
+          .getDocuments();
+      await _messageCollection
+          .document(doc.documents.first.documentID)
+          .updateData(message.toMap());
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   Stream<List<User>> fetchContacts({String userId}) {
     return _userCollection.snapshots().transform(contactTrans());
   }
@@ -160,9 +178,10 @@ class ChatMethods extends IMessages {
         await getContactsDocument(of: userId, forContact: idToAdd).get();
     if (!senderSnapshot.exists) {
       //does not exists
-      Contact receiverContact = Contact(uid: idToAdd, addedOn: currentTime);
+      // Contact receiverContact = Contact(uid: idToAdd, addedOn: currentTime);
 
-      var receiverMap = receiverContact.toMap(receiverContact);
+      var receiverMap = {'contact_id': idToAdd, 'added_on': currentTime};
+      //receiverContact.toMap(receiverContact);
 
       await getContactsDocument(of: userId, forContact: idToAdd)
           .setData(receiverMap);
@@ -181,12 +200,11 @@ class ChatMethods extends IMessages {
       String recipientId, String appUserId) {
     return StreamTransformer<QuerySnapshot, List<Message>>.fromHandlers(
       handleData: (QuerySnapshot data, EventSink<List<Message>> sink) {
-        final chats = data.documents
+        List<Message> chats = data.documents
             .where((element) => element.documentID.startsWith(recipientId))
+            .map((chat) => convertToMessage(chat, recipientId))
             .toList();
-        List<Message> formattedChats =
-            chats.map((chat) => convertToMessage(chat, recipientId)).toList();
-        sink.add(formattedChats);
+        sink.add(chats);
       },
     );
   }
@@ -202,6 +220,7 @@ class ChatMethods extends IMessages {
   }
 
   Message convertToMessage(DocumentSnapshot chat, String recipientId) {
+    assert(recipientId != null);
     readMessage(chat, recipientId);
     // print(chat.data['photoUrl']);
     return Message.fromMap(chat.data);

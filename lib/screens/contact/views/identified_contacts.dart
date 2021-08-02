@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/chats/chat_methods.dart';
 import 'package:switchcalls/screens/contact/providers/contacts_screen_provider.dart';
+import 'package:switchcalls/screens/messages/views/chat_screen.dart';
 import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +11,7 @@ import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/utils/call_utilities.dart';
-import 'package:switchcalls/screens/messages/views/message_screen.dart';
+import 'package:switchcalls/models/contact.dart';
 
 class IdentifiedContacts extends StatefulWidget {
   IdentifiedContacts({
@@ -18,7 +19,7 @@ class IdentifiedContacts extends StatefulWidget {
     @required this.contacts,
   }) : super(key: key);
 
-  final List<Contact> contacts;
+  final List<MyContact> contacts;
 
   @override
   _IdentifiedContactsState createState() => _IdentifiedContactsState();
@@ -60,13 +61,15 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
         stream: _chatMethods.fetchContacts(),
         builder: (BuildContext context, snapshot) {
           List<User> identified = snapshot.data;
-          print(snapshot.data.map((e) => e.phoneNumber).toList());
+          // print(snapshot.data.map((e) => e.phoneNumber).toList());
           // print(_contactsProvider.contactList);
           if (snapshot.connectionState == ConnectionState.waiting)
             return Center(child: CircularProgressIndicator());
           if (identified != null || identified.isNotEmpty) {
             List<User> filtered = _provider.filterIdentifiedCL(identified,
                 _contactsProvider.contactList, searchController.text);
+            filtered.removeWhere((element) =>
+                element.phoneNumber == userProvider.getUser.phoneNumber);
             return Container(
               padding: EdgeInsets.all(20),
               child: Column(
@@ -186,6 +189,21 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
                     if (await Permissions
                         .cameraAndMicrophonePermissionsGranted())
                       return CallUtils.dialAudio(
+                        from: userProvider.getUser,
+                        to: receiver,
+                        context: context,
+                      );
+                    return;
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.video_call),
+                  color: Colors.white,
+                  onPressed: () async {
+                    User receiver = contact;
+                    if (await Permissions
+                        .cameraAndMicrophonePermissionsGranted())
+                      return CallUtils.dial(
                         from: userProvider.getUser,
                         to: receiver,
                         context: context,

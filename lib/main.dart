@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
       ],
       child: MaterialApp(
         title: "Switch Calls",
-        debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: true,
         initialRoute: '/',
         routes: {
           '/search_screen': (context) => SearchScreen(),
@@ -39,7 +39,7 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(brightness: Brightness.dark),
         home: SplashScreen(),
       ),
-    );
+    ); 
   }
 }
 

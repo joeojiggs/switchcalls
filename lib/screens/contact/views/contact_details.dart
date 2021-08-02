@@ -1,4 +1,3 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:provider/provider.dart';
@@ -7,10 +6,11 @@ import 'package:sms/sms.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
-import 'package:switchcalls/screens/messages/views/message_screen.dart';
-import 'package:switchcalls/screens/messages/views/text_message_screen.dart';
+import 'package:switchcalls/screens/messages/views/chat_screen.dart';
+import 'package:switchcalls/screens/messages/views/text_screen.dart';
 import 'package:switchcalls/utils/call_utilities.dart';
 import 'package:switchcalls/utils/permissions.dart';
+import 'package:switchcalls/models/contact.dart';
 
 class ContactDetails extends StatelessWidget {
   final AuthMethods _authMethods = AuthMethods();
@@ -26,7 +26,7 @@ class ContactDetails extends StatelessWidget {
 
   final Color color1;
   final Color color2;
-  final Contact contact;
+  final MyContact contact;
 
   String formatNumber(String number) {
     if (number.length == 11 && number.startsWith('0')) {
@@ -60,7 +60,7 @@ class ContactDetails extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                contact.initials(),
+                contact?.initials,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 90,
@@ -76,7 +76,7 @@ class ContactDetails extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
-                  contact.displayName,
+                  contact?.name ?? '',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 30,
@@ -90,16 +90,16 @@ class ContactDetails extends StatelessWidget {
           Divider(height: 5),
           FutureBuilder<User>(
             initialData: null,
-            future: _authMethods.getUserByPhone(
-                formatNumber(contact.phones.elementAt(0).value)),
+            future: _authMethods
+                .getUserByPhone(formatNumber(contact?.trimNums?.elementAt(0))),
             builder: (context, snapshot) {
               UserProvider userProvider;
               userProvider = Provider.of<UserProvider>(context, listen: false);
               return ListView.builder(
                 shrinkWrap: true,
-                itemCount: contact.phones.length,
+                itemCount: contact.trimNums?.length ?? 0,
                 itemBuilder: (__, index) {
-                  String number = contact.phones.elementAt(index).value;
+                  String number = contact?.trimNums?.elementAt(index);
                   return ListTile(
                     title: Text(number),
                     trailing: ButtonBar(
@@ -158,11 +158,12 @@ class ContactDetails extends StatelessWidget {
                                 color: color1,
                                 onPressed: () {
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ChatScreen(receiver: snapshot.data),
-                                      ));
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ChatScreen(receiver: snapshot.data),
+                                    ),
+                                  );
                                 },
                               )
                             : Container(),

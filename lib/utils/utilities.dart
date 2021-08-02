@@ -7,7 +7,11 @@ import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:switchcalls/enum/user_state.dart';
+import 'package:open_file/open_file.dart';
+import 'package:switchcalls/models/contact.dart';
 //import 'package:switchcalls/resources/auth_methods.dart';
+import 'package:switchcalls/utils/universal_variables.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class Utils {
   static String getUsername(String email) {
@@ -31,7 +35,8 @@ class Utils {
   // this is new
 
   static Future<File> pickImage({@required ImageSource source}) async {
-    PickedFile selectedImage = await ImagePicker().getImage(source: source);
+    PickedFile selectedImage =
+        await ImagePicker().getImage(source: source, imageQuality: 60);
     if (selectedImage != null)
       return await compressImage(File(selectedImage.path));
     else
@@ -48,6 +53,19 @@ class Utils {
 
     return new File('$path/img_$rand.jpg')
       ..writeAsBytesSync(Im.encodeJpg(image, quality: 85));
+  }
+
+  static Future<File> cropImage(File image) async {
+    return await ImageCropper.cropImage(
+      sourcePath: image.path,
+      androidUiSettings: AndroidUiSettings(
+        toolbarColor: UniversalVariables.blueColor,
+        cropFrameColor: UniversalVariables.blueColor,
+        activeControlsWidgetColor: UniversalVariables.blueColor,
+      ),
+      cropStyle: CropStyle.rectangle,
+      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+    );
   }
 
   static int stateToNum(UserState userState) {
@@ -92,4 +110,32 @@ class Utils {
     var dateToTimeStamp = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
     return DateFormat('HH:mm').format(dateToTimeStamp);
   }
+
+  static bool compareNumbers(String number1, String number2) {
+    String num1 = formatNum(number1);
+    String num2 = formatNum(number2);
+    return num1 == num2 ? true : false;
+  }
+
+  static String formatNum(String numb, [bool to234 = false]) {
+    String number = numb.replaceAll(new RegExp(r' '), '');
+    if (number.startsWith('+234')) {
+      return number.replaceRange(0, 3, '0');
+    } else if (number.startsWith('234')) {
+      return number.replaceRange(0, 2, '0');
+    } else
+      return number;
+  }
+
+  static List<MyContact> cleanList(List<MyContact> cts) {
+    cts.removeWhere((e) => e.name.isEmpty && e.numbers.isEmpty);
+    return cts;
+  }
+
+  static void openFile(String path) {
+    OpenFile.open(path);
+  }
+
+  static Future<String> getDir() async =>
+      (await getExternalStorageDirectory()).path;
 }

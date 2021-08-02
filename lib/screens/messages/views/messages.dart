@@ -7,6 +7,7 @@ import 'package:switchcalls/provider/local_message_provider.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
+import 'package:switchcalls/screens/messages/views/free_messages.dart';
 import 'package:switchcalls/screens/search_screen.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/skype_appbar.dart';
@@ -14,8 +15,7 @@ import 'package:switchcalls/widgets/skype_appbar.dart';
 import '../widgets/new_chat_button.dart';
 import '../widgets/select_contact.dart';
 import '../../../widgets/user_details_container.dart';
-import 'chat_list.dart';
-import 'sms_list.dart';
+import 'local_messages.dart';
 
 class ChatListScreen extends StatefulWidget {
   @override
@@ -93,7 +93,11 @@ class _ChatListScreenState extends State<ChatListScreen>
                   color: Colors.white,
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, "/search_screen");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SearchScreen(showAll: true)),
+                  );
                 },
               ),
               PopupMenuButton(
@@ -122,7 +126,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => SearchScreen(show: true)),
+                      builder: (context) => SearchScreen()),
                 );
               } else {
                 //TODO: New Message for text messages
@@ -170,10 +174,10 @@ class _ChatListScreenState extends State<ChatListScreen>
                 child: TabBarView(
                   controller: _tabCont,
                   children: [
-                    ChatList(
+                    FreeMessages(
                       user: _userProvider.getUser,
                     ), //controller: _messageListProvider?.controller),
-                    SMSList(
+                    LocalMessages(
                       isLoading: isLoading,
                       threads: threads,
                       messageProvider: _messageProvider,

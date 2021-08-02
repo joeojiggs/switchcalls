@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:switchcalls/constants/strings.dart';
-import 'package:switchcalls/enum/view_state.dart';
 import 'package:switchcalls/models/message.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
-
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/screens/messages/providers/free_message_provider.dart';
 import 'package:switchcalls/screens/messages/widgets/chat_controls.dart';
-import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/utilities.dart';
 import 'package:switchcalls/widgets/appbar.dart';
+
+import '../widgets/message_tile.dart';
 
 class ChatScreen extends StatefulWidget {
   final User receiver;
@@ -34,8 +32,6 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _authMethods.getCurrentUser().then((user) {
-      // _currentUserId = user.uid;
-
       setState(() {
         sender = User(
           uid: user.uid,
@@ -53,6 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (context, provider) {
         return Consumer<FreeMessageProvider>(
           builder: (context, model, child) {
+            model.getDir();
             return PickupLayout(
               scaffold: Scaffold(
                 backgroundColor: UniversalVariables.blackColor,
@@ -62,15 +59,15 @@ class _ChatScreenState extends State<ChatScreen> {
                     Flexible(
                       child: messageList(model, sender),
                     ),
-                    model.imageUploadProvider?.getViewState ==
-                                ViewState.LOADING ??
-                            false
-                        ? Container(
-                            alignment: Alignment.centerRight,
-                            margin: EdgeInsets.only(right: 15),
-                            child: CircularProgressIndicator(),
-                          )
-                        : Container(),
+                    // model.imageUploadProvider?.getViewState ==
+                    //             ViewState.LOADING ??
+                    //         false
+                    //     ? Container(
+                    //         alignment: Alignment.centerRight,
+                    //         margin: EdgeInsets.only(right: 15),
+                    //         child: CircularProgressIndicator(),
+                    //       )
+                    //     : Container(),
                     ChatControls(
                       controller: model.textFieldController,
                       isWriting: model.isWriting,
@@ -91,6 +88,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       onSendTap: () =>
                           model.sendMessage(sender, widget.receiver),
                       onFileTap: () => model.pickFile(sender, widget.receiver),
+                      onContactTap: () =>
+                          model.pickContact(context, sender, widget.receiver),
+                      onLocationTap: () =>
+                          model.getLocation(sender, widget.receiver),
                     ),
                   ],
                 ),
@@ -106,11 +107,11 @@ class _ChatScreenState extends State<ChatScreen> {
     return StreamBuilder<List<Message>>(
       stream: model.messageStream(sender?.uid),
       builder: (context, AsyncSnapshot<List<Message>> snapshot) {
-        if (snapshot.data == null) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
 
-        if (snapshot.data.isEmpty)
+        if (snapshot.data == null || snapshot.data.isEmpty)
           return Center(
             child: Text(
               'You do not have any messages at this moment!',
@@ -127,30 +128,30 @@ class _ChatScreenState extends State<ChatScreen> {
           itemCount: snapshot.data.length,
           itemBuilder: (context, index) {
             // mention the arrow syntax if you get the time
-            return chatMessageItem(snapshot.data[index], sender);
+            return chatMessageItem(model, snapshot.data[index], sender);
           },
         );
       },
     );
   }
 
-  Widget chatMessageItem(Message _message, User sender) {
-    // Message _message = Message.fromMap(snapshot);
+  Widget chatMessageItem(FreeMessageProvider model, Message _mes, User sender) {
+    // Message _mes = Message.fromMap(snapshot);
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 15),
       child: Container(
-        alignment: _message.senderId == sender.uid
+        alignment: _mes.senderId == sender.uid
             ? Alignment.centerRight
             : Alignment.centerLeft,
-        child: _message.senderId == sender.uid
-            ? senderLayout(_message)
-            : receiverLayout(_message),
+        child: _mes.senderId == sender.uid
+            ? senderLayout(model, _mes)
+            : receiverLayout(model, _mes),
       ),
     );
   }
 
-  Widget senderLayout(Message message) {
+  Widget senderLayout(FreeMessageProvider model, Message message) {
     Radius messageRadius = Radius.circular(10);
 
     return Container(
@@ -172,7 +173,8 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: getMessage(message),
+              child:
+                  MessageTile(sender: sender, model: model, message: message),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -203,27 +205,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget getMessage(Message message) {
-    // print(message.photoUrl);
-    return message.type != MESSAGE_TYPE_IMAGE
-        ? Text(
-            message.message,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16.0,
-            ),
-          )
-        : message.photoUrl != null
-            ? CachedImage(
-                message.photoUrl,
-                height: 250,
-                width: 250,
-                radius: 10,
-              )
-            : Text("Url was null");
-  }
-
-  Widget receiverLayout(Message message) {
+  Widget receiverLayout(FreeMessageProvider model, Message message) {
     Radius messageRadius = Radius.circular(10);
 
     return Container(
@@ -245,7 +227,8 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: getMessage(message),
+              child:
+                  MessageTile(sender: sender, model: model, message: message),
             ),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -302,3 +285,4 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
+

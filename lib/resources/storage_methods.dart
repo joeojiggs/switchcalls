@@ -7,11 +7,13 @@ import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/provider/image_upload_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:switchcalls/resources/chats/chat_methods.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class StorageMethods {
   static final Firestore firestore = Firestore.instance;
   final ChatMethods chatMethods = ChatMethods();
-
+  http.Client _httpClient = http.Client();
   StorageReference _storageReference;
 
   //user class
@@ -19,7 +21,6 @@ class StorageMethods {
 
   Future<String> uploadImageToStorage(File imageFile) async {
     // mention try catch later on
-
     try {
       _storageReference = FirebaseStorage.instance
           .ref()
@@ -45,7 +46,7 @@ class StorageMethods {
     // Get url from the image bucket
     String url = await uploadImageToStorage(image);
 
-    message.photoUrl = url;
+    message.url = url;
     // print(message.photoUrl);
 
     // Hide loading
@@ -63,11 +64,23 @@ class StorageMethods {
     imageUploadProvider.setToLoading();
 
     String url = await uploadImageToStorage(file);
-    message.photoUrl = url;
+    message.url = url;
 
     // Hide loading
     imageUploadProvider.setToIdle();
 
     chatMethods.sendMessage(message: message);
+  }
+
+  Future<Message> downloadFile(Message message) async {
+    var request = await _httpClient.get(Uri.parse(message.url));
+    var bytes = request.bodyBytes;
+    String dir =
+        '${(await getExternalStorageDirectory()).path}/${message.senderId}';
+    Directory(dir).createSync();
+    File file = new File('$dir/${message.file.name}');
+    await file.writeAsBytes(bytes);
+    message.file = MyFile(name: message.file.name, path: file.path);
+    return message;
   }
 }

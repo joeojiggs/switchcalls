@@ -9,18 +9,19 @@ import 'package:switchcalls/screens/contact/providers/contacts_screen_provider.d
 import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 
-import 'messages/views/message_screen.dart';
+import 'messages/views/chat_screen.dart';
 
 class SearchScreen extends StatefulWidget {
-  final bool show;
+  final bool showAll;
 
-  const SearchScreen({Key key, this.show = true}) : super(key: key);
+  const SearchScreen({Key key, this.showAll = false}) : super(key: key);
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  AuthMethods _authMethods = AuthMethods();
+  final AuthMethods _authMethods = AuthMethods();
+  final ContactsScreenProvider _provider = ContactsScreenProvider();
   ContactsProvider _contactsProvider;
 
   List<User> userList = [];
@@ -97,7 +98,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   buildSuggestions(String query) {
-    if (widget.show) {
+    if (widget.showAll) {
       suggestionList = query.isEmpty
           ? userList
           : userList.where((User user) {
@@ -113,9 +114,12 @@ class _SearchScreenState extends State<SearchScreen> {
               //     (user.name.toLowerCase().contains(query.toLowerCase()))),
             }).toList();
     } else {
+      List<User> filtered = _provider.filterIdentifiedCL(
+          userList, _contactsProvider.contactList, searchController.text);
+
       suggestionList = query.isEmpty
-          ? []
-          : userList.where((User user) {
+          ? filtered
+          : filtered.where((User user) {
               String _getUsername = user.username.toLowerCase();
               String _query = query.toLowerCase();
               String _getName = user.name.toLowerCase();

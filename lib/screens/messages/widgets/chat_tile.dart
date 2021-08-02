@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:switchcalls/screens/messages/views/chat_screen.dart';
 import 'package:switchcalls/screens/messages/widgets/online_dot_indicator.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/widgets/custom_tile.dart';
 import 'package:switchcalls/models/chat.dart';
 
-import '../views/message_screen.dart';
 
 // ignore: must_be_immutable
 class ChatTile extends StatelessWidget {

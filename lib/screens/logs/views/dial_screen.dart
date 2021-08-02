@@ -6,7 +6,7 @@ import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
-import 'package:contacts_service/contacts_service.dart';
+import 'package:switchcalls/models/contact.dart';
 
 class DialScreen extends StatefulWidget {
   @override
@@ -19,7 +19,7 @@ class _DialScreenState extends State<DialScreen> {
   String phoneNumber = '';
   Map<String, Color> contactsColorMap = new Map();
   ContactsProvider _contacts;
-  List<Contact> _contactList = [];
+  List<MyContact> _contactList = [];
 
   @override
   void initState() {
@@ -52,14 +52,14 @@ class _DialScreenState extends State<DialScreen> {
     });
   }
 
-  List<Contact> getAllContacts(List<Contact> value) {
+  List<MyContact> getAllContacts(List<MyContact> value) {
     List colors = [Colors.green, Colors.indigo, Colors.yellow, Colors.orange];
     int colorIndex = 0;
-    List<Contact> _contacts = value;
+    List<MyContact> _contacts = value;
     // print('\n\n\n HERE \n\n');
     _contacts?.forEach((contact) {
       Color baseColor = colors[colorIndex];
-      contactsColorMap[contact.displayName] = baseColor;
+      contactsColorMap[contact.name] = baseColor;
       colorIndex++;
       if (colorIndex == colors.length) {
         colorIndex = 0;
@@ -73,14 +73,14 @@ class _DialScreenState extends State<DialScreen> {
     // }
   }
 
-  void filterContacts(List<Contact> contacts) {
-    List<Contact> _contacts = [];
+  void filterContacts(List<MyContact> contacts) {
+    List<MyContact> _contacts = [];
     _contacts.addAll(contacts);
     if (controller.text.isNotEmpty) {
       _contacts.retainWhere((contact) {
         String searchTerm = controller.text.toLowerCase();
         String searchTermFlatten = flattenPhoneNumber(searchTerm);
-        String contactName = contact.displayName.toLowerCase();
+        String contactName = contact.name.toLowerCase();
         bool nameMatches = contactName.contains(searchTerm);
         if (nameMatches == true) {
           return true;
@@ -90,8 +90,8 @@ class _DialScreenState extends State<DialScreen> {
           return false;
         }
 
-        var phone = contact.phones.firstWhere((phn) {
-          String phnFlattened = flattenPhoneNumber(phn.value);
+        var phone = contact.numbers.firstWhere((phn) {
+          String phnFlattened = flattenPhoneNumber(phn);
           return phnFlattened.contains(searchTermFlatten);
         }, orElse: () => null);
 
@@ -130,31 +130,30 @@ class _DialScreenState extends State<DialScreen> {
                           shrinkWrap: true,
                           itemCount: _contactList.length,
                           itemBuilder: (context, index) {
-                            Contact contact = _contactList[index];
+                            MyContact contact = _contactList[index];
 
                             var baseColor =
-                                contactsColorMap[contact.displayName]
-                                    as dynamic;
+                                contactsColorMap[contact.name] as dynamic;
                             Color color1 = baseColor[800];
                             Color color2 = baseColor[400];
                             return ListTile(
                               onTap: () async {
                                 debugPrint('CALLING');
                                 await FlutterPhoneDirectCaller.callNumber(
-                                    contact.phones.elementAt(0).value);
+                                    contact.numbers.elementAt(0));
                                 controller.clear();
                               },
-                              title: Text(contact.displayName),
+                              title: Text(contact.name),
                               subtitle: Text(
-                                contact.phones.length > 0
-                                    ? contact.phones.elementAt(0).value
+                                contact.numbers.length > 0
+                                    ? contact.numbers.elementAt(0)
                                     : '',
                               ),
-                              leading: (contact.avatar != null &&
-                                      contact.avatar.length > 0)
+                              leading: (contact.localPic != null &&
+                                      contact.localPic.length > 0)
                                   ? CircleAvatar(
                                       backgroundImage:
-                                          MemoryImage(contact.avatar),
+                                          MemoryImage(contact.localPic),
                                     )
                                   : Container(
                                       decoration: BoxDecoration(
@@ -170,7 +169,7 @@ class _DialScreenState extends State<DialScreen> {
                                       ),
                                       child: CircleAvatar(
                                         child: Text(
-                                          contact.initials(),
+                                          contact.initials,
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         backgroundColor: Colors.transparent,
@@ -178,8 +177,8 @@ class _DialScreenState extends State<DialScreen> {
                                     ),
                               trailing: FutureBuilder<User>(
                                 initialData: null,
-                                future: authMethods.getUserByPhone(formatNumber(
-                                    contact.phones.elementAt(0).value)),
+                                future: authMethods.getUserByPhone(
+                                    formatNumber(contact.numbers.elementAt(0))),
                                 builder: (context, snapshot) {
                                   return Container(
                                     child: Padding(
