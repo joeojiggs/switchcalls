@@ -168,9 +168,12 @@ class FreeMessageProvider extends ChangeNotifier {
   }
 
   bool doesFileExist(Message message) {
-    print("CHA DIR IS \n $chatDir");
-    String dir = chatDir + message.senderId + message.file.name;
-    return File(dir).existsSync() ? true : false;
+    // print("CHA DIR IS $chatDir");
+    String dir = chatDir + '/' + message.senderId + '/' + message.file.name;
+    print("CHA DIR IS $dir");
+    bool res = File(dir).existsSync() ? true : false;
+    print(res.toString().toUpperCase());
+    return res;
   }
 
   void updateFile(Message message) {

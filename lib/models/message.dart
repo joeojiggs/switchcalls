@@ -95,7 +95,7 @@ class FileMessage {
 
   FileMessage({this.message, this.isDownloading = false});
 
-  bool get hasDownloaded => File(this.message.file.path).existsSync ?? false;
+  bool get hasDownloaded => File(this.message.file.path).existsSync() ?? false;
 }
 
 class MyFile {

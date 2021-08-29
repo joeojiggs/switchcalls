@@ -25,7 +25,7 @@ class MessageTile extends StatefulWidget {
 }
 
 class _MesTileState extends State<MessageTile> {
-
+  FileMessage _mes;
   @override
   Widget build(BuildContext context) {
     switch (widget.message.type) {
@@ -61,16 +61,24 @@ class _MesTileState extends State<MessageTile> {
               )
             : Text("Url was null");
       case 'file':
-        FileMessage _mes = FileMessage(message: widget.message);
+        _mes = FileMessage(message: widget.message);
+        print('_mes status is ${_mes.message.message}');
+        String fileBasePath =
+            '${widget.model.chatDir}/${_mes.message.senderId}';
         // print(_mes.message.file?.name);
         return InkWell(
           onTap: () async {
-            print(_mes.hasDownloaded);
-            if (widget.model.doesFileExist(_mes.message)) {
-              // open file
-              print(_mes.message.file.path);
-              print('OPENING');
+            if (_mes.message.senderId == widget.sender.uid) {
+              // print("User is sender");
+              // print('OPENING ${_mes.message.file.path}');
               Utils.openFile(_mes.message.file.path);
+            } else {
+              print('Downloaded status ' + _mes.hasDownloaded.toString());
+              if (widget.model.doesFileExist(_mes.message)) {
+                // open file
+                // print('OPENING $fileBasePath/${_mes.message.file.name}');
+                Utils.openFile('$fileBasePath/${_mes.message.file.name}');
+              }
             }
           },
           child: Container(
@@ -95,7 +103,8 @@ class _MesTileState extends State<MessageTile> {
                 ),
                 Visibility(
                   visible: (_mes.message.senderId != widget.sender.uid &&
-                      !widget.model.doesFileExist(_mes.message)),
+                      !widget.model.doesFileExist(_mes
+                          .message)), //check if message user is not the sender and if message
                   child: Visibility(
                     visible: _mes.isDownloading,
                     child: IconButton(
@@ -103,17 +112,24 @@ class _MesTileState extends State<MessageTile> {
                       onPressed: () {},
                     ),
                     replacement: IconButton(
-                      icon: Icon(!widget.model.doesFileExist(_mes.message)
+                      icon: Icon(widget.model.doesFileExist(_mes
+                              .message) //if file doesn't exist showw the download icon
                           ? null
                           : Icons.file_download),
                       onPressed: () async {
-                        print('DOWNLOADING');
-                        setState(() => _mes.isDownloading = true);
-                        _mes.message =
-                            await StorageMethods().downloadFile(_mes.message);
-                        setState(() => _mes.isDownloading = false);
-                        print('DOWNLOADED');
-                        print('${_mes.message.file.path}');
+                        if (widget.model.doesFileExist(_mes.message)) {
+                          print(true);
+                        } else {
+                          print(false);
+                          print('DOWNLOADING');
+                          setState(() => _mes.isDownloading = true);
+                          await Future.delayed(Duration(seconds: 5));
+                          _mes.message =
+                              await StorageMethods().downloadFile(_mes.message);
+                          setState(() => _mes.isDownloading = false);
+                          print('DOWNLOADED');
+                          print('${_mes.message.file.path}');
+                        }
                       },
                     ),
                   ),

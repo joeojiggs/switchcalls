@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:switchcalls/resources/chats/chat_methods.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:switchcalls/utils/utilities.dart';
 
 class StorageMethods {
   static final Firestore firestore = Firestore.instance;
@@ -75,8 +76,7 @@ class StorageMethods {
   Future<Message> downloadFile(Message message) async {
     var request = await _httpClient.get(Uri.parse(message.url));
     var bytes = request.bodyBytes;
-    String dir =
-        '${(await getExternalStorageDirectory()).path}/${message.senderId}';
+    String dir = '${(await Utils.getDir())}/${message.senderId}';
     Directory(dir).createSync();
     File file = new File('$dir/${message.file.name}');
     await file.writeAsBytes(bytes);
