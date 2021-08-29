@@ -63,9 +63,7 @@ class _MesTileState extends State<MessageTile> {
       case 'file':
         _mes = FileMessage(message: widget.message);
         print('_mes status is ${_mes.message.message}');
-        String fileBasePath =
-            '${widget.model.chatDir}/${_mes.message.senderId}';
-        // print(_mes.message.file?.name);
+        String basePath = '${widget.model.chatDir}/${_mes.message.senderId}';
         return InkWell(
           onTap: () async {
             if (_mes.message.senderId == widget.sender.uid) {
@@ -76,8 +74,8 @@ class _MesTileState extends State<MessageTile> {
               print('Downloaded status ' + _mes.hasDownloaded.toString());
               if (widget.model.doesFileExist(_mes.message)) {
                 // open file
-                // print('OPENING $fileBasePath/${_mes.message.file.name}');
-                Utils.openFile('$fileBasePath/${_mes.message.file.name}');
+                // print('OPENING $basePath/${_mes.message.file.name}');
+                Utils.openFile('$basePath/${_mes.message.file.name}');
               }
             }
           },
@@ -120,15 +118,14 @@ class _MesTileState extends State<MessageTile> {
                         if (widget.model.doesFileExist(_mes.message)) {
                           print(true);
                         } else {
-                          print(false);
+                          // print(false);
                           print('DOWNLOADING');
                           setState(() => _mes.isDownloading = true);
-                          await Future.delayed(Duration(seconds: 5));
                           _mes.message =
                               await StorageMethods().downloadFile(_mes.message);
                           setState(() => _mes.isDownloading = false);
                           print('DOWNLOADED');
-                          print('${_mes.message.file.path}');
+                          // print('${_mes.message.file.path}');
                         }
                       },
                     ),
@@ -141,7 +138,34 @@ class _MesTileState extends State<MessageTile> {
         );
       case 'contacts':
         return InkWell(
-          onTap: () {},
+          onTap: () async {
+            await showModalBottomSheet(
+              context: context,
+              builder: (ctx) {
+                return Container(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: Column(
+                    children: [
+                      AppBar(
+                        title: Text(widget.message.contact.name),
+                      ),
+                      SizedBox(height: 20),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: widget.message.contact.numbers.length,
+                        itemBuilder: (ctx, index) {
+                          String e = widget.message.contact.numbers[index];
+                          return ListTile(
+                            title: Text(e.toString()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
           child: Container(
             height: 100,
             width: 250,

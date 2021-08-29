@@ -137,6 +137,7 @@ class FreeMessageProvider extends ChangeNotifier {
       backgroundColor: UniversalVariables.blackColor,
       builder: (context) => SelectContact(shouldReturn: true),
     );
+    
     if (_contact != null) {
       print(_contact.toMap());
       Message _message = Message(
@@ -170,7 +171,7 @@ class FreeMessageProvider extends ChangeNotifier {
   bool doesFileExist(Message message) {
     // print("CHA DIR IS $chatDir");
     String dir = chatDir + '/' + message.senderId + '/' + message.file.name;
-    print("CHA DIR IS $dir");
+    // print("CHA DIR IS $dir");
     bool res = File(dir).existsSync() ? true : false;
     print(res.toString().toUpperCase());
     return res;
