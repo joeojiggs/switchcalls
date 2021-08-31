@@ -106,7 +106,7 @@ class CallUtils {
   static Future<void> toggleRingSound(value) async {
     if (value) {
       await assetsAudioPlayer.open(
-        Audio('assets/audio/AUD-20190211-WA0039.mp3'),
+        Audio('assets/audio/Phone Internal Ringing-Calling - Sound Effect.mp3'),
         loopMode: LoopMode.single,
       );
       assetsAudioPlayer.play();

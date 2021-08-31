@@ -79,6 +79,7 @@ dependencies:
 
   # international phone number input
   intl_phone_number_input:
+  flutter_libphonenumber:
   
   # utils
   flutter_ringtone_player:

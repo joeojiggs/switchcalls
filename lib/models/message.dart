@@ -119,8 +119,10 @@ class MyFile {
 class MyLocation {
   final double long;
   final double lat;
+  final String region;
+  String countryCode;
 
-  MyLocation({this.long, this.lat});
+  MyLocation({this.long, this.lat, this.region, this.countryCode});
 
   Map<String, dynamic> toMap() {
     return {

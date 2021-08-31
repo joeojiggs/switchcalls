@@ -5,6 +5,7 @@ import 'package:switchcalls/models/message.dart';
 class LocationUtils {
   static final Geolocator geolocator = Geolocator()
     ..forceAndroidLocationManager;
+  static MyLocation loc;
 
   static Future<MyLocation> getCurrentLocation() async {
     try {
@@ -35,10 +36,12 @@ class LocationUtils {
       List<Placemark> p = await geolocator.placemarkFromCoordinates(
           _currentPosition.latitude, _currentPosition.longitude);
       // Placemark place = p[0];
-      return MyLocation(
+      loc = MyLocation(
         lat: _currentPosition.latitude,
         long: _currentPosition.longitude,
+        region: p?.first?.isoCountryCode ?? '',
       );
+      return loc;
     } catch (e) {
       print(e);
       throw e;

@@ -21,10 +21,8 @@ class ContactsScreenProvider extends ChangeNotifier {
   List<User> filterIdentifiedCL(
       List<User> identified, List<MyContact> contacts, String query) {
     List<String> contNumbers = contacts
-        ?.map((e) => (e.trimNums.length) > 0 ? e.trimNums.first : '')
+        ?.map((e) => (e.formatNums.length) > 0 ? e.formatNums.first : '')
         ?.toList();
-
-    // print(contNumbers);
 
     // keep numbers that the user has in his contact list.
     identified.retainWhere((element) =>

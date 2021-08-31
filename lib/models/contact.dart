@@ -5,6 +5,7 @@ class MyContact {
   final String name;
   final String uid;
   List<String> numbers;
+  List<String> formatNums;
   final String profilePic;
   final Uint8List localPic;
   final Timestamp addedOn;
@@ -13,6 +14,7 @@ class MyContact {
     this.name = '',
     this.uid = '',
     this.numbers,
+    this.formatNums,
     this.profilePic = '',
     this.localPic,
     this.addedOn,
@@ -30,11 +32,15 @@ class MyContact {
   List<String> get trimNums =>
       this.numbers?.map((e) => e.replaceAll(' ', ''))?.toList() ?? [];
 
+  List<String> get trimFormNums =>
+      this.numbers?.map((e) => e.replaceAll(' ', ''))?.toList() ?? [];
+
   Map<String, dynamic> toMap() => {
         'name': this.name,
         'profilePic': this.profilePic,
         'contact_id': this.uid,
         'numbers': this.numbers,
+        'formatNums': this.formatNums,
         'added_on': this.addedOn,
       };
 
@@ -45,6 +51,7 @@ class MyContact {
       name: mapData['name'] ?? '',
       profilePic: mapData['profilePic'] ?? '',
       numbers: parseNumbers(mapData['numbers']),
+      formatNums: parseNumbers(mapData['formatNums']),
     );
   }
 

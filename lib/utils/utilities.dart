@@ -11,9 +11,13 @@ import 'package:open_file/open_file.dart';
 import 'package:switchcalls/models/contact.dart';
 //import 'package:switchcalls/resources/auth_methods.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
+import 'package:switchcalls/utils/location_utils.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 
 class Utils {
+  static FlutterLibphonenumber numLib = FlutterLibphonenumber();
+
   static String getUsername(String email) {
     return "live:${email.split('@')[0]}";
   }
@@ -112,19 +116,53 @@ class Utils {
   }
 
   static bool compareNumbers(String number1, String number2) {
-    String num1 = formatNum(number1);
-    String num2 = formatNum(number2);
-    return num1 == num2 ? true : false;
+    String num1 = number1.replaceAll(RegExp(r' '), '') ?? '';
+    String num2 = number2?.replaceAll(RegExp(r' '), '') ?? '';
+    return num1 == num2;
   }
 
-  static String formatNum(String numb, [bool to234 = false]) {
-    String number = numb.replaceAll(new RegExp(r' '), '');
-    if (number.startsWith('+234')) {
-      return number.replaceRange(0, 3, '0');
-    } else if (number.startsWith('234')) {
-      return number.replaceRange(0, 2, '0');
-    } else
-      return number;
+  static Future<String> formatNum(String number, [bool to234 = false]) async {
+    // print(number);
+    Map<String, dynamic> res;
+    String numb = number.replaceAll(RegExp(r' '), '');
+    try {
+      await numLib.init();
+      //path 1
+      if (numb.startsWith('+')) {
+        print('Path 1');
+        res = await numLib.parse(numb);
+      }
+      //path 2
+      else if (numb.startsWith('0')) {
+        print('Path 2');
+        if (LocationUtils.loc?.countryCode == null) {
+          await getCountryCode();
+        }
+        // print("LOC IS ${LocationUtils.loc?.countryCode}");
+        res = await numLib.parse('${LocationUtils.loc?.countryCode}$numb');
+      }
+      // path 3
+      else {
+        print('Path 3');
+        int ind = numb.indexOf('+');
+        res = await numLib.parse('${numb.substring(ind)}');
+      }
+      // print(res);
+      return (to234 ? res['e164'] : res['national'])
+        ..toString()
+        ..replaceAll(RegExp(r' '), '');
+    } catch (e) {
+      print(e);
+      throw numb;
+    }
+
+    // numLib.String number = numb.replaceAll(new RegExp(r' '), '');
+    // if (number.startsWith('+234')) {
+    //   return number.replaceRange(0, 3, '0');
+    // } else if (number.startsWith('234')) {
+    //   return number.replaceRange(0, 2, '0');
+    // } else
+    //   return number;
   }
 
   static List<MyContact> cleanList(List<MyContact> cts) {
@@ -134,6 +172,20 @@ class Utils {
 
   static void openFile(String path) {
     OpenFile.open(path);
+  }
+
+  static Future<void> getCountryCode() async {
+    print('Country Code is null');
+    Map<String, CountryWithPhoneCode> supRegs;
+    if (LocationUtils.loc?.region == null) {
+      print('Region is null');
+      await LocationUtils.getCurrentLocation();
+    }
+    supRegs = await numLib.getAllSupportedRegions();
+    supRegs.removeWhere(
+      (key, value) => !key.startsWith(LocationUtils.loc?.region),
+    );
+    LocationUtils.loc.countryCode = supRegs.values.first.phoneCode;
   }
 
   static Future<String> getDir() async =>
