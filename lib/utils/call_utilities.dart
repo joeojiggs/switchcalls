@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:async';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,9 @@ import 'package:switchcalls/screens/callscreens/call_screen.dart';
 
 class CallUtils {
   static final CallMethods callMethods = CallMethods();
-  static final assetsAudioPlayer = AssetsAudioPlayer();
+  static final tonePlayer = AssetsAudioPlayer.withId('CALL');
+  static StreamSubscription<bool> sub;
+  static bool isRinging = false;
 
   static dial({User from, User to, context}) async {
     Call call = Call(
@@ -103,15 +106,49 @@ class CallUtils {
     }
   }
 
-  static Future<void> toggleRingSound(value) async {
-    if (value) {
-      await assetsAudioPlayer.open(
+  static Future<void> initRingTone() async {
+    try {
+      await tonePlayer.open(
         Audio('assets/audio/Phone Internal Ringing-Calling - Sound Effect.mp3'),
+        showNotification: false,
+        headPhoneStrategy: HeadPhoneStrategy.none,
+        respectSilentMode: false,
+        audioFocusStrategy: AudioFocusStrategy.request(),
+        volume: 0.3,
         loopMode: LoopMode.single,
       );
-      assetsAudioPlayer.play();
-    } else {
-      assetsAudioPlayer.stop();
+      sub = tonePlayer.isPlaying.listen((event) async {
+        if (!event && isRinging) {
+          Future.delayed(Duration(seconds: 1), () => tonePlayer.play());
+        } else if (event && !isRinging) {
+          tonePlayer.pause();
+        }
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  static Future<void> toggleRingSound(bool value) async {
+    try {
+      if (value) {
+        // await tonePlayer.play();
+        sub.resume();
+        isRinging = true;
+      } else {
+        isRinging = false;
+        await tonePlayer.pause();
+        sub.pause();
+      }
+    } catch (e) {}
+  }
+
+  static Future<void> closeRingTone() async {
+    try {
+      sub.cancel();
+      await tonePlayer.stop();
+    } catch (e) {
+      print(e.toString());
     }
   }
 }

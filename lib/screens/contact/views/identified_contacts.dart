@@ -1,17 +1,15 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:switchcalls/models/user.dart';
 import 'package:switchcalls/resources/chats/chat_methods.dart';
 import 'package:switchcalls/screens/contact/providers/contacts_screen_provider.dart';
-import 'package:switchcalls/screens/messages/views/chat_screen.dart';
 import 'package:switchcalls/widgets/cached_image.dart';
 import 'package:switchcalls/provider/contacts_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:switchcalls/provider/user_provider.dart';
 import 'package:switchcalls/utils/universal_variables.dart';
-import 'package:switchcalls/utils/permissions.dart';
-import 'package:switchcalls/utils/call_utilities.dart';
 import 'package:switchcalls/models/contact.dart';
+
+import '../widgets/Identified_contact_details.dart';
 
 class IdentifiedContacts extends StatefulWidget {
   IdentifiedContacts({
@@ -33,20 +31,11 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
   ContactsProvider _contactsProvider;
   UserProvider userProvider;
 
-  // List<User> searchedContacts(List<User> filtered) {
-  //   String query = searchController.text.toLowerCase();
-
-  //   Iterable<User> res = filtered
-  //       .where((element) => element.username.toLowerCase().contains(query));
-
-  //   return res.toList();
-  // }
-
   @override
   void initState() {
     userProvider = Provider.of<UserProvider>(context, listen: false);
     _contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
-    _contactsProvider.init(true);
+    // _contactsProvider.init(true);
 
     // searchController.addListener(() {
     //   setState(() {});
@@ -76,36 +65,49 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
               child: Column(
                 children: <Widget>[
                   Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: isSearching == true
-                          ? searched.length
-                          : filtered.length,
-                      itemBuilder: (context, index) {
-                        User contact = isSearching == true
-                            ? searched[index]
-                            : filtered[index];
+                    child: Visibility(
+                      visible: filtered.length > 0,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount:
+                            isSearching ? searched.length : filtered.length,
+                        itemBuilder: (context, index) {
+                          User contact =
+                              isSearching ? searched[index] : filtered[index];
 
-                        return ListTile(
-                          title: Text(contact.username),
-                          subtitle: Text(contact.phoneNumber),
-                          leading: CachedImage(
-                            contact.profilePhoto,
-                            isRound: true,
-                            radius: 45,
+                          return ListTile(
+                            title: Text(contact.username),
+                            subtitle: Text(contact.phoneNumber),
+                            leading: CachedImage(
+                              contact.profilePhoto,
+                              isRound: true,
+                              radius: 45,
+                            ),
+                            onTap: () async {
+                              await showModalBottomSheet(
+                                isScrollControlled: true,
+                                context: context,
+                                backgroundColor: UniversalVariables.blackColor,
+                                builder: (context) {
+                                  return IdentifiedContactDetails(
+                                    contact: contact,
+                                    userProvider: userProvider,
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      replacement: Center(
+                        child: Text(
+                          'You do not have any identified contacts.',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 20,
                           ),
-                          onTap: () async {
-                            await showModalBottomSheet(
-                              isScrollControlled: true,
-                              context: context,
-                              backgroundColor: UniversalVariables.blackColor,
-                              builder: (context) {
-                                return _buildInfo(context, contact);
-                              },
-                            );
-                          },
-                        );
-                      },
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -136,99 +138,6 @@ class _IdentifiedContactsState extends State<IdentifiedContacts> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Container _buildInfo(BuildContext context, User contact) {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.4,
-            width: double.infinity,
-            child: CachedImage(
-              contact.profilePhoto,
-              isRound: false,
-              radius: 45,
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Flexible(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    contact.username,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Divider(height: 5),
-          ListTile(
-            title: Text('${contact.phoneNumber}'),
-            trailing: ButtonBar(
-              alignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.call),
-                  color: Colors.white,
-                  onPressed: () async {
-                    User receiver = contact;
-                    if (await Permissions
-                        .cameraAndMicrophonePermissionsGranted())
-                      return CallUtils.dialAudio(
-                        from: userProvider.getUser,
-                        to: receiver,
-                        context: context,
-                      );
-                    return;
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.video_call),
-                  color: Colors.white,
-                  onPressed: () async {
-                    User receiver = contact;
-                    if (await Permissions
-                        .cameraAndMicrophonePermissionsGranted())
-                      return CallUtils.dial(
-                        from: userProvider.getUser,
-                        to: receiver,
-                        context: context,
-                      );
-                    return;
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.message),
-                  color: Colors.white,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChatScreen(receiver: contact),
-                      ),
-                    );
-                  },
-                )
-              ],
-            ),
-          ),
-          SizedBox(height: 100),
-        ],
       ),
     );
   }

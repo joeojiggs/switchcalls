@@ -14,6 +14,7 @@ import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/utils/location_utils.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
+import 'package:switchcalls/widgets/toasts.dart';
 
 class Utils {
   static FlutterLibphonenumber numLib = FlutterLibphonenumber();
@@ -122,11 +123,9 @@ class Utils {
   }
 
   static Future<String> formatNum(String number, [bool to234 = false]) async {
-    // print(number);
-    Map<String, dynamic> res;
     String numb = number.replaceAll(RegExp(r' '), '');
+    Map<String, dynamic> res;
     try {
-      await numLib.init();
       //path 1
       if (numb.startsWith('+')) {
         print('Path 1');
@@ -138,11 +137,12 @@ class Utils {
         if (LocationUtils.loc?.countryCode == null) {
           await getCountryCode();
         }
-        // print("LOC IS ${LocationUtils.loc?.countryCode}");
         res = await numLib.parse('${LocationUtils.loc?.countryCode}$numb');
       }
       // path 3
-      else {
+      else if (!numb.contains('+')) {
+        return numb;
+      } else {
         print('Path 3');
         int ind = numb.indexOf('+');
         res = await numLib.parse('${numb.substring(ind)}');
@@ -153,16 +153,8 @@ class Utils {
         ..replaceAll(RegExp(r' '), '');
     } catch (e) {
       print(e);
-      throw numb;
+      return null;
     }
-
-    // numLib.String number = numb.replaceAll(new RegExp(r' '), '');
-    // if (number.startsWith('+234')) {
-    //   return number.replaceRange(0, 3, '0');
-    // } else if (number.startsWith('234')) {
-    //   return number.replaceRange(0, 2, '0');
-    // } else
-    //   return number;
   }
 
   static List<MyContact> cleanList(List<MyContact> cts) {
@@ -180,6 +172,8 @@ class Utils {
     if (LocationUtils.loc?.region == null) {
       print('Region is null');
       await LocationUtils.getCurrentLocation();
+      if (LocationUtils.loc?.region == null)
+        Toasts.error("Please check your internet connection.");
     }
     supRegs = await numLib.getAllSupportedRegions();
     supRegs.removeWhere(

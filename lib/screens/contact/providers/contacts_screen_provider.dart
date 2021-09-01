@@ -19,7 +19,10 @@ class ContactsScreenProvider extends ChangeNotifier {
   }
 
   List<User> filterIdentifiedCL(
-      List<User> identified, List<MyContact> contacts, String query) {
+    List<User> identified,
+    List<MyContact> contacts,
+    String query,
+  ) {
     List<String> contNumbers = contacts
         ?.map((e) => (e.formatNums.length) > 0 ? e.formatNums.first : '')
         ?.toList();
@@ -29,7 +32,7 @@ class ContactsScreenProvider extends ChangeNotifier {
         contNumbers.any((e) => Utils.compareNumbers(element.phoneNumber, e)));
 
     //return the contact the user searched for
-    Iterable<User> res = identified
+    List<User> res = identified
         .where((element) => element.username.toLowerCase().contains(query))
         .toList();
     return res;

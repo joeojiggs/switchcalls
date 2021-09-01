@@ -85,7 +85,7 @@ class ContactsProvider extends ChangeNotifier {
       cts = await formatAllNumbers(cts);
 
       await _prefs.setStringList(
-          LOCAL_CONTACTS, cts.map((e) => jsonEncode(e.toMap())).toList());
+          LOCAL_CONTACTS, cts?.map((e) => jsonEncode(e.toMap()))?.toList());
       print("STORED CONTACTS");
       yield cts;
     }
@@ -101,7 +101,8 @@ class ContactsProvider extends ChangeNotifier {
       for (MyContact ct in cts) {
         List<String> nums = [];
         for (String nu in ct.numbers) {
-          String n = await Utils.formatNum(nu, true);
+          String n =
+              await Utils.formatNum(nu, true).catchError((e) => nums.add(e));
           nums.add(n);
         }
         cts2.add(MyContact(
@@ -110,12 +111,18 @@ class ContactsProvider extends ChangeNotifier {
           profilePic: '',
           localPic: ct.localPic,
           numbers: ct.numbers,
-          formatNums: nums,
+          formatNums: nums.contains(null)
+              ? (contactList
+                      .firstWhere((e) => e.name == ct.name, orElse: () => null)
+                      ?.formatNums ??
+                  [])
+              : nums,
         ));
         // print(ct.formatNums);
       }
       return cts2;
     } catch (e) {
+      print(e);
       return contactList;
     }
   }
