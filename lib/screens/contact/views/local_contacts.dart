@@ -5,7 +5,7 @@ import 'package:switchcalls/utils/universal_variables.dart';
 import 'package:switchcalls/models/contact.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import './contact_details.dart';
+import '../widgets/local_contact_details.dart';
 
 class LocalContacts extends StatelessWidget {
   LocalContacts({
@@ -122,7 +122,7 @@ class LocalContacts extends StatelessWidget {
                               context: context,
                               backgroundColor: UniversalVariables.blackColor,
                               builder: (context) {
-                                return ContactDetails(
+                                return LocalContactDetails(
                                   color1: color1,
                                   color2: color2,
                                   contact: contact,

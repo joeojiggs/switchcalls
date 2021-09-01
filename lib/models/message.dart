@@ -95,7 +95,7 @@ class FileMessage {
 
   FileMessage({this.message, this.isDownloading = false});
 
-  bool get hasDownloaded => File(this.message.file.path).existsSync ?? false;
+  bool get hasDownloaded => File(this.message.file.path).existsSync() ?? false;
 }
 
 class MyFile {
@@ -119,8 +119,10 @@ class MyFile {
 class MyLocation {
   final double long;
   final double lat;
+  final String region;
+  String countryCode;
 
-  MyLocation({this.long, this.lat});
+  MyLocation({this.long, this.lat, this.region, this.countryCode});
 
   Map<String, dynamic> toMap() {
     return {

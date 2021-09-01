@@ -70,21 +70,60 @@ class ContactsProvider extends ChangeNotifier {
   Stream<Iterable<MyContact>> contacts() async* {
     while (true) {
       await Future.delayed(Duration(milliseconds: 500));
-      Iterable<MyContact> cts = (await ContactsService.getContacts()).map(
-        (e) => MyContact(
-          name: e?.displayName ?? '',
-          uid: '',
-          profilePic: '',
-          localPic: e.avatar,
-          numbers: e.phones.map((e) => e.value).toList(),
-        ),
-      );
-      // cts.skipWhile((e) => e.name.isEmpty && e.numbers.isEmpty);
-      // await _prefs.remove(LOCAL_CONTACTS);
+
+      // get contacts on users device
+      List<MyContact> cts = (await ContactsService.getContacts())
+          .map((e) => MyContact(
+                name: e?.displayName ?? '',
+                uid: '',
+                profilePic: '',
+                localPic: e.avatar,
+                numbers: e.phones.map((e) => e.value).toList(),
+              ))
+          .toList();
+
+      cts = await formatAllNumbers(cts);
+
       await _prefs.setStringList(
-          LOCAL_CONTACTS, cts.map((e) => jsonEncode(e.toMap())).toList());
+          LOCAL_CONTACTS, cts?.map((e) => jsonEncode(e.toMap()))?.toList());
       print("STORED CONTACTS");
       yield cts;
+    }
+  }
+
+  Future<List<MyContact>> formatAllNumbers(List<MyContact> cts) async {
+    try {
+      List<MyContact> cts2 = [];
+      // init list of country codes
+      await Utils.numLib.init();
+
+      // format all number gotten from users device
+      for (MyContact ct in cts) {
+        List<String> nums = [];
+        for (String nu in ct.numbers) {
+          String n =
+              await Utils.formatNum(nu, true).catchError((e) => nums.add(e));
+          nums.add(n);
+        }
+        cts2.add(MyContact(
+          name: ct.name,
+          uid: '',
+          profilePic: '',
+          localPic: ct.localPic,
+          numbers: ct.numbers,
+          formatNums: nums.contains(null)
+              ? (contactList
+                      .firstWhere((e) => e.name == ct.name, orElse: () => null)
+                      ?.formatNums ??
+                  [])
+              : nums,
+        ));
+        // print(ct.formatNums);
+      }
+      return cts2;
+    } catch (e) {
+      print(e);
+      return contactList;
     }
   }
 

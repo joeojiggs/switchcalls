@@ -12,12 +12,12 @@ import 'package:switchcalls/utils/call_utilities.dart';
 import 'package:switchcalls/utils/permissions.dart';
 import 'package:switchcalls/models/contact.dart';
 
-class ContactDetails extends StatelessWidget {
+class LocalContactDetails extends StatelessWidget {
   final AuthMethods _authMethods = AuthMethods();
   final SmsQuery query = new SmsQuery();
   final Sms.ContactQuery contacts = new Sms.ContactQuery();
 
-  ContactDetails({
+  LocalContactDetails({
     Key key,
     @required this.color1,
     @required this.color2,

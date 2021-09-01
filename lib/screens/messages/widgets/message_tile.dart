@@ -25,7 +25,7 @@ class MessageTile extends StatefulWidget {
 }
 
 class _MesTileState extends State<MessageTile> {
-
+  FileMessage _mes;
   @override
   Widget build(BuildContext context) {
     switch (widget.message.type) {
@@ -61,16 +61,22 @@ class _MesTileState extends State<MessageTile> {
               )
             : Text("Url was null");
       case 'file':
-        FileMessage _mes = FileMessage(message: widget.message);
-        // print(_mes.message.file?.name);
+        _mes = FileMessage(message: widget.message);
+        print('_mes status is ${_mes.message.message}');
+        String basePath = '${widget.model.chatDir}/${_mes.message.senderId}';
         return InkWell(
           onTap: () async {
-            print(_mes.hasDownloaded);
-            if (widget.model.doesFileExist(_mes.message)) {
-              // open file
-              print(_mes.message.file.path);
-              print('OPENING');
+            if (_mes.message.senderId == widget.sender.uid) {
+              // print("User is sender");
+              // print('OPENING ${_mes.message.file.path}');
               Utils.openFile(_mes.message.file.path);
+            } else {
+              print('Downloaded status ' + _mes.hasDownloaded.toString());
+              if (widget.model.doesFileExist(_mes.message)) {
+                // open file
+                // print('OPENING $basePath/${_mes.message.file.name}');
+                Utils.openFile('$basePath/${_mes.message.file.name}');
+              }
             }
           },
           child: Container(
@@ -95,7 +101,8 @@ class _MesTileState extends State<MessageTile> {
                 ),
                 Visibility(
                   visible: (_mes.message.senderId != widget.sender.uid &&
-                      !widget.model.doesFileExist(_mes.message)),
+                      !widget.model.doesFileExist(_mes
+                          .message)), //check if message user is not the sender and if message
                   child: Visibility(
                     visible: _mes.isDownloading,
                     child: IconButton(
@@ -103,17 +110,23 @@ class _MesTileState extends State<MessageTile> {
                       onPressed: () {},
                     ),
                     replacement: IconButton(
-                      icon: Icon(!widget.model.doesFileExist(_mes.message)
+                      icon: Icon(widget.model.doesFileExist(_mes
+                              .message) //if file doesn't exist showw the download icon
                           ? null
                           : Icons.file_download),
                       onPressed: () async {
-                        print('DOWNLOADING');
-                        setState(() => _mes.isDownloading = true);
-                        _mes.message =
-                            await StorageMethods().downloadFile(_mes.message);
-                        setState(() => _mes.isDownloading = false);
-                        print('DOWNLOADED');
-                        print('${_mes.message.file.path}');
+                        if (widget.model.doesFileExist(_mes.message)) {
+                          print(true);
+                        } else {
+                          // print(false);
+                          print('DOWNLOADING');
+                          setState(() => _mes.isDownloading = true);
+                          _mes.message =
+                              await StorageMethods().downloadFile(_mes.message);
+                          setState(() => _mes.isDownloading = false);
+                          print('DOWNLOADED');
+                          // print('${_mes.message.file.path}');
+                        }
                       },
                     ),
                   ),
@@ -125,7 +138,34 @@ class _MesTileState extends State<MessageTile> {
         );
       case 'contacts':
         return InkWell(
-          onTap: () {},
+          onTap: () async {
+            await showModalBottomSheet(
+              context: context,
+              builder: (ctx) {
+                return Container(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: Column(
+                    children: [
+                      AppBar(
+                        title: Text(widget.message.contact.name),
+                      ),
+                      SizedBox(height: 20),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: widget.message.contact.numbers.length,
+                        itemBuilder: (ctx, index) {
+                          String e = widget.message.contact.numbers[index];
+                          return ListTile(
+                            title: Text(e.toString()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
           child: Container(
             height: 100,
             width: 250,

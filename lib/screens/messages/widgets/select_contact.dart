@@ -116,65 +116,21 @@ class _SelectContactState extends State<SelectContact> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: _contact.trimNums
-                        .map((e) => InkWell(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text('$e'),
+                        .map((e) => IgnorePointer(
+                              ignoring: widget.shouldReturn ? true : false,
+                              child: InkWell(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('$e'),
+                                ),
+                                onTap: () => _selectNum(_contact, e),
                               ),
-                              onTap: () async {
-                                if (_contact.trimNums.length > 1) {
-                                  MyContact ct;
-                                  Cts.Contact contact =
-                                      (await Cts.ContactQuery()
-                                          .queryContact(e));
-                                  ct = MyContact(
-                                    name: contact.fullName,
-                                    localPic: contact.photo?.bytes,
-                                    numbers: [contact.address],
-                                  );
-
-                                  SmsThread test =
-                                      _messageProvider.messages.firstWhere((e) {
-                                    print(e.contact.address);
-                                    print(ct.trimNums);
-                                    return ct.trimNums
-                                        .any((element) => Utils.compareNumbers(
-                                              e.contact.address
-                                                  .replaceAll(RegExp(r' '), ''),
-                                              element,
-                                            ));
-                                  }, orElse: () {
-                                    print('None found');
-                                    return;
-                                  });
-                                  List<SmsMessage> _messages = test?.messages;
-                                  print(
-                                      _messages?.map((e) => e.body)?.toList());
-                                  // (await _messageProvider.getthreads())
-                                  //     .where((element) =>
-                                  //         element.contact.address == contact.address)
-                                  //     .first
-                                  //     .messages;
-
-                                  if (_messages == null) {
-                                    return;
-                                  }
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => TextScreen(
-                                        contact: contact,
-                                        messages: _messages,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
                             ))
                         .toList(),
                   ),
                   onTap: () async {
                     if (widget.shouldReturn) {
+                      print(_contact.toString());
                       return Navigator.pop(context, _contact);
                     } else {
                       if (_contact.trimNums.length < 2) {
@@ -263,5 +219,59 @@ class _SelectContactState extends State<SelectContact> {
     return phoneStr.replaceAllMapped(RegExp(r'^(\+)|\D'), (Match m) {
       return m[0] == "+" ? "+" : "";
     });
+  }
+
+  void _selectNum(MyContact _contact, String e) async{
+    if (_contact.trimNums.length > 1) {
+      MyContact ct;
+      Cts.Contact contact = (await Cts.ContactQuery().queryContact(e));
+      ct = MyContact(
+        name: contact.fullName,
+        localPic: contact.photo?.bytes,
+        numbers: [contact.address],
+      );
+
+      List<SmsThread> list = [];
+      for (SmsThread e in _messageProvider.messages) {
+        for (String element in ct.trimNums) {
+          bool isSame = Utils.compareNumbers(e.contact.address, element);
+          if (isSame) list.add(e);
+        }
+      }
+
+      SmsThread test = list.length > 0 ? list[0] : null;
+      //  _messageProvider.messages.firstWhere((e) {
+      //   // print(e.contact.address);
+      //   // print(ct.trimNums);
+
+      //   return ct.trimNums.any((element) => Utils.compareNumbers(
+      //         e.contact.address,
+      //         element,
+      //       ));
+      // }, orElse: () {
+      //   print('None found');
+      //   return;
+      // });
+      List<SmsMessage> _messages = test?.messages;
+      print(_messages?.map((e) => e.body)?.toList());
+      // (await _messageProvider.getthreads())
+      //     .where((element) =>
+      //         element.contact.address == contact.address)
+      //     .first
+      //     .messages;
+
+      if (_messages == null) {
+        return;
+      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TextScreen(
+            contact: contact,
+            messages: _messages,
+          ),
+        ),
+      );
+    }
   }
 }

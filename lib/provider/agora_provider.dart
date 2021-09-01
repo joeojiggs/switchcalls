@@ -28,7 +28,7 @@ class AgoraProvider extends ChangeNotifier {
   };
 
   Future<void> initializeAgora(Call call) async {
-    CallUtils.toggleRingSound(true);
+    CallUtils.initRingTone();
     if (APP_ID.isEmpty) {
       _infoStrings.add(
         'APP_ID missing, please provide your APP_ID in settings.dart',
@@ -97,10 +97,10 @@ class AgoraProvider extends ChangeNotifier {
       },
       connectionStateChanged:
           (ConnectionStateType type, ConnectionChangedReason reason) {
-        if (type == ConnectionStateType.Connecting) {
+        if (type == ConnectionStateType.Connected) {
+          // CallUtils.toggleRingSound(false);
+        } else {
           CallUtils.toggleRingSound(true);
-        } else if (type == ConnectionStateType.Connected) {
-          CallUtils.toggleRingSound(false);
         }
       },
       firstRemoteVideoFrame: (int uid, int width, int height, int elapsed) {
@@ -109,6 +109,9 @@ class AgoraProvider extends ChangeNotifier {
         print(_infoStrings.last);
         notifyListeners();
       },
+      // firstRemoteAudioFrame: (int uid, int elapsed) {
+      //   CallUtils.toggleRingSound(false);
+      // },
       userOffline: (int a, UserOfflineReason b) {
         callMethods.endCall(call: call);
         final info = 'onUserOffline: a: ${a.toString()}, b: ${b.toString()}';
@@ -190,7 +193,7 @@ class AgoraProvider extends ChangeNotifier {
   void close() {
     try {
       //
-      CallUtils.toggleRingSound(false);
+      CallUtils.closeRingTone();
       // clear users
       _users.clear();
       _infoStrings.clear();
